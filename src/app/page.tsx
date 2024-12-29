@@ -583,7 +583,7 @@ const CallToAction = () => {
                 height={20}
                 className="rounded-full"
               />
-              <span className="text-gray-400 text-sm">NeoX Chain</span>
+              <span className="text-gray-400 text-sm">NeoX Mainet & Testnet</span>
             </div>
             <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
               <Image
@@ -615,6 +615,16 @@ const CallToAction = () => {
               />
               <span className="text-gray-400 text-sm">Kaia Chain</span>
             </div>
+            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
+              <Image
+                src="/chains/telos.png"
+                alt="Telos Chain"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              <span className="text-gray-400 text-sm">Telos Chain</span>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -624,10 +634,11 @@ const CallToAction = () => {
 
 const SupportedChains = () => {
   const chains = [
-    { name: 'NeoX Testnet', icon: '/chains/neox.png', description: 'High-performance Neo Virtual Machine chain', status: 'Live' },
-    { name: 'EDU Chain', icon: '/chains/educhain.png', description: 'Educational blockchain network', status: 'Live' },
-    { name: 'Flow Chain', icon: '/chains/flow.png', description: 'Scalable blockchain used by NBA, NFL, and Disney.', status: 'Live' },
-    { name: 'Kaia Chain', icon: '/chains/kaia.png', description: 'Blockchain for AI-driven applications', status: 'Live' }
+    { name: 'NeoX Mainnet & Testnet', icon: '/chains/neox.png', description: 'High-performance Neo VM chain', status: 'Live' },
+    { name: 'EDU Chain', icon: '/chains/educhain.png', description: 'Educational blockchain', status: 'Live' },
+    { name: 'Flow Chain', icon: '/chains/flow.png', description: 'Scalable blockchain used by NBA, NFL, Disney', status: 'Live' },
+    { name: 'Kaia Chain', icon: '/chains/kaia.png', description: 'AI-driven blockchain', status: 'Live' },
+    { name: 'Telos Chain', icon: '/chains/telos.png', description: 'Scalable utility blockchain', status: 'Live' }
   ];
 
   return (

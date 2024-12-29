@@ -16,6 +16,15 @@ export interface ChainInfo {
 
 export const supportedChains: ChainInfo[] = [
   {
+    id: 47763,
+    hexId: '0xBA93',
+    name: 'NeoX Mainnet',
+    icon: '/chains/neox.png',
+    symbol: 'GAS',
+    rpcUrl: 'https://mainnet-1.rpc.banelabs.org/',
+    blockExplorerUrl: 'https://xexplorer.neo.org/',
+  },
+  {
     id: 12227332,
     hexId: '0xBA9304',
     name: 'NeoX Testnet',
@@ -50,6 +59,15 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'KAIA',
     rpcUrl: 'https://kaia-kairos.blockpi.network/v1/rpc/public',
     blockExplorerUrl: 'https://kairos.kaiascope.com/',
+  },
+  {
+    id: 41,
+    hexId: '0x29',
+    name: 'Telos Testnet',
+    icon: '/chains/telos.png',
+    symbol: 'TLOS',
+    rpcUrl: 'https://testnet.telos.net/evm',
+    blockExplorerUrl: 'https://testnet.teloscan.io/',
   }
 ] as const
 

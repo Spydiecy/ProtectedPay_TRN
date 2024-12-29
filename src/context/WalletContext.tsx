@@ -48,6 +48,33 @@ const neoXTestnet = {
   testnet: true,
 } as const;
 
+const neoXMainnet = {
+  id: 47763,
+  hexId: '0xBA93',
+  name: 'NeoX Mainnet',
+  network: 'neoxmainnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'GAS',
+    symbol: 'GAS',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://mainnet-1.rpc.banelabs.org/']
+    },
+    public: {
+      http: ['https://mainnet-1.rpc.banelabs.org/']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'NeoX Explorer',
+      url: 'https://xexplorer.neo.org/'
+    }
+  },
+  testnet: false,
+} as const;
+
 const eduChainTestnet = {
   id: 656476,
   name: 'EDU Chain Testnet',
@@ -128,7 +155,34 @@ const kaiatestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet] as const; 
+const telosTestnet = {
+  id: 41,
+  hexId: '0x29',
+  name: 'Telos Testnet',
+  network: 'telostestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'TLOS',
+    symbol: 'TLOS',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://testnet.telos.net/evm']
+    },
+    public: {
+      http: ['https://testnet.telos.net/evm']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Telos Testnet Explorer',
+      url: 'https://testnet.teloscan.io/'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -152,6 +206,8 @@ const wagmiConfig = createConfig({
     [eduChainTestnet.id]: http(),
     [flowTestnet.id]: http(),
     [kaiatestnet.id]: http(),
+    [telosTestnet.id]: http(),
+    [neoXMainnet.id]: http(),
   },
 });
 
