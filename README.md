@@ -14,6 +14,7 @@ Currently supporting:
     <img align="left" src="https://raw.githubusercontent.com/Spydiecy/ProtectedPay/refs/heads/main/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/flow.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/kaia.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/telos.png" width="40" height="40" style="margin-right: 10px;"></img>
 </p>
 
 <br clear="left"/>
@@ -120,6 +121,9 @@ Currently supporting:
 
 ## Deployed Contracts
 
+### NeoX Mainnet
+- **Contract**: `0x2440b2A42972C37831ea365524dB46985DDc0653`  
+
 ### NeoX Testnet  
 - **Contract**: `0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9`  
 
@@ -131,6 +135,9 @@ Currently supporting:
 
 ### KAIA Testnet  
 - **Contract**: `0xca36dd890f987edce1d6d7c74fb9df627c216bf6`  
+
+### Telos Testnet  
+- **Contract**: `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`  
 
 ---
 
