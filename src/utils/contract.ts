@@ -4,7 +4,7 @@ const CONTRACT_ADDRESSES = {
 	12227332: '0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9', // NeoX Testnet
 	656476: '0x03c4fb7563e593ca0625C1c64959AC56081785cE', // EDU Chain Testnet
 	545: '0xF887B4D3b17C12C86cc917cF72fb8881f866a847', // Flow chain Testnet
-	1001: '0xca36dd890f987edce1d6d7c74fb9df627c216bf6'
+	1001: '0xca36dd890f987edce1d6d7c74fb9df627c216bf6', // KAIA Testnet
 } as const;
   
 const CONTRACT_ABI = [

@@ -26,6 +26,7 @@ import {
   getTransferDetails
 } from '@/utils/contract'
 import { useChainInfo } from '@/utils/useChainInfo';
+import QRScanner from '@/components/qr/QRScanner';
 
 enum TransferTabs {
   SEND = 'send',
@@ -576,6 +577,15 @@ export default function TransferPage() {
           </AnimatePresence>
         </div>
       </motion.div>
+
+      {/* QR Scanner */}
+<QRScanner 
+  onScan={(data) => {
+    setRecipient(data);
+    setActiveTab(TransferTabs.SEND);
+  }}
+  onError={(error) => setError(error)}
+/>
 
       {/* Custom Scrollbar Styles */}
       <style jsx global>{`

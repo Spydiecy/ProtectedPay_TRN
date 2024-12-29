@@ -6,7 +6,8 @@ import {
   UserCircleIcon, ClockIcon, CheckCircleIcon, 
   UsersIcon, BanknotesIcon, ArrowPathIcon,
   ArrowUpIcon, WalletIcon, ExclamationTriangleIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 import { useWallet } from '@/context/WalletContext';
 import { 
@@ -14,6 +15,8 @@ import {
   getTransferDetails, getGroupPaymentDetails, getSavingsPotDetails 
 } from '@/utils/contract';
 import { useChainInfo } from '@/utils/useChainInfo';
+import ProfileQR from '@/components/qr/ProfileQR';
+import { QrCodeIcon } from '@heroicons/react/24/outline';
 
 // Animation Variants
 const fadeIn = {
@@ -133,6 +136,7 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('transfers');
   const { currentChain } = useChainInfo();
+  const [showQR, setShowQR] = useState(false);
 
   const fetchUserData = useCallback(async () => {
     if (!signer || !address) return;
@@ -354,7 +358,7 @@ export default function ProfilePage() {
               {transfer.sender === userAddress ? 'Sent to:' : 'Received from:'}
             </p>
             <p className="text-green-400">
-              {transfer.sender === userAddress ? transfer.recipient : transfer.sender}
+              {transfer.sender === userAddress ? `${transfer.recipient.slice(0, 6)}...${transfer.recipient.slice(-4)}` : `${transfer.sender.slice(0, 6)}...${transfer.sender.slice(-4)}`}
             </p>
           </div>
           <div className="text-right">
@@ -510,28 +514,41 @@ const SavingsPotCard: React.FC<SavingsPotCardProps> = ({ pot }) => {
       >
         {/* Profile Header */}
         <motion.div className="text-center mb-12">
-          <motion.div
-            className="inline-block mb-6"
-            variants={iconFloat}
-            initial="initial"
-            animate="animate"
-          >
-            <div className="bg-black/30 p-6 rounded-2xl backdrop-blur-xl border border-green-500/10">
-              <UserCircleIcon className="w-16 h-16 text-green-400" />
-            </div>
-          </motion.div>
+  <motion.div
+    className="inline-block mb-6"
+    variants={iconFloat}
+    initial="initial"
+    animate="animate"
+  >
+    <div className="bg-black/30 p-6 rounded-2xl backdrop-blur-xl border border-green-500/10">
+      <UserCircleIcon className="w-16 h-16 text-green-400" />
+    </div>
+  </motion.div>
 
-          <motion.div className="space-y-4">
-            <h1 className="text-5xl font-bold">
-              <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-                Welcome, {registeredUsername || 'User'}
-              </span>
-            </h1>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Manage your profile and view your activity across ProtectedPay
-            </p>
-          </motion.div>
-        </motion.div>
+  <motion.div className="space-y-4 relative">
+    <div className="flex items-center justify-center space-x-4">
+      <h1 className="text-5xl font-bold">
+        <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+          Welcome, {registeredUsername || 'User'}
+        </span>
+      </h1>
+      {registeredUsername && (
+        <motion.button
+          onClick={() => setShowQR(true)}
+          className="p-3 bg-black/30 backdrop-blur-xl rounded-xl border border-green-500/10 text-green-400 hover:bg-green-500/20 transition-all duration-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          title="Show Payment QR"
+        >
+          <QrCodeIcon className="w-6 h-6" />
+        </motion.button>
+      )}
+    </div>
+    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+      Manage your profile and view your activity across ProtectedPay
+    </p>
+  </motion.div>
+</motion.div>
 
         {/* Stats Grid */}
         <motion.div 
@@ -795,6 +812,47 @@ const SavingsPotCard: React.FC<SavingsPotCardProps> = ({ pot }) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* QR Code Modal */}
+      <AnimatePresence>
+      {showQR && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+          onClick={() => setShowQR(false)}
+        >
+          <div className="w-full min-h-screen pt-[72px] px-4 pb-4 overflow-y-auto">
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-4xl mx-auto"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="relative bg-gradient-to-b from-gray-800/30 to-gray-900/30 rounded-3xl border border-green-500/20 overflow-hidden backdrop-blur-xl shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-emerald-500/10 rounded-3xl blur-xl" />
+                <div className="relative p-6 md:p-8">
+                  <button
+                    onClick={() => setShowQR(false)}
+                    className="absolute right-4 top-4 p-2 rounded-xl bg-black/30 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <XMarkIcon className="w-6 h-6" />
+                  </button>
+                  <ProfileQR
+                    username={registeredUsername}
+                    address={address || ''}
+                    onClose={() => setShowQR(false)}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
     </div>
   );
 }
