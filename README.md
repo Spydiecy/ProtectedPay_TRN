@@ -136,7 +136,7 @@ ProtectedPay ensures user safety through:
 ## Quick Links  
 
 - **[Telegram Bot](https://t.me/protectedpay_bot)**  
-- **[Video Demo](#)**  
+- **[Mobile Demo Video](https://youtu.be/TJgnpVpa51c?si=ojjzXsVgQBj_BSGN)**
 
 ---
 
