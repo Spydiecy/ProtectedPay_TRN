@@ -638,7 +638,8 @@ const SupportedChains = () => {
     { name: 'EDU Chain', icon: '/chains/educhain.png', description: 'Educational blockchain', status: 'Live' },
     { name: 'Flow Chain', icon: '/chains/flow.png', description: 'Scalable blockchain used by NBA, NFL, Disney', status: 'Live' },
     { name: 'Kaia Chain', icon: '/chains/kaia.png', description: 'AI-driven blockchain', status: 'Live' },
-    { name: 'Telos Chain', icon: '/chains/telos.png', description: 'Scalable utility blockchain', status: 'Live' }
+    { name: 'Telos Chain', icon: '/chains/telos.png', description: 'Scalable utility blockchain', status: 'Live' },
+    { name: 'Ancient8 Chain', icon: '/chains/ancient8.png', description: 'Gaming-focused Ethereum L2 blockchain', status: 'Live' }
   ];
 
   return (

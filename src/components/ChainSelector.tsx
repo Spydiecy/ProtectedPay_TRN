@@ -68,6 +68,15 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'TLOS',
     rpcUrl: 'https://testnet.telos.net/evm',
     blockExplorerUrl: 'https://testnet.teloscan.io/',
+  },
+  {
+    id: 28122024,
+    hexId: '0x1AD1BA8',
+    name: 'Ancient8 Testnet',
+    icon: '/chains/ancient8.png',
+    symbol: 'ETH',
+    rpcUrl: 'https://rpcv2-testnet.ancient8.gg/',
+    blockExplorerUrl: 'https://ancient8.testnet.routescan.io/',
   }
 ] as const
 

@@ -182,7 +182,34 @@ const telosTestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet] as const; 
+const ancient8Testnet = {
+  id: 28122024,
+  hexId: '0x1AD1BA8',
+  name: 'Ancient8 Testnet',
+  network: 'ancient8testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'ETH',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpcv2-testnet.ancient8.gg/']
+    },
+    public: {
+      http: ['https://rpcv2-testnet.ancient8.gg/']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Ancient8 Testnet Explorer',
+      url: 'https://ancient8.testnet.routescan.io/'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet, ancient8Testnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -208,6 +235,7 @@ const wagmiConfig = createConfig({
     [kaiatestnet.id]: http(),
     [telosTestnet.id]: http(),
     [neoXMainnet.id]: http(),
+    [ancient8Testnet.id]: http(),
   },
 });
 

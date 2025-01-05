@@ -11,12 +11,15 @@ ProtectedPay is a multi-chain DeFi platform designed to provide secure transfers
 ProtectedPay supports the following blockchains:  
 
 <p align="left">
-    <img src="/public/chains/neox.png" width="40" height="40" style="margin-right: 10px;">
-    <img src="https://raw.githubusercontent.com/Spydiecy/ProtectedPay/refs/heads/main/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;">
-    <img src="/public/chains/flow.png" width="40" height="40" style="margin-right: 10px;">
-    <img src="/public/chains/kaia.png" width="40" height="40" style="margin-right: 10px;">
-    <img src="/public/chains/telos.png" width="40" height="40" style="margin-right: 10px;">
-</p>  
+    <img align="left" src="/public/chains/neox.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="https://raw.githubusercontent.com/Spydiecy/ProtectedPay/refs/heads/main/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/flow.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/kaia.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/telos.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/ancient8.png" width="40" height="40" style="margin-right: 10px;"></img>
+</p>
+
+<br clear="left"/>
 
 ---
 
@@ -126,6 +129,7 @@ ProtectedPay ensures user safety through:
 | Flow Testnet  | `0xF887B4D3b17C12C86cc917cF72fb8881f866a847`       |  
 | KAIA Testnet  | `0xca36dd890f987edce1d6d7c74fb9df627c216bf6`       |  
 | Telos Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`       |  
+| Ancient8 Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`     |  
 
 ---
 
