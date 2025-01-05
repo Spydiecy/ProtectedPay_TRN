@@ -625,6 +625,16 @@ const CallToAction = () => {
               />
               <span className="text-gray-400 text-sm">Telos Chain</span>
             </div>
+            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
+              <Image
+                src="/chains/ancient8.png"
+                alt="Ancient8"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              <span className="text-gray-400 text-sm">Ancient8</span>
+            </div>
           </motion.div>
         </div>
       </div>
