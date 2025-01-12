@@ -198,9 +198,9 @@ const ChainSelector = () => {
   const currentChain = supportedChains.find(c => c.id === currentChainId) || supportedChains[0]
 
   const mobileDropdownVariants = {
-    hidden: { opacity: 0, y: "-100%" },
+    hidden: { opacity: 0, y: -20 },
     visible: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: "-100%" }
+    exit: { opacity: 0, y: -20 }
   }
 
   const desktopDropdownVariants = {
@@ -241,45 +241,65 @@ const ChainSelector = () => {
       <AnimatePresence>
         {isDropdownOpen && (
           isMobile ? (
-            // Mobile Dropdown
+            // Mobile Dropdown - Improved scrollable design
             <motion.div
-              className="fixed inset-x-0 top-16 z-50 bg-black/95 backdrop-blur-xl border-b border-green-500/20"
+              className="fixed inset-x-0 top-16 bottom-0 z-50 bg-black/95 backdrop-blur-xl"
               variants={mobileDropdownVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
               transition={{ duration: 0.2 }}
             >
-              <div className="px-4 py-2 max-h-[calc(100vh-5rem)] overflow-y-auto">
-                {supportedChains.map((chain) => (
-                  <motion.button
-                    key={chain.id}
-                    onClick={() => handleSwitchNetwork(chain)}
-                    className={`w-full px-4 py-4 flex items-center space-x-3 rounded-lg ${
-                      chain.id === currentChainId ? 'text-green-400 bg-green-500/5' : 'text-gray-400'
-                    } ${isSwitching ? 'opacity-50' : 'active:bg-green-500/10'}`}
-                    disabled={isSwitching}
+              <div className="flex flex-col h-full">
+                <div className="px-4 py-3 border-b border-green-500/20">
+                  <h3 className="text-green-400 font-medium text-lg">Select Network</h3>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                  <div className="px-4 py-2 space-y-2">
+                    {supportedChains.map((chain) => (
+                      <motion.button
+                        key={chain.id}
+                        onClick={() => handleSwitchNetwork(chain)}
+                        className={`w-full px-4 py-3 flex items-center space-x-3 rounded-xl border ${
+                          chain.id === currentChainId 
+                            ? 'border-green-500/30 bg-green-500/5 text-green-400' 
+                            : 'border-transparent text-gray-400 active:bg-green-500/5'
+                        } ${isSwitching ? 'opacity-50' : ''}`}
+                        disabled={isSwitching}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="w-8 h-8 relative flex-shrink-0">
+                          <Image
+                            src={chain.icon}
+                            alt={chain.name}
+                            fill
+                            className="rounded-full object-contain"
+                          />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className="text-base font-medium">{chain.name}</div>
+                          <div className="text-sm opacity-60">{chain.symbol}</div>
+                        </div>
+                        {chain.id === currentChainId && (
+                          <motion.div
+                            className="w-2 h-2 rounded-full bg-green-500"
+                            layoutId="activeChain"
+                          />
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="p-4 border-t border-green-500/20">
+                  <button
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="w-full py-3 px-4 rounded-xl bg-green-500/10 text-green-400 font-medium active:bg-green-500/20"
                   >
-                    <div className="w-8 h-8 relative flex-shrink-0">
-                      <Image
-                        src={chain.icon}
-                        alt={chain.name}
-                        fill
-                        className="rounded-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 text-left">
-                      <div className="text-base font-medium">{chain.name}</div>
-                      <div className="text-sm opacity-60">{chain.symbol}</div>
-                    </div>
-                    {chain.id === currentChainId && (
-                      <motion.div
-                        className="w-2 h-2 rounded-full bg-green-500"
-                        layoutId="activeChain"
-                      />
-                    )}
-                  </motion.button>
-                ))}
+                    Close
+                  </button>
+                </div>
               </div>
             </motion.div>
           ) : (
@@ -290,9 +310,9 @@ const ChainSelector = () => {
               animate="visible"
               exit="exit"
               transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-2 w-56 rounded-xl bg-black/95 backdrop-blur-xl border border-green-500/20 shadow-xl overflow-hidden z-50"
+              className="absolute right-0 mt-2 w-64 rounded-xl bg-black/95 backdrop-blur-xl border border-green-500/20 shadow-xl overflow-hidden z-50"
             >
-              <div className="py-1">
+              <div className="py-2 max-h-96 overflow-y-auto scrollbar-hide">
                 {supportedChains.map((chain) => (
                   <motion.button
                     key={chain.id}
