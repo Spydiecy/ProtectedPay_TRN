@@ -644,11 +644,11 @@ const CallToAction = () => {
 
 const SupportedChains = () => {
   const chains = [
-    { name: 'NeoX Mainnet & Testnet', icon: '/chains/neox.png', description: 'High-performance Neo VM chain', status: 'Live' },
-    { name: 'EDU Chain', icon: '/chains/educhain.png', description: 'Educational blockchain', status: 'Live' },
+    { name: 'NeoX', icon: '/chains/neox.png', description: 'High-performance Neo Smaart Economy EVM chain', status: 'Live' },
+    { name: 'EDU Chain', icon: '/chains/educhain.png', description: 'Education focused blockchain by Open Campus', status: 'Live' },
     { name: 'Flow Chain', icon: '/chains/flow.png', description: 'Scalable blockchain used by NBA, NFL, Disney', status: 'Live' },
-    { name: 'Kaia Chain', icon: '/chains/kaia.png', description: 'AI-driven blockchain', status: 'Live' },
-    { name: 'Telos Chain', icon: '/chains/telos.png', description: 'Scalable utility blockchain', status: 'Live' },
+    { name: 'Kaia Chain', icon: '/chains/kaia.png', description: 'Kaia is an EVM L1 designed to bring Web3 to millions', status: 'Live' },
+    { name: 'Telos Chain', icon: '/chains/telos.png', description: 'Scalable utility chain with low latency & low network congestion', status: 'Live' },
     { name: 'Ancient8 Chain', icon: '/chains/ancient8.png', description: 'Gaming-focused Ethereum L2 blockchain', status: 'Live' }
   ];
 
@@ -670,7 +670,7 @@ const SupportedChains = () => {
           </span>
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
           {chains.map((chain) => (
             <motion.div
               key={chain.name}
