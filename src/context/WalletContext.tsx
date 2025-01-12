@@ -209,7 +209,34 @@ const ancient8Testnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet, ancient8Testnet] as const; 
+const citreaTestnet = {
+  id: 5115,
+  hexId: '0x13FB',
+  name: 'Citrea Testnet',
+  network: 'citreatestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'cBTC',
+    symbol: 'cBTC',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.citrea.xyz']
+    },
+    public: {
+      http: ['https://rpc.testnet.citrea.xyz']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Citrea Testnet Explorer',
+      url: 'https://explorer.testnet.citrea.xyz/'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet, ancient8Testnet, citreaTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -236,6 +263,7 @@ const wagmiConfig = createConfig({
     [telosTestnet.id]: http(),
     [neoXMainnet.id]: http(),
     [ancient8Testnet.id]: http(),
+    [citreaTestnet.id]: http(),
   },
 });
 

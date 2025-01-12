@@ -78,6 +78,17 @@ export const supportedChains: ChainInfo[] = [
     rpcUrl: 'https://rpcv2-testnet.ancient8.gg/',
     blockExplorerUrl: 'https://ancient8.testnet.routescan.io/',
   }
+  ,
+  {
+    id: 5115,
+    hexId: '0x13FB',
+    name: 'Citrea Testnet',
+    icon: '/chains/citrea.png',
+    symbol: 'cBTC',
+    rpcUrl: 'https://rpc.testnet.citrea.xyz',
+    blockExplorerUrl: 'https://explorer.testnet.citrea.xyz/'
+  }
+
 ] as const
 
 const ChainSelector = () => {
