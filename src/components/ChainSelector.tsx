@@ -77,8 +77,7 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'ETH',
     rpcUrl: 'https://rpcv2-testnet.ancient8.gg/',
     blockExplorerUrl: 'https://ancient8.testnet.routescan.io/',
-  }
-  ,
+  },
   {
     id: 5115,
     hexId: '0x13FB',
@@ -87,8 +86,16 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'cBTC',
     rpcUrl: 'https://rpc.testnet.citrea.xyz',
     blockExplorerUrl: 'https://explorer.testnet.citrea.xyz/'
+  },
+  {
+    id: 5003,
+    hexId: '0x138B',
+    name: 'Mantle Sepolia Testnet',
+    icon: '/chains/mantle.png',
+    symbol: 'MNT',
+    rpcUrl: 'https://rpc.sepolia.mantle.xyz',
+    blockExplorerUrl: 'https://explorer.sepolia.mantle.xyz'
   }
-
 ] as const
 
 const ChainSelector = () => {

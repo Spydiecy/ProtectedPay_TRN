@@ -645,6 +645,16 @@ const CallToAction = () => {
               />
               <span className="text-gray-400 text-sm">Citrea</span>
             </div>
+            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
+              <Image
+                src="/chains/mantle.png"
+                alt="Mantle"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              <span className="text-gray-400 text-sm">Mantle</span>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -660,7 +670,8 @@ const SupportedChains = () => {
     { name: 'Kaia', icon: '/chains/kaia.png', description: 'Kaia is an EVM L1 designed to bring Web3 to millions', status: 'Live' },
     { name: 'Telos', icon: '/chains/telos.png', description: 'Scalable utility chain with low latency & low network congestion', status: 'Live' },
     { name: 'Ancient8', icon: '/chains/ancient8.png', description: 'Gaming-focused Ethereum L2 blockchain set to onboard the next 100 mil users', status: 'Live' },
-    { name: 'Citrea', icon: '/chains/citrea.png', description: 'First rollup that enhances the capabilities of Bitcoin blockspace', status: 'Live' }
+    { name: 'Citrea', icon: '/chains/citrea.png', description: 'First rollup that enhances the capabilities of Bitcoin blockspace', status: 'Live' },
+    { name: 'Mantle', icon: '/chains/mantle.png', description: 'Mass adoption of token-governed technologies', status: 'Live' }
   ];
 
   return (

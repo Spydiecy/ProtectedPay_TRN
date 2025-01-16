@@ -236,7 +236,34 @@ const citreaTestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet, ancient8Testnet, citreaTestnet] as const; 
+const mantleSepoliaTestnet = {
+  id: 5003,
+  hexId: '0x138B',
+  name: 'Mantle Sepolia Testnet',
+  network: 'mantlesepoliatestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'MNT',
+    symbol: 'MNT',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.sepolia.mantle.xyz']
+    },
+    public: {
+      http: ['https://rpc.sepolia.mantle.xyz']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Mantle Sepolia Testnet Explorer',
+      url: 'https://explorer.sepolia.mantle.xyz/'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet, ancient8Testnet, citreaTestnet, mantleSepoliaTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -264,6 +291,7 @@ const wagmiConfig = createConfig({
     [neoXMainnet.id]: http(),
     [ancient8Testnet.id]: http(),
     [citreaTestnet.id]: http(),
+    [mantleSepoliaTestnet.id]: http(),
   },
 });
 

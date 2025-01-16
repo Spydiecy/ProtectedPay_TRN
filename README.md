@@ -18,6 +18,7 @@ ProtectedPay supports the following blockchains:
     <img align="left" src="/public/chains/telos.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/ancient8.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/citrea.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/mantle.png" width="40" height="40" style="margin-right: 10px;"></img>
 </p>
 
 <br clear="left"/>
@@ -132,6 +133,7 @@ ProtectedPay ensures user safety through:
 | Telos Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`       |  
 | Ancient8 Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`    |  
 | Citrea Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`      |  
+| Citrea Testnet | `0x74689f77e03D8213DF5037b681F05b80bAAe3504`      |  
 
 ---
 
