@@ -11,6 +11,7 @@ import {
   DocumentIcon
 } from '@heroicons/react/24/outline';
 import { FaTelegramPlane } from 'react-icons/fa';
+import Link from 'next/link';
 
 // Animation variants
 const fadeIn: Variants = {
@@ -149,15 +150,17 @@ const Hero = () => {
             </span>
             <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-[#0088cc] blur-xl group-hover:opacity-75 transition-opacity opacity-0" />
           </motion.button>
-            <motion.button
-            onClick={() => window.open('https://github.com/Spydiecy/ProtectedPay/blob/main/README.md', '_blank')}
-            className="group relative bg-black/40 backdrop-blur-xl border border-green-500/20 text-green-400 px-6 md:px-10 py-3 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl hover:border-green-500/40 transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            >
-            <span className="relative z-10">Documentation</span>
-            <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-green-500/5 blur-xl group-hover:opacity-75 transition-opacity opacity-0" />
-            </motion.button>
+            <Link href="/transfer" passHref>
+              <motion.a
+              className="group relative bg-black/40 backdrop-blur-xl border border-green-500/20 text-green-400 px-6 md:px-10 py-3 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl hover:border-green-500/40 transition-all duration-300 flex items-center justify-center space-x-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              >
+              <DocumentIcon className="w-6 h-6" />
+              <span className="relative z-10">Pay Now</span>
+              <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-green-500/5 blur-xl group-hover:opacity-75 transition-opacity opacity-0" />
+              </motion.a>
+            </Link>
         </motion.div>
 
         <motion.div 
@@ -557,17 +560,16 @@ const CallToAction = () => {
               <span>Open in Telegram</span>
             </motion.button>
 
-            <motion.a
-              href="https://github.com/Spydiecy/ProtectedPay/blob/main/README.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative bg-black/40 backdrop-blur-xl border border-green-500/20 text-green-400 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:border-green-500/40 transition-all duration-300 flex items-center justify-center space-x-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <DocumentIcon className="w-6 h-6" />
-              <span>Read Documentation</span>
-            </motion.a>
+            <Link href="/transfer" passHref>
+              <motion.a
+                className="group relative bg-black/40 backdrop-blur-xl border border-green-500/20 text-green-400 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:border-green-500/40 transition-all duration-300 flex items-center justify-center space-x-2"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <DocumentIcon className="w-6 h-6" />
+                <span>Pay Now</span>
+              </motion.a>
+            </Link>
           </motion.div>
 
           {/* Network badges */}
@@ -664,14 +666,14 @@ const CallToAction = () => {
 
 const SupportedChains = () => {
   const chains = [
-    { name: 'NeoX', icon: '/chains/neox.png', description: 'High-performance Neo Smaart Economy EVM chain', status: 'Live' },
     { name: 'EduChain', icon: '/chains/educhain.png', description: 'Education focused blockchain by Open Campus', status: 'Live' },
-    { name: 'Flow', icon: '/chains/flow.png', description: ' Highly Scalable blockchain used by NBA, NFL, Disney', status: 'Live' },
+    { name: 'Ancient8', icon: '/chains/ancient8.png', description: 'Gaming-focused Ethereum L2 blockchain set to onboard the next 100 mil users', status: 'Live' },
+    { name: 'NeoX', icon: '/chains/neox.png', description: 'High-performance Neo Smaart Economy EVM chain', status: 'Live' },
+    { name: 'Mantle', icon: '/chains/mantle.png', description: 'Mass adoption of token-governed technologies', status: 'Live' },
     { name: 'Kaia', icon: '/chains/kaia.png', description: 'Kaia is an EVM L1 designed to bring Web3 to millions', status: 'Live' },
     { name: 'Telos', icon: '/chains/telos.png', description: 'Scalable utility chain with low latency & low network congestion', status: 'Live' },
-    { name: 'Ancient8', icon: '/chains/ancient8.png', description: 'Gaming-focused Ethereum L2 blockchain set to onboard the next 100 mil users', status: 'Live' },
-    { name: 'Citrea', icon: '/chains/citrea.png', description: 'First rollup that enhances the capabilities of Bitcoin blockspace', status: 'Live' },
-    { name: 'Mantle', icon: '/chains/mantle.png', description: 'Mass adoption of token-governed technologies', status: 'Live' }
+    { name: 'Linea', icon: '/chains/linea.png', description: 'Linea is a high-performance EVM chain for DeFi and NFTs', status: 'Live' },
+    { name: 'Creator', icon: '/chains/creator.png', description: 'AI Superhero Layer 2 blockchain built on OP Stack with revenue sharing & Phantom X NFTs', status: 'Live' }
   ];
 
   return (
