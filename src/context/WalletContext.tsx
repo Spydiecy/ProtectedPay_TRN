@@ -182,6 +182,32 @@ const mantleSepoliaTestnet = {
   testnet: true,
 } as const;
 
+const creatorChainTestnet = {
+  id: 66665,
+  name: 'Creator Chain Testnet',
+  network: 'creatorchaintestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'CETH',
+    symbol: 'CETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://66665.rpc.thirdweb.com']
+    },
+    public: {
+      http: ['https://66665.rpc.thirdweb.com']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Creator Chain Explorer',
+      url: 'https://explorer.creatorchain.io'
+    }
+  },
+  testnet: true,
+} as const;
+
 const lineaSepoliaTestnet = {
   id: 59141,
   hexId: '0xE705',
@@ -209,7 +235,7 @@ const lineaSepoliaTestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet] as const; 
+const chains = [neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -236,6 +262,7 @@ const wagmiConfig = createConfig({
     [mantleSepoliaTestnet.id]: http(),
     [telosTestnet.id]: http(),
     [lineaSepoliaTestnet.id]: http(),
+    [creatorChainTestnet.id]: http(),
   },
 });
 

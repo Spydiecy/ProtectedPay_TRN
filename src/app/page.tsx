@@ -577,16 +577,6 @@ const CallToAction = () => {
           >
             <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
               <Image
-                src="/chains/neox.png"
-                alt="NeoX"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">NeoX</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
                 src="/chains/educhain.png"
                 alt="EDU Chain"
                 width={20}
@@ -597,18 +587,38 @@ const CallToAction = () => {
             </div>
             <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
               <Image
-                src="/chains/flow.png"
-                alt="Flow Chain"
+                src="/chains/ancient8.png"
+                alt="Ancient8"
                 width={20}
                 height={20}
                 className="rounded-full"
               />
-              <span className="text-gray-400 text-sm">Flow</span>
+              <span className="text-gray-400 text-sm">Ancient8</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
+              <Image
+                src="/chains/neox.png"
+                alt="NeoX"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              <span className="text-gray-400 text-sm">NeoX</span>
+            </div>
+            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
+              <Image
+                src="/chains/mantle.png"
+                alt="Mantle"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              <span className="text-gray-400 text-sm">Mantle</span>
             </div>
             <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
               <Image
                 src="/chains/kaia.png"
-                alt="Flow Chain"
+                alt="Kaia Chain"
                 width={20}
                 height={20}
                 className="rounded-full"
@@ -627,33 +637,23 @@ const CallToAction = () => {
             </div>
             <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
               <Image
-                src="/chains/ancient8.png"
-                alt="Ancient8"
+                src="/chains/linea.png"
+                alt="Linea Chain"
                 width={20}
                 height={20}
                 className="rounded-full"
               />
-              <span className="text-gray-400 text-sm">Ancient8</span>
+              <span className="text-gray-400 text-sm">Linea</span>
             </div>
             <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
               <Image
-                src="/chains/citrea.png"
-                alt="Citrea"
+                src="/chains/creator.png"
+                alt="Creator Chain"
                 width={20}
                 height={20}
                 className="rounded-full"
               />
-              <span className="text-gray-400 text-sm">Citrea</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/mantle.png"
-                alt="Mantle"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Mantle</span>
+              <span className="text-gray-400 text-sm">Creator</span>
             </div>
           </motion.div>
         </div>

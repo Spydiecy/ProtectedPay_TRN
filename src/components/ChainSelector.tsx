@@ -25,15 +25,6 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://opencampus-codex.blockscout.com/'
   },
   {
-    id: 59141,
-    hexId: '0xE705',
-    name: 'Linea Sepolia',
-    icon: '/chains/linea.png',
-    symbol: 'LineaETH',
-    rpcUrl: 'https://linea-sepolia.infura.io',
-    blockExplorerUrl: 'https://sepolia.lineascan.build'
-  },
-  {
     id: 28122024,
     hexId: '0x1AD1BA8',
     name: 'Ancient8 Testnet',
@@ -52,15 +43,6 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://xt4scan.ngd.network/'
   },
   {
-    id: 1001,
-    hexId: '0x3E9',
-    name: 'KAIA Testnet',
-    icon: '/chains/kaia.png',
-    symbol: 'KAIA',
-    rpcUrl: 'https://kaia-kairos.blockpi.network/v1/rpc/public',
-    blockExplorerUrl: 'https://kairos.kaiascope.com/',
-  },
-  {
     id: 5003,
     hexId: '0x138B',
     name: 'Mantle Sepolia Testnet',
@@ -70,6 +52,15 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://explorer.sepolia.mantle.xyz'
   },
   {
+    id: 1001,
+    hexId: '0x3E9',
+    name: 'KAIA Testnet',
+    icon: '/chains/kaia.png',
+    symbol: 'KAIA',
+    rpcUrl: 'https://kaia-kairos.blockpi.network/v1/rpc/public',
+    blockExplorerUrl: 'https://kairos.kaiascope.com/',
+  },
+  {
     id: 41,
     hexId: '0x29',
     name: 'Telos Testnet',
@@ -77,6 +68,24 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'TLOS',
     rpcUrl: 'https://testnet.telos.net/evm',
     blockExplorerUrl: 'https://testnet.teloscan.io/',
+  },
+  {
+    id: 59141,
+    hexId: '0xE705',
+    name: 'Linea Sepolia',
+    icon: '/chains/linea.png',
+    symbol: 'LineaETH',
+    rpcUrl: 'https://linea-sepolia.infura.io',
+    blockExplorerUrl: 'https://sepolia.lineascan.build'
+  },
+  {
+    id: 66665,
+    hexId: '0x10469',
+    name: 'Creator Chain Testnet',
+    icon: '/chains/creator.png',
+    symbol: 'CETH',
+    rpcUrl: 'https://66665.rpc.thirdweb.com',
+    blockExplorerUrl: 'https://explorer.creatorchain.io'
   },
 ] as const
 
