@@ -16,24 +16,6 @@ export interface ChainInfo {
 
 export const supportedChains: ChainInfo[] = [
   {
-    id: 47763,
-    hexId: '0xBA93',
-    name: 'NeoX Mainnet',
-    icon: '/chains/neox.png',
-    symbol: 'GAS',
-    rpcUrl: 'https://mainnet-1.rpc.banelabs.org/',
-    blockExplorerUrl: 'https://xexplorer.neo.org/',
-  },
-  {
-    id: 12227332,
-    hexId: '0xBA9304',
-    name: 'NeoX Testnet',
-    icon: '/chains/neox.png',
-    symbol: 'GAS',
-    rpcUrl: 'https://neoxt4seed1.ngd.network/',
-    blockExplorerUrl: 'https://xt4scan.ngd.network/'
-  },
-  {
     id: 656476,
     hexId: '0xA045C',
     name: 'EduChain Testnet',
@@ -43,31 +25,13 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://opencampus-codex.blockscout.com/'
   },
   {
-    id: 545,
-    hexId: '0x221',
-    name: 'Flow Testnet',
-    icon: '/chains/flow.png',
-    symbol: 'FLOW',
-    rpcUrl: 'https://testnet.evm.nodes.onflow.org',
-    blockExplorerUrl: 'https://evm-testnet.flowscan.io',
-  },
-  {
-    id: 1001,
-    hexId: '0x3E9',
-    name: 'KAIA Testnet',
-    icon: '/chains/kaia.png',
-    symbol: 'KAIA',
-    rpcUrl: 'https://kaia-kairos.blockpi.network/v1/rpc/public',
-    blockExplorerUrl: 'https://kairos.kaiascope.com/',
-  },
-  {
-    id: 41,
-    hexId: '0x29',
-    name: 'Telos Testnet',
-    icon: '/chains/telos.png',
-    symbol: 'TLOS',
-    rpcUrl: 'https://testnet.telos.net/evm',
-    blockExplorerUrl: 'https://testnet.teloscan.io/',
+    id: 59141,
+    hexId: '0xE705',
+    name: 'Linea Sepolia',
+    icon: '/chains/linea.png',
+    symbol: 'LineaETH',
+    rpcUrl: 'https://linea-sepolia.infura.io',
+    blockExplorerUrl: 'https://sepolia.lineascan.build'
   },
   {
     id: 28122024,
@@ -79,13 +43,22 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://ancient8.testnet.routescan.io/',
   },
   {
-    id: 5115,
-    hexId: '0x13FB',
-    name: 'Citrea Testnet',
-    icon: '/chains/citrea.png',
-    symbol: 'cBTC',
-    rpcUrl: 'https://rpc.testnet.citrea.xyz',
-    blockExplorerUrl: 'https://explorer.testnet.citrea.xyz/'
+    id: 12227332,
+    hexId: '0xBA9304',
+    name: 'NeoX Testnet',
+    icon: '/chains/neox.png',
+    symbol: 'GAS',
+    rpcUrl: 'https://neoxt4seed1.ngd.network/',
+    blockExplorerUrl: 'https://xt4scan.ngd.network/'
+  },
+  {
+    id: 1001,
+    hexId: '0x3E9',
+    name: 'KAIA Testnet',
+    icon: '/chains/kaia.png',
+    symbol: 'KAIA',
+    rpcUrl: 'https://kaia-kairos.blockpi.network/v1/rpc/public',
+    blockExplorerUrl: 'https://kairos.kaiascope.com/',
   },
   {
     id: 5003,
@@ -95,7 +68,16 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'MNT',
     rpcUrl: 'https://rpc.sepolia.mantle.xyz',
     blockExplorerUrl: 'https://explorer.sepolia.mantle.xyz'
-  }
+  },
+  {
+    id: 41,
+    hexId: '0x29',
+    name: 'Telos Testnet',
+    icon: '/chains/telos.png',
+    symbol: 'TLOS',
+    rpcUrl: 'https://testnet.telos.net/evm',
+    blockExplorerUrl: 'https://testnet.teloscan.io/',
+  },
 ] as const
 
 const ChainSelector = () => {

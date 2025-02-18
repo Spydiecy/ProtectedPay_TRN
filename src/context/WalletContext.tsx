@@ -48,33 +48,6 @@ const neoXTestnet = {
   testnet: true,
 } as const;
 
-const neoXMainnet = {
-  id: 47763,
-  hexId: '0xBA93',
-  name: 'NeoX Mainnet',
-  network: 'neoxmainnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'GAS',
-    symbol: 'GAS',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://mainnet-1.rpc.banelabs.org/']
-    },
-    public: {
-      http: ['https://mainnet-1.rpc.banelabs.org/']
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: 'NeoX Explorer',
-      url: 'https://xexplorer.neo.org/'
-    }
-  },
-  testnet: false,
-} as const;
-
 const eduChainTestnet = {
   id: 656476,
   name: 'EDU Chain Testnet',
@@ -96,33 +69,6 @@ const eduChainTestnet = {
     default: {
       name: 'EDU Chain Explorer',
       url: 'https://opencampus-codex.blockscout.com/'
-    }
-  },
-  testnet: true,
-} as const;
-
-const flowTestnet = {
-  id: 545,
-  hexId: '0x221',
-  name: 'Flow Testnet',
-  network: 'flowtestnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'FLOW',
-    symbol: 'FLOW',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://testnet.evm.nodes.onflow.org']
-    },
-    public: {
-      http: ['https://testnet.evm.nodes.onflow.org']
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: 'Flow Testnet Explorer',
-      url: 'https://evm-testnet.flowscan.io'
     }
   },
   testnet: true,
@@ -209,33 +155,6 @@ const ancient8Testnet = {
   testnet: true,
 } as const;
 
-const citreaTestnet = {
-  id: 5115,
-  hexId: '0x13FB',
-  name: 'Citrea Testnet',
-  network: 'citreatestnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'cBTC',
-    symbol: 'cBTC',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://rpc.testnet.citrea.xyz']
-    },
-    public: {
-      http: ['https://rpc.testnet.citrea.xyz']
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: 'Citrea Testnet Explorer',
-      url: 'https://explorer.testnet.citrea.xyz/'
-    }
-  },
-  testnet: true,
-} as const;
-
 const mantleSepoliaTestnet = {
   id: 5003,
   hexId: '0x138B',
@@ -263,7 +182,34 @@ const mantleSepoliaTestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXMainnet, neoXTestnet, eduChainTestnet, flowTestnet, kaiatestnet, telosTestnet, ancient8Testnet, citreaTestnet, mantleSepoliaTestnet] as const; 
+const lineaSepoliaTestnet = {
+  id: 59141,
+  hexId: '0xE705',
+  name: 'Linea Sepolia Testnet',
+  network: 'lineasepoliatestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'LineaETH',
+    symbol: 'LineaETH',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://linea-sepolia.infura.io']
+    },
+    public: {
+      http: ['https://linea-sepolia.infura.io']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Linea Sepolia Explorer',
+      url: 'https://sepolia.lineascan.build'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -283,15 +229,13 @@ const wagmiConfig = createConfig({
   connectors,
   chains,
   transports: {
-    [neoXTestnet.id]: http(),
     [eduChainTestnet.id]: http(),
-    [flowTestnet.id]: http(),
-    [kaiatestnet.id]: http(),
-    [telosTestnet.id]: http(),
-    [neoXMainnet.id]: http(),
     [ancient8Testnet.id]: http(),
-    [citreaTestnet.id]: http(),
+    [neoXTestnet.id]: http(),
+    [kaiatestnet.id]: http(),
     [mantleSepoliaTestnet.id]: http(),
+    [telosTestnet.id]: http(),
+    [lineaSepoliaTestnet.id]: http(),
   },
 });
 

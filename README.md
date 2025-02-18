@@ -11,14 +11,15 @@ ProtectedPay is a multi-chain DeFi platform designed to provide secure transfers
 ProtectedPay supports the following blockchains:  
 
 <p align="left">
+    <img align="left" src="/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/neox.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="https://raw.githubusercontent.com/Spydiecy/ProtectedPay/refs/heads/main/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/flow.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/kaia.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/telos.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/ancient8.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/citrea.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/mantle.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/linea.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/creator.png" width="40" height="40" style="margin-right: 10px;"></img>
+    <img align="left" src="/public/chains/crossfi.png" width="40" height="40" style="margin-right: 10px;"></img>
 </p>
 
 <br clear="left"/>
@@ -125,15 +126,15 @@ ProtectedPay ensures user safety through:
 
 | Network       | Contract Address                                   |  
 |---------------|----------------------------------------------------|  
-| NeoX Mainnet  | `0x2440b2A42972C37831ea365524dB46985DDc0653`       |  
-| NeoX Testnet  | `0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9`       |  
 | Educhain Testnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`    |  
-| Flow Testnet  | `0xF887B4D3b17C12C86cc917cF72fb8881f866a847`       |  
+| Ancient8 Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`    | 
+| NeoX Testnet  | `0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9`       |
+| Mantle Testnet | `0x74689f77e03D8213DF5037b681F05b80bAAe3504`      | 
 | KAIA Testnet  | `0xca36dd890f987edce1d6d7c74fb9df627c216bf6`       |  
 | Telos Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`       |  
-| Ancient8 Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`    |  
-| Citrea Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`      |  
-| Citrea Testnet | `0x74689f77e03D8213DF5037b681F05b80bAAe3504`      |  
+| Linea Testnet | ``       |  
+| CrossFi Testnet | ``       |  
+| Creator Testnet | ``       |  
 
 ---
 
@@ -147,7 +148,7 @@ ProtectedPay ensures user safety through:
 ## Support  
 
 For queries or issues, reach out at:  
-- **Email**: tanishqgupta322@gmail.com  
+- **Email**: protectedpay.business@gmail.com  
 
 ---
 
