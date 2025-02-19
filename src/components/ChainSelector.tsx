@@ -16,15 +16,6 @@ export interface ChainInfo {
 
 export const supportedChains: ChainInfo[] = [
   {
-    id: 4157,
-    hexId: '0x103D',
-    name: 'CrossFi Testnet',
-    icon: '/chains/crossfi.png',
-    symbol: 'XFI',
-    rpcUrl: 'https://rpc.testnet.ms',
-    blockExplorerUrl: 'https://test.xfiscan.com'
-  },
-  {
     id: 656476,
     hexId: '0xA045C',
     name: 'EduChain Testnet',
@@ -95,6 +86,15 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'CETH',
     rpcUrl: 'https://66665.rpc.thirdweb.com',
     blockExplorerUrl: 'https://explorer.creatorchain.io'
+  },
+  {
+    id: 4157,
+    hexId: '0x103D',
+    name: 'CrossFi Testnet',
+    icon: '/chains/crossfi.png',
+    symbol: 'XFI',
+    rpcUrl: 'https://rpc.testnet.ms',
+    blockExplorerUrl: 'https://test.xfiscan.com'
   },
 ] as const
 
