@@ -235,7 +235,34 @@ const lineaSepoliaTestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet] as const; 
+const crossFiTestnet = {
+  id: 4157,
+  hexId: '0x103D',
+  name: 'CrossFi Testnet',
+  network: 'crossfitestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'XFI',
+    symbol: 'XFI',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.ms']
+    },
+    public: {
+      http: ['https://rpc.testnet.ms']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'CrossFi Explorer',
+      url: 'https://test.xfiscan.com'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet, crossFiTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -263,6 +290,7 @@ const wagmiConfig = createConfig({
     [telosTestnet.id]: http(),
     [lineaSepoliaTestnet.id]: http(),
     [creatorChainTestnet.id]: http(),
+    [crossFiTestnet.id]: http(),
   },
 });
 

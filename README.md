@@ -132,9 +132,9 @@ ProtectedPay ensures user safety through:
 | Mantle Testnet | `0x74689f77e03D8213DF5037b681F05b80bAAe3504`      | 
 | KAIA Testnet  | `0xca36dd890f987edce1d6d7c74fb9df627c216bf6`       |  
 | Telos Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`       |  
-| Linea Testnet | ``       |  
-| CrossFi Testnet | ``       |  
-| Creator Testnet | ``       |  
+| Linea Testnet | `0xd150d34976Ac00D5e892aDFE565ba47de11c2656`       |  
+| CrossFi Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`     |  
+| Creator Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`     |  
 
 ---
 

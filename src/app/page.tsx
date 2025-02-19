@@ -657,6 +657,16 @@ const CallToAction = () => {
               />
               <span className="text-gray-400 text-sm">Creator</span>
             </div>
+            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
+              <Image
+                src="/chains/crossfi.png"
+                alt="CrossFi Chain"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              <span className="text-gray-400 text-sm">CrossFi</span>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -672,8 +682,9 @@ const SupportedChains = () => {
     { name: 'Mantle', icon: '/chains/mantle.png', description: 'Mass adoption of token-governed technologies', status: 'Live' },
     { name: 'Kaia', icon: '/chains/kaia.png', description: 'Kaia is an EVM L1 designed to bring Web3 to millions', status: 'Live' },
     { name: 'Telos', icon: '/chains/telos.png', description: 'Scalable utility chain with low latency & low network congestion', status: 'Live' },
-    { name: 'Linea', icon: '/chains/linea.png', description: 'Linea is a high-performance EVM chain for DeFi and NFTs', status: 'Live' },
-    { name: 'Creator', icon: '/chains/creator.png', description: 'AI Superhero Layer 2 blockchain built on OP Stack with revenue sharing & Phantom X NFTs', status: 'Live' }
+    { name: 'Linea', icon: '/chains/linea.png', description: 'Ethereum core devs built L2 offering web2-like speed and zk technology', status: 'Live' },
+    { name: 'Creator', icon: '/chains/creator.png', description: 'AI Superhero L2 blockchain built on OP Stack with revenue sharing & Phantom X NFTs', status: 'Live' },
+    { name: 'CrossFi', icon: '/chains/crossfi.png', description: 'L1 blockchain with modular architecture consisting of Cosmos and EVM', status: 'Live' }
   ];
 
   return (
