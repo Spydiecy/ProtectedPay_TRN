@@ -109,7 +109,7 @@ ProtectedPay supports the following blockchains:
 - Comprehensive multi-chain activity tracking.  
 - Status indicators and network switching for seamless navigation.
 
-![image](https://github.com/user-attachments/assets/b979d9b9-2050-483c-86d1-9c39cc6208af)
+![image](https://github.com/user-attachments/assets/1862a47f-beef-4664-aac1-38bdbed67b93)
 
 ---
 
