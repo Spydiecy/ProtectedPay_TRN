@@ -1,5 +1,3 @@
-// trasnfer/page.tsx
-
 'use client'
 
 import React, { useState, useCallback, useEffect } from 'react'
@@ -12,7 +10,8 @@ import {
   ArrowPathIcon,
   CheckCircleIcon,
   ClockIcon,
-  XCircleIcon
+  XCircleIcon,
+  DocumentDuplicateIcon
 } from '@heroicons/react/24/outline'
 import { useWallet } from '@/context/WalletContext'
 import { 
@@ -35,13 +34,13 @@ enum TransferTabs {
 }
 
 interface Transfer {
-  id: string
-  sender: string
-  recipient: string
-  amount: string
-  timestamp: number
-  remarks: string
-  status: string
+  id: string;
+  sender: string;
+  recipient: string;
+  amount: string;
+  timestamp: number;
+  remarks: string;
+  status: number;
 }
 
 const pageTransition = {
@@ -74,6 +73,7 @@ export default function TransferPage() {
   const [success, setSuccess] = useState('')
   const [pendingTransfers, setPendingTransfers] = useState<Transfer[]>([])
   const [pendingSentTransfers, setPendingSentTransfers] = useState<Transfer[]>([])
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const { signer, address } = useWallet()
   const { currentChain } = useChainInfo();
 
@@ -81,28 +81,79 @@ export default function TransferPage() {
     if (!signer || !address) return
 
     try {
+      setIsLoading(true)
+      // Get all pending transfer IDs for the connected wallet
       const transferIds = await getPendingTransfers(signer, address)
+      
+      console.log('Fetched transfer IDs:', transferIds)
+      
+      if (!transferIds || transferIds.length === 0) {
+        setPendingTransfers([])
+        setPendingSentTransfers([])
+        setIsLoading(false)
+        return
+      }
+
+      // For each transfer ID, get the full details and parse them
       const transfers = await Promise.all(
         transferIds.map(async (id: string) => {
-          const details = await getTransferDetails(signer, id)
-          return {
-            ...details,
-            id,
-            timestamp: details.timestamp.getTime()
-          } as Transfer
+          try {
+            const details = await getTransferDetails(signer, id)
+            console.log(`Transfer details for ${id}:`, details)
+            
+            // Format the details into our Transfer interface format
+            return {
+              id,
+              sender: details.sender || '',
+              recipient: details.recipient || '',
+              amount: details.amount ? details.amount.toString() : '0',
+              timestamp: details.timestamp ? 
+                (typeof details.timestamp === 'number' ? details.timestamp : 
+                 details.timestamp.toNumber ? details.timestamp.toNumber() : 
+                 details.timestamp.getTime ? details.timestamp.getTime() : 0) : 0,
+              remarks: details.remarks || '',
+              status: details.status !== undefined ? 
+                (typeof details.status === 'number' ? details.status : 
+                 details.status.toNumber ? details.status.toNumber() : 0) : 0
+            } as Transfer
+          } catch (err) {
+            console.error(`Error fetching details for transfer ${id}:`, err)
+            return null
+          }
         })
       )
       
-      setPendingTransfers(transfers.filter(t => t.recipient === address))
-      setPendingSentTransfers(transfers.filter(t => t.sender === address))
+      // Filter out any failed transfers and split into received vs sent transfers
+      const validTransfers = transfers.filter(t => t !== null) as Transfer[]
+      console.log('Processed transfers:', validTransfers)
+      
+      // Transfers where the current address is the recipient
+      const receivedTransfers = validTransfers.filter(t => 
+        t.recipient.toLowerCase() === address.toLowerCase() && 
+        t.status === 0 // Pending status
+      )
+      
+      // Transfers where the current address is the sender
+      const sentTransfers = validTransfers.filter(t => 
+        t.sender.toLowerCase() === address.toLowerCase() && 
+        t.status === 0 // Pending status
+      )
+      
+      setPendingTransfers(receivedTransfers)
+      setPendingSentTransfers(sentTransfers)
+      
     } catch (err) {
       console.error('Error fetching transfers:', err)
+    } finally {
+      setIsLoading(false)
     }
   }, [signer, address])
 
   useEffect(() => {
-    fetchPendingTransfers()
-  }, [fetchPendingTransfers])
+    if (signer && address) {
+      fetchPendingTransfers()
+    }
+  }, [fetchPendingTransfers, signer, address])
 
   const handleTabChange = (tab: TransferTabs) => {
     setActiveTab(tab)
@@ -153,7 +204,8 @@ export default function TransferPage() {
       
       setSuccess('Transfer initiated successfully!')
       resetForm()
-      fetchPendingTransfers()
+      // Let's wait a bit before fetching to ensure transaction is indexed
+      setTimeout(() => fetchPendingTransfers(), 2000)
     } catch (error) {
       console.error('Transfer error:', error)
       setError(error instanceof Error ? error.message : 'Failed to initiate transfer')
@@ -181,7 +233,7 @@ export default function TransferPage() {
       }
       setSuccess('Transfer claimed successfully!')
       resetForm()
-      fetchPendingTransfers()
+      setTimeout(() => fetchPendingTransfers(), 2000)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to claim transfer')
     } finally {
@@ -202,11 +254,46 @@ export default function TransferPage() {
       await refundTransfer(signer, id)
       setSuccess('Transfer refunded successfully!')
       resetForm()
-      fetchPendingTransfers()
+      setTimeout(() => fetchPendingTransfers(), 2000)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to refund transfer')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setCopiedId(text)
+        setTimeout(() => setCopiedId(null), 2000)
+      })
+      .catch(err => {
+        console.error('Failed to copy text: ', err)
+      })
+  }
+
+  // Helper to truncate long addresses/ids
+  const truncateText = (text: string, startChars = 6, endChars = 4) => {
+    if (!text) return '';
+    if (text.length <= startChars + endChars) return text;
+    return `${text.substring(0, startChars)}...${text.substring(text.length - endChars)}`;
+  }
+
+  const formatAmount = (amount: string) => {
+    if (!amount) return '0';
+    // Try to parse the amount and format it to a maximum of 6 decimal places
+    try {
+      const parsed = parseFloat(amount);
+      if (isNaN(parsed)) return amount;
+      
+      // If it's a whole number, show no decimals
+      if (parsed % 1 === 0) return parsed.toString();
+      
+      // Otherwise show up to 6 decimal places
+      return parsed.toFixed(6).replace(/\.?0+$/, '');
+    } catch (e) {
+      return amount;
     }
   }
 
@@ -335,9 +422,10 @@ export default function TransferPage() {
   };
 
   const renderTransferList = () => {
+    // Select which transfers to display based on the active tab
     const transfers = activeTab === TransferTabs.CLAIM ? pendingTransfers :
-                     activeTab === TransferTabs.REFUND ? pendingSentTransfers :
-                     [...pendingTransfers, ...pendingSentTransfers];
+                      activeTab === TransferTabs.REFUND ? pendingSentTransfers :
+                      [...pendingTransfers, ...pendingSentTransfers];
 
     if (!signer) {
       return (
@@ -347,10 +435,19 @@ export default function TransferPage() {
       );
     }
 
+    if (isLoading) {
+      return (
+        <div className="text-center py-8 flex flex-col items-center justify-center">
+          <ArrowPathIcon className="w-8 h-8 text-green-400 animate-spin mb-4" />
+          <p className="text-gray-400">Loading transfers...</p>
+        </div>
+      );
+    }
+
     if (transfers.length === 0) {
       return (
         <div className="text-center py-8 text-gray-400">
-          No transfers found
+          No pending transfers found
         </div>
       );
     }
@@ -368,22 +465,25 @@ export default function TransferPage() {
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <div className="text-sm text-gray-400 mb-1">
-                    {activeTab === TransferTabs.CLAIM ? 
-                      `From: ${transfer.sender}` : 
-                      `To: ${transfer.recipient}`}
+                    {activeTab === TransferTabs.CLAIM || 
+                     (activeTab === TransferTabs.SEND && transfer.sender.toLowerCase() !== address?.toLowerCase()) ? 
+                      `From: ${truncateText(transfer.sender)}` : 
+                      `To: ${truncateText(transfer.recipient)}`}
                   </div>
-                  <div className="text-green-400 font-semibold">{transfer.amount} {currentChain.symbol}</div>
+                  <div className="text-green-400 font-semibold">{formatAmount(transfer.amount)} {currentChain.symbol}</div>
                 </div>
                 <motion.button
                   onClick={() => {
-                    if (activeTab === TransferTabs.CLAIM) {
+                    if (activeTab === TransferTabs.CLAIM || 
+                        (activeTab === TransferTabs.SEND && transfer.recipient.toLowerCase() === address?.toLowerCase())) {
                       handleClaim(transfer.id);
-                    } else if (activeTab === TransferTabs.REFUND) {
+                    } else {
                       handleRefund(transfer.id);
                     }
                   }}
                   className={`${
-                    activeTab === TransferTabs.CLAIM
+                    (activeTab === TransferTabs.CLAIM || 
+                     (activeTab === TransferTabs.SEND && transfer.recipient.toLowerCase() === address?.toLowerCase()))
                       ? 'bg-green-500/10 border-green-500/20 text-green-400 hover:bg-green-500/20'
                       : 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'
                   } border px-3 py-1.5 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2`}
@@ -391,11 +491,12 @@ export default function TransferPage() {
                   whileTap={{ scale: 0.95 }}
                   disabled={isLoading}
                 >
-                  {activeTab === TransferTabs.CLAIM ? (
+                  {(activeTab === TransferTabs.CLAIM || 
+                    (activeTab === TransferTabs.SEND && transfer.recipient.toLowerCase() === address?.toLowerCase())) ? (
                     <>
                       <CheckCircleIcon className="w-4 h-4" />
-                      <span>Quick Claim</span>
-                      </>
+                      <span>Claim</span>
+                    </>
                   ) : (
                     <>
                       <XCircleIcon className="w-4 h-4" />
@@ -404,6 +505,42 @@ export default function TransferPage() {
                   )}
                 </motion.button>
               </div>
+
+              {/* Transfer ID with copy button */}
+              <div className="flex items-center space-x-2 mb-2 bg-black/40 p-2 rounded-lg">
+                <div className="text-xs text-gray-400 overflow-hidden text-ellipsis">
+                  ID: {truncateText(transfer.id, 8, 8)}
+                </div>
+                <motion.button
+                  onClick={() => copyToClipboard(transfer.id)}
+                  className="bg-black/30 p-1 rounded text-green-400 hover:text-green-300"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Copy Transfer ID"
+                >
+                  {copiedId === transfer.id ? (
+                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <DocumentDuplicateIcon className="w-4 h-4" />
+                  )}
+                </motion.button>
+                <motion.button
+                  onClick={() => {
+                    setTransferId(transfer.id);
+                    if (transfer.sender.toLowerCase() === address?.toLowerCase()) {
+                      setActiveTab(TransferTabs.REFUND);
+                    } else {
+                      setActiveTab(TransferTabs.CLAIM);
+                    }
+                  }}
+                  className="text-xs bg-green-500/10 px-2 py-0.5 rounded text-green-400 hover:bg-green-500/20"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Use
+                </motion.button>
+              </div>
+
               {transfer.remarks && (
                 <div className="bg-black/20 p-2 rounded-lg text-sm text-gray-400 mb-2">
                   {transfer.remarks}
@@ -411,7 +548,7 @@ export default function TransferPage() {
               )}
               <div className="text-xs text-gray-500 flex items-center space-x-2">
                 <ClockIcon className="w-4 h-4" />
-                <span>{new Date(transfer.timestamp).toLocaleString()}</span>
+                <span>{new Date(transfer.timestamp * 1000).toLocaleString()}</span>
               </div>
             </div>
           </motion.div>
@@ -579,13 +716,13 @@ export default function TransferPage() {
       </motion.div>
 
       {/* QR Scanner */}
-<QRScanner 
-  onScan={(data) => {
-    setRecipient(data);
-    setActiveTab(TransferTabs.SEND);
-  }}
-  onError={(error) => setError(error)}
-/>
+      <QRScanner 
+        onScan={(data) => {
+          setRecipient(data);
+          setActiveTab(TransferTabs.SEND);
+        }}
+        onError={(error) => setError(error)}
+      />
 
       {/* Custom Scrollbar Styles */}
       <style jsx global>{`
