@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
 import { 
   ArrowRightIcon, 
   ArrowDownIcon,
@@ -11,7 +11,14 @@ import {
   CheckCircleIcon,
   ClockIcon,
   XCircleIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
+  InformationCircleIcon,
+  QrCodeIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  UserCircleIcon,
+  CurrencyDollarIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline'
 import { useWallet } from '@/context/WalletContext'
 import { 
@@ -43,8 +50,9 @@ interface Transfer {
   status: number;
 }
 
+// Animation variants
 const pageTransition = {
-  initial: { opacity: 0, y: 20, scale: 0.95 },
+  initial: { opacity: 0, y: 20, scale: 0.98 },
   animate: { 
     opacity: 1, 
     y: 0,
@@ -62,6 +70,23 @@ const fadeIn = {
   }
 }
 
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const slideIn = {
+  initial: { opacity: 0, x: -20 },
+  animate: { 
+    opacity: 1, 
+    x: 0, 
+    transition: { duration: 0.3 } 
+  }
+}
+
 export default function TransferPage() {
   const [activeTab, setActiveTab] = useState<TransferTabs>(TransferTabs.SEND)
   const [recipient, setRecipient] = useState('')
@@ -74,8 +99,20 @@ export default function TransferPage() {
   const [pendingTransfers, setPendingTransfers] = useState<Transfer[]>([])
   const [pendingSentTransfers, setPendingSentTransfers] = useState<Transfer[]>([])
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [showTransactions, setShowTransactions] = useState(true)
+  const [formStep, setFormStep] = useState(1) // For multi-step send form
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const { signer, address } = useWallet()
   const { currentChain } = useChainInfo();
+  const formRef = useRef<HTMLDivElement>(null)
+
+  // Scroll to form when tab changes
+  useEffect(() => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setFormStep(1); // Reset form step when tab changes
+  }, [activeTab]);
 
   const fetchPendingTransfers = useCallback(async () => {
     if (!signer || !address) return
@@ -85,12 +122,9 @@ export default function TransferPage() {
       // Get all pending transfer IDs for the connected wallet
       const transferIds = await getPendingTransfers(signer, address)
       
-      console.log('Fetched transfer IDs:', transferIds)
-      
       if (!transferIds || transferIds.length === 0) {
         setPendingTransfers([])
         setPendingSentTransfers([])
-        setIsLoading(false)
         return
       }
 
@@ -99,7 +133,6 @@ export default function TransferPage() {
         transferIds.map(async (id: string) => {
           try {
             const details = await getTransferDetails(signer, id)
-            console.log(`Transfer details for ${id}:`, details)
             
             // Format the details into our Transfer interface format
             return {
@@ -125,7 +158,6 @@ export default function TransferPage() {
       
       // Filter out any failed transfers and split into received vs sent transfers
       const validTransfers = transfers.filter(t => t !== null) as Transfer[]
-      console.log('Processed transfers:', validTransfers)
       
       // Transfers where the current address is the recipient
       const receivedTransfers = validTransfers.filter(t => 
@@ -158,6 +190,7 @@ export default function TransferPage() {
   const handleTabChange = (tab: TransferTabs) => {
     setActiveTab(tab)
     resetForm()
+    setShowConfirmation(false)
   }
 
   const resetForm = () => {
@@ -167,6 +200,7 @@ export default function TransferPage() {
     setTransferId('')
     setError('')
     setSuccess('')
+    setFormStep(1)
   }
 
   const validateSendForm = (): string | null => {
@@ -177,7 +211,7 @@ export default function TransferPage() {
     return null
   }
 
-  const handleSend = async (e: React.FormEvent) => {
+  const handleConfirmSend = (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!signer || !address) {
@@ -188,6 +222,15 @@ export default function TransferPage() {
     const validationError = validateSendForm()
     if (validationError) {
       setError(validationError)
+      return
+    }
+
+    setShowConfirmation(true)
+  }
+
+  const handleSend = async () => {
+    if (!signer || !address) {
+      setError('Please connect your wallet first')
       return
     }
 
@@ -203,6 +246,7 @@ export default function TransferPage() {
       }
       
       setSuccess('Transfer initiated successfully!')
+      setShowConfirmation(false)
       resetForm()
       // Let's wait a bit before fetching to ensure transaction is indexed
       setTimeout(() => fetchPendingTransfers(), 2000)
@@ -297,125 +341,435 @@ export default function TransferPage() {
     }
   }
 
+  const getTabLabel = () => {
+    switch (activeTab) {
+      case TransferTabs.SEND: return 'Send Funds Securely';
+      case TransferTabs.CLAIM: return 'Claim Your Funds';
+      case TransferTabs.REFUND: return 'Refund Your Transaction';
+    }
+  }
+
+  const getTabDescription = () => {
+    switch (activeTab) {
+      case TransferTabs.SEND: return 'Send funds with protection - recipient must claim to receive';
+      case TransferTabs.CLAIM: return 'Retrieve funds that have been sent to you';
+      case TransferTabs.REFUND: return 'Retrieve unclaimed funds you\'ve sent';
+    }
+  }
+
+  const renderSendForm = () => {
+    return (
+      <AnimatePresence mode="wait">
+        {showConfirmation ? (
+          <motion.div
+            key="confirmation"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="space-y-6"
+          >
+            <div className="bg-green-500/5 p-4 rounded-xl border border-green-500/20">
+              <h3 className="text-lg font-medium text-green-400 mb-4 flex items-center">
+                <ShieldCheckIcon className="w-5 h-5 mr-2" />
+                Confirm Your Transfer
+              </h3>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between items-center bg-black/30 p-3 rounded-lg">
+                  <span className="text-gray-400">Recipient</span>
+                  <span className="text-white font-medium">{recipient.startsWith('0x') ? truncateText(recipient) : recipient}</span>
+                </div>
+
+                <div className="flex justify-between items-center bg-black/30 p-3 rounded-lg">
+                  <span className="text-gray-400">Amount</span>
+                  <span className="text-white font-medium">{amount} {currentChain.symbol}</span>
+                </div>
+
+                <div className="bg-black/30 p-3 rounded-lg">
+                  <div className="text-gray-400 mb-1">Message</div>
+                  <div className="text-white">{remarks}</div>
+                </div>
+              </div>
+
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mb-6">
+                <p className="text-yellow-400 text-sm flex items-start">
+                  <InformationCircleIcon className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
+                  Funds will be held securely until the recipient claims them. You can refund anytime if unclaimed.
+                </p>
+              </div>
+
+              <div className="flex space-x-4">
+                <motion.button
+                  type="button"
+                  onClick={() => setShowConfirmation(false)}
+                  className="flex-1 bg-black/50 border border-gray-700 text-gray-300 px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-black/70"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <ArrowLeftIcon className="w-5 h-5" />
+                  <span>Back</span>
+                </motion.button>
+
+                <motion.button
+                  type="button"
+                  onClick={handleSend}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-black px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-70"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <ArrowPathIcon className="w-5 h-5 animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircleIcon className="w-5 h-5" />
+                      <span>Confirm Transfer</span>
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.form
+            key="send-form"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            onSubmit={handleConfirmSend}
+            className="space-y-6"
+          >
+            <LayoutGroup>
+              <AnimatePresence mode="wait">
+                {formStep === 1 && (
+                  <motion.div
+                    key="step1"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="text-green-400 font-medium flex items-center">
+                          <UserCircleIcon className="w-5 h-5 mr-2" />
+                          Recipient
+                        </label>
+                        
+                        <motion.button
+                          type="button"
+                          onClick={() => document.getElementById('qr-scanner-trigger')?.click()}
+                          className="text-sm flex items-center bg-green-500/10 px-2 py-1 rounded-lg text-green-400 hover:bg-green-500/20"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <QrCodeIcon className="w-4 h-4 mr-1" />
+                          Scan QR
+                        </motion.button>
+                      </div>
+                      
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={recipient}
+                          onChange={(e) => setRecipient(e.target.value)}
+                          className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
+                          placeholder="0x... or username"
+                          required
+                        />
+                        {recipient && (
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs px-2 py-1 rounded bg-green-500/10 text-green-400">
+                            {recipient.startsWith('0x') ? 'Address' : 'Username'}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <p className="mt-2 text-xs text-gray-400 flex items-center">
+                        <InformationCircleIcon className="w-4 h-4 mr-1" />
+                        Enter wallet address or registered username
+                      </p>
+                    </div>
+
+                    <motion.button
+                      type="button"
+                      onClick={() => recipient ? setFormStep(2) : null}
+                      disabled={!recipient}
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                      whileHover={recipient ? { scale: 1.02 } : undefined}
+                      whileTap={recipient ? { scale: 0.98 } : undefined}
+                    >
+                      <ArrowRightIcon className="w-5 h-5" />
+                      <span>Continue</span>
+                    </motion.button>
+                  </motion.div>
+                )}
+
+                {formStep === 2 && (
+                  <motion.div
+                    key="step2"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
+                    <div>
+                      <label className="mb-2 text-green-400 font-medium flex items-center">
+                        <CurrencyDollarIcon className="w-5 h-5 mr-2" />
+                        Amount ({currentChain.symbol})
+                      </label>
+                      <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
+                        placeholder="0.0"
+                        required
+                        min="0"
+                        step="0.000000000000000001"
+                      />
+                      {amount && parseFloat(amount) > 0 && (
+                        <p className="mt-2 text-xs text-green-400 flex justify-end">
+                          ≈ {formatAmount(amount)} {currentChain.symbol}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-4">
+                      <motion.button
+                        type="button"
+                        onClick={() => setFormStep(1)}
+                        className="flex-1 bg-black/50 border border-gray-700 text-gray-300 px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-black/70"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <ArrowLeftIcon className="w-5 h-5" />
+                        <span>Back</span>
+                      </motion.button>
+
+                      <motion.button
+                        type="button"
+                        onClick={() => amount && parseFloat(amount) > 0 ? setFormStep(3) : null}
+                        disabled={!amount || parseFloat(amount) <= 0}
+                        className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-black px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={amount && parseFloat(amount) > 0 ? { scale: 1.02 } : undefined}
+                        whileTap={amount && parseFloat(amount) > 0 ? { scale: 0.98 } : undefined}
+                      >
+                        <ArrowRightIcon className="w-5 h-5" />
+                        <span>Continue</span>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {formStep === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="space-y-6"
+                  >
+                    <div>
+                      <label className="mb-2 text-green-400 font-medium flex items-center">
+                        <ChatBubbleBottomCenterTextIcon className="w-5 h-5 mr-2" />
+                        Message
+                      </label>
+                      <textarea
+                        value={remarks}
+                        onChange={(e) => setRemarks(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
+                        placeholder="Add a note about this transfer"
+                        required
+                        rows={3}
+                      />
+                      <p className="mt-2 text-xs text-gray-400 flex items-center">
+                        <InformationCircleIcon className="w-4 h-4 mr-1" />
+                        Add a message to help the recipient identify this transfer
+                      </p>
+                    </div>
+
+                    <div className="flex space-x-4">
+                      <motion.button
+                        type="button"
+                        onClick={() => setFormStep(2)}
+                        className="flex-1 bg-black/50 border border-gray-700 text-gray-300 px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-black/70"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <ArrowLeftIcon className="w-5 h-5" />
+                        <span>Back</span>
+                      </motion.button>
+
+                      <motion.button
+                        type="submit"
+                        disabled={!remarks}
+                        className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-black px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={remarks ? { scale: 1.02 } : undefined}
+                        whileTap={remarks ? { scale: 0.98 } : undefined}
+                      >
+                        <ArrowRightIcon className="w-5 h-5" />
+                        <span>Review Transfer</span>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </LayoutGroup>
+          </motion.form>
+        )}
+      </AnimatePresence>
+    );
+  };
+
+  const renderClaimForm = () => {
+    return (
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handleClaim(transferId);
+      }} className="space-y-6">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-green-400 font-medium flex items-center">
+              <UserCircleIcon className="w-5 h-5 mr-2" />
+              Sender Identifier
+            </label>
+            
+            <motion.button
+              type="button"
+              onClick={() => document.getElementById('qr-scanner-trigger')?.click()}
+              className="text-sm flex items-center bg-green-500/10 px-2 py-1 rounded-lg text-green-400 hover:bg-green-500/20"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <QrCodeIcon className="w-4 h-4 mr-1" />
+              Scan QR
+            </motion.button>
+          </div>
+          
+          <input
+            type="text"
+            value={transferId}
+            onChange={(e) => setTransferId(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
+            placeholder="Address, username, or transfer ID"
+            required
+          />
+          <p className="mt-2 text-xs text-gray-400 flex items-center">
+            <InformationCircleIcon className="w-4 h-4 mr-1" />
+            Enter sender's address/username or the full transfer ID
+          </p>
+        </div>
+
+        <div className="bg-green-500/5 p-4 rounded-xl border border-green-500/20">
+          <p className="text-gray-300 text-sm flex items-start">
+            <CheckCircleIcon className="w-5 h-5 mr-2 flex-shrink-0 text-green-400" />
+            When you claim, funds will be immediately transferred to your wallet
+          </p>
+        </div>
+
+        <motion.button
+          type="submit"
+          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={isLoading || !signer || !transferId}
+        >
+          {isLoading ? (
+            <>
+              <ArrowPathIcon className="w-5 h-5 animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <ArrowDownIcon className="w-5 h-5" />
+              <span>Claim Funds</span>
+            </>
+          )}
+        </motion.button>
+
+        <div className="text-center text-sm text-gray-400">
+          You can also claim directly from the list of pending transfers
+        </div>
+      </form>
+    );
+  };
+
+  const renderRefundForm = () => {
+    return (
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handleRefund(transferId);
+      }} className="space-y-6">
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-green-400 font-medium flex items-center">
+              <DocumentDuplicateIcon className="w-5 h-5 mr-2" />
+              Transfer ID
+            </label>
+          </div>
+          
+          <input
+            type="text"
+            value={transferId}
+            onChange={(e) => setTransferId(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
+            placeholder="0x... (transfer ID)"
+            required
+          />
+          <p className="mt-2 text-xs text-gray-400 flex items-center">
+            <InformationCircleIcon className="w-4 h-4 mr-1" />
+            Enter the transfer ID of the transaction you want to refund
+          </p>
+        </div>
+
+        <div className="bg-yellow-500/5 p-4 rounded-xl border border-yellow-500/20">
+          <p className="text-gray-300 text-sm flex items-start">
+            <InformationCircleIcon className="w-5 h-5 mr-2 flex-shrink-0 text-yellow-400" />
+            Refunds are only possible for transfers that have not yet been claimed by the recipient
+          </p>
+        </div>
+
+        <motion.button
+          type="submit"
+          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          disabled={isLoading || !signer || !transferId}
+        >
+          {isLoading ? (
+            <>
+              <ArrowPathIcon className="w-5 h-5 animate-spin" />
+              <span>Processing...</span>
+            </>
+          ) : (
+            <>
+              <ArrowLeftIcon className="w-5 h-5" />
+              <span>Refund Transfer</span>
+            </>
+          )}
+        </motion.button>
+
+        <div className="text-center text-sm text-gray-400">
+          You can also refund directly from your list of pending transfers
+        </div>
+      </form>
+    );
+  };
+
   const renderForm = () => {
     switch (activeTab) {
       case TransferTabs.SEND:
-        return (
-          <form onSubmit={handleSend} className="space-y-6">
-            <div>
-              <label className="mb-2 text-green-400 font-medium">Recipient</label>
-              <input
-                type="text"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
-                placeholder="0x... or username"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 text-green-400 font-medium">Amount ({currentChain.symbol})</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
-                placeholder="0.0"
-                required
-                min="0"
-                step="0.000000000000000001"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 text-green-400 font-medium flex items-center space-x-2">
-                <ChatBubbleBottomCenterTextIcon className="w-5 h-5" />
-                <span>Remarks</span>
-              </label>
-              <textarea
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
-                placeholder="Add a note about this transfer"
-                required
-                rows={3}
-              />
-            </div>
-
-            <motion.button
-              type="submit"
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={isLoading || !signer}
-            >
-              {isLoading ? (
-                <>
-                  <ArrowPathIcon className="w-5 h-5 animate-spin" />
-                  <span>Processing...</span>
-                </>
-              ) : (
-                <>
-                  <ArrowRightIcon className="w-5 h-5" />
-                  <span>Transfer</span>
-                </>
-              )}
-            </motion.button>
-          </form>
-        );
-
+        return renderSendForm();
       case TransferTabs.CLAIM:
+        return renderClaimForm();
       case TransferTabs.REFUND:
-        return (
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            if (activeTab === TransferTabs.CLAIM) {
-              handleClaim(transferId);
-            } else {
-              handleRefund(transferId);
-            }
-          }} className="space-y-6">
-            <div>
-              <label className="mb-2 text-green-400 font-medium">
-                {activeTab === TransferTabs.CLAIM ? 'Sender Identifier' : 'Transfer ID'}
-              </label>
-              <input
-                type="text"
-                value={transferId}
-                onChange={(e) => setTransferId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
-                placeholder={activeTab === TransferTabs.CLAIM ? "Address, username, or transfer ID" : "Transfer ID"}
-                required
-              />
-            </div>
-
-            <motion.button
-              type="submit"
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={isLoading || !signer}
-            >
-              {isLoading ? (
-                <>
-                  <ArrowPathIcon className="w-5 h-5 animate-spin" />
-                  <span>Processing...</span>
-                </>
-              ) : (
-                <>
-                  {activeTab === TransferTabs.CLAIM ? (
-                    <ArrowDownIcon className="w-5 h-5" />
-                  ) : (
-                    <ArrowLeftIcon className="w-5 h-5" />
-                  )}
-                  <span>{activeTab === TransferTabs.CLAIM ? 'Claim' : 'Refund'}</span>
-                </>
-              )}
-            </motion.button>
-          </form>
-        );
-
+        return renderRefundForm();
       default:
         return null;
     }
@@ -435,7 +789,7 @@ export default function TransferPage() {
       );
     }
 
-    if (isLoading) {
+    if (isLoading && !transfers.length) {
       return (
         <div className="text-center py-8 flex flex-col items-center justify-center">
           <ArrowPathIcon className="w-8 h-8 text-green-400 animate-spin mb-4" />
@@ -446,19 +800,42 @@ export default function TransferPage() {
 
     if (transfers.length === 0) {
       return (
-        <div className="text-center py-8 text-gray-400">
-          No pending transfers found
+        <div className="text-center py-8 text-gray-400 flex flex-col items-center">
+          <div className="bg-black/30 p-4 rounded-full mb-4">
+            {activeTab === TransferTabs.CLAIM ? (
+              <ArrowDownIcon className="w-10 h-10 text-green-400 opacity-50" />
+            ) : activeTab === TransferTabs.REFUND ? (
+              <ArrowLeftIcon className="w-10 h-10 text-green-400 opacity-50" />
+            ) : (
+              <ArrowRightIcon className="w-10 h-10 text-green-400 opacity-50" />
+            )}
+          </div>
+          <p>No pending transfers found</p>
+          {activeTab === TransferTabs.SEND && (
+            <button 
+              onClick={() => setFormStep(1)}
+              className="mt-4 text-green-400 hover:text-green-300 text-sm underline flex items-center"
+            >
+              <ArrowRightIcon className="w-4 h-4 mr-1" />
+              Send your first transfer
+            </button>
+          )}
         </div>
       );
     }
 
     return (
-      <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 styled-scrollbar">
+      <motion.div 
+        className="space-y-4 max-h-[400px] overflow-y-auto pr-2 styled-scrollbar"
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+      >
         {transfers.map((transfer) => (
           <motion.div
             key={transfer.id}
             className="relative group"
-            variants={fadeIn}
+            variants={slideIn}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative bg-black/30 backdrop-blur-xl p-4 rounded-xl border border-green-500/10 group-hover:border-green-500/20">
@@ -553,16 +930,16 @@ export default function TransferPage() {
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900 via-black to-green-950">
-      <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none" />
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900 via-black to-green-950 overflow-x-hidden">
+      <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-30" />
       
       <motion.div 
-        className="container mx-auto px-4 py-20 relative z-10"
+        className="container mx-auto px-4 py-16 md:py-20 relative z-10"
         initial="initial"
         animate="animate"
         variants={pageTransition}
@@ -587,23 +964,19 @@ export default function TransferPage() {
             </div>
           </motion.div>
 
-          <h1 className="text-5xl font-bold mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-              {activeTab === TransferTabs.SEND ? 'Transfer Funds' : 
-               activeTab === TransferTabs.CLAIM ? 'Claim Funds' : 
-               'Refund Transfer'}
+              {getTabLabel()}
             </span>
           </h1>
           
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            {activeTab === TransferTabs.SEND ? 'Send funds securely to any address or username' :
-             activeTab === TransferTabs.CLAIM ? 'Claim your incoming transfers easily' :
-             'Recover funds from unclaimed transfers'}
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
+            {getTabDescription()}
           </p>
         </motion.div>
 
         {/* Tab Navigation */}
-        <div className="max-w-4xl mx-auto mb-8">
+        <div className="max-w-4xl mx-auto mb-8 px-2">
           <div className="flex rounded-xl overflow-hidden bg-black/30 backdrop-blur-xl border border-green-500/20 p-1">
             {Object.values(TransferTabs).map((tab) => (
               <motion.button
@@ -611,7 +984,7 @@ export default function TransferPage() {
                 onClick={() => handleTabChange(tab)}
                 className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
                   activeTab === tab 
-                    ? 'bg-green-500 text-black' 
+                    ? 'bg-green-500 text-black shadow-lg' 
                     : 'text-green-400 hover:bg-green-500/10'
                 }`}
                 whileHover={{ scale: 1.02 }}
@@ -624,43 +997,150 @@ export default function TransferPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div ref={formRef} className="max-w-4xl mx-auto">
+          <div className="md:grid md:grid-cols-12 gap-8">
             {/* Left Panel - Form */}
-            <motion.div variants={pageTransition}>
+            <motion.div 
+              className="md:col-span-7 mb-8 md:mb-0"
+              variants={pageTransition}
+            >
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl blur-xl" />
-                <div className="relative bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-green-500/20">
+                <div className="relative bg-black/40 backdrop-blur-xl p-6 md:p-8 rounded-2xl border border-green-500/20">
+                  <h2 className="text-xl font-semibold text-green-400 mb-6 flex items-center">
+                    {activeTab === TransferTabs.SEND && (
+                      <>
+                        <ArrowRightIcon className="w-5 h-5 mr-2" />
+                        <span>Send Protected Transfer</span>
+                      </>
+                    )}
+                    {activeTab === TransferTabs.CLAIM && (
+                      <>
+                        <ArrowDownIcon className="w-5 h-5 mr-2" />
+                        <span>Claim Your Funds</span>
+                      </>
+                    )}
+                    {activeTab === TransferTabs.REFUND && (
+                      <>
+                        <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                        <span>Refund Your Transfer</span>
+                      </>
+                    )}
+                  </h2>
+                  
                   {renderForm()}
                 </div>
               </div>
             </motion.div>
 
             {/* Right Panel - List */}
-            <motion.div variants={pageTransition}>
+            <motion.div 
+              className="md:col-span-5"
+              variants={pageTransition}
+            >
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-2xl blur-xl" />
-                <div className="relative bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-green-500/20">
+                <div className="relative bg-black/40 backdrop-blur-xl p-6 md:p-8 rounded-2xl border border-green-500/20">
                   <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold text-green-400 flex items-center space-x-2">
-                      <ClockIcon className="w-5 h-5" />
+                    <h2 className="text-xl font-semibold text-green-400 flex items-center">
+                      <ClockIcon className="w-5 h-5 mr-2" />
                       <span>
                         {activeTab === TransferTabs.SEND ? 'Recent Transfers' :
                          activeTab === TransferTabs.CLAIM ? 'Pending Claims' :
                          'Pending Refunds'}
                       </span>
                     </h2>
-                    <motion.button
-                      onClick={fetchPendingTransfers}
-                      className="bg-black/30 p-2 rounded-lg text-green-400 hover:text-green-300"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <ArrowPathIcon className="w-5 h-5" />
-                    </motion.button>
+                    
+                    <div className="flex space-x-2">
+                      <motion.button
+                        onClick={fetchPendingTransfers}
+                        className="bg-black/30 p-2 rounded-lg text-green-400 hover:text-green-300"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        title="Refresh"
+                      >
+                        <ArrowPathIcon className="w-5 h-5" />
+                      </motion.button>
+                      
+                      <motion.button
+                        onClick={() => setShowTransactions(!showTransactions)}
+                        className="bg-black/30 p-2 rounded-lg text-green-400 hover:text-green-300 md:hidden"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        title={showTransactions ? "Hide Transactions" : "Show Transactions"}
+                      >
+                        {showTransactions ? (
+                          <ChevronUpIcon className="w-5 h-5" />
+                        ) : (
+                          <ChevronDownIcon className="w-5 h-5" />
+                        )}
+                      </motion.button>
+                    </div>
                   </div>
 
-                  {renderTransferList()}
+                  <AnimatePresence>
+                    {(showTransactions || window.innerWidth >= 768) && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {renderTransferList()}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Feature Callouts - Desktop: horizontal, Mobile: vertical */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-8">
+            <motion.div 
+              className="bg-black/30 backdrop-blur-sm border border-green-500/10 rounded-xl p-4 hover:border-green-500/20"
+              variants={fadeIn}
+              whileHover={{ y: -5 }}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="bg-green-500/10 p-2 rounded-lg">
+                  <ShieldCheckIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-green-400">Protected Transfers</h3>
+                  <p className="text-sm text-gray-400">Funds are held in escrow until claimed</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-black/30 backdrop-blur-sm border border-green-500/10 rounded-xl p-4 hover:border-green-500/20"
+              variants={fadeIn}
+              whileHover={{ y: -5 }}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="bg-green-500/10 p-2 rounded-lg">
+                  <UserCircleIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-green-400">Username Support</h3>
+                  <p className="text-sm text-gray-400">Send to usernames instead of addresses</p>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="bg-black/30 backdrop-blur-sm border border-green-500/10 rounded-xl p-4 hover:border-green-500/20"
+              variants={fadeIn}
+              whileHover={{ y: -5 }}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="bg-green-500/10 p-2 rounded-lg">
+                  <QrCodeIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-green-400">QR Scan & Share</h3>
+                  <p className="text-sm text-gray-400">Easily send and receive with QR codes</p>
                 </div>
               </div>
             </motion.div>
@@ -695,31 +1175,18 @@ export default function TransferPage() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Loading Overlay */}
-          <AnimatePresence>
-            {isLoading && (
-              <motion.div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <div className="bg-black/80 p-6 rounded-2xl border border-green-500/20 flex flex-col items-center space-y-4">
-                  <ArrowPathIcon className="w-8 h-8 text-green-400 animate-spin" />
-                  <p className="text-green-400 font-medium">Processing Transaction...</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </motion.div>
 
       {/* QR Scanner */}
       <QRScanner 
         onScan={(data) => {
-          setRecipient(data);
-          setActiveTab(TransferTabs.SEND);
+          if (activeTab === TransferTabs.SEND) {
+            setRecipient(data);
+            setFormStep(1);
+          } else {
+            setTransferId(data);
+          }
         }}
         onError={(error) => setError(error)}
       />

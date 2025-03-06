@@ -2,20 +2,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, useScroll, useTransform, Variants } from 'framer-motion';
+import { motion, useScroll, useTransform, Variants, useAnimation, useInView } from 'framer-motion';
 import { 
   ShieldCheckIcon, CurrencyDollarIcon, UserCircleIcon, 
   ArrowPathIcon, CheckCircleIcon, 
   BanknotesIcon, UsersIcon, SparklesIcon,
   ChartBarIcon, WalletIcon, FireIcon,
-  DocumentIcon
+  QrCodeIcon, DevicePhoneMobileIcon, 
+  ArrowRightIcon, ScissorsIcon
 } from '@heroicons/react/24/outline';
-import { FaTelegramPlane } from 'react-icons/fa';
 import Link from 'next/link';
 
 // Animation variants
-const fadeIn: Variants = {
-  initial: { opacity: 0, y: 20, scale: 0.95 },
+const fadeIn = {
+  initial: { opacity: 0, y: 20, scale: 0.98 },
   animate: { 
     opacity: 1, 
     y: 0, 
@@ -24,7 +24,7 @@ const fadeIn: Variants = {
   }
 };
 
-const stagger: Variants = {
+const stagger = {
   animate: {
     transition: {
       staggerChildren: 0.15
@@ -32,13 +32,12 @@ const stagger: Variants = {
   }
 };
 
-const iconFloat: Variants = {
-  initial: { y: 0, rotate: 0 },
+const iconFloat = {
+  initial: { y: 0 },
   animate: { 
     y: [-5, 5, -5],
-    rotate: [-5, 5, -5],
     transition: { 
-      duration: 4,
+      duration: 3,
       repeat: Infinity,
       ease: "easeInOut" 
     } 
@@ -56,7 +55,7 @@ const FloatingObjects = () => {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {[...Array(15)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-4 h-4 md:w-8 md:h-8 rounded-full"
@@ -70,7 +69,7 @@ const FloatingObjects = () => {
             y: [0, -30, 0],
             x: [0, Math.random() * 20 - 10, 0],
             scale: [1, 1.2, 1],
-            opacity: [0.1, 0.3, 0.1],
+            opacity: [0.1, 0.2, 0.1],
           }}
           transition={{
             duration: 5 + Math.random() * 5,
@@ -91,10 +90,6 @@ const Hero = () => {
   const y = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-  const openTelegramBot = () => {
-    window.open('https://t.me/protectedpay_bot', '_blank');
-  };
-
   return (
     <motion.section
       className="relative min-h-[100vh] flex items-center justify-center text-center overflow-hidden px-4"
@@ -108,13 +103,13 @@ const Hero = () => {
       
       <motion.div style={{ y, opacity }} className="relative z-10 w-full max-w-6xl mx-auto">
         <motion.div
-          className="mb-8 inline-block perspective-1000"
+          className="mb-8 inline-block"
           variants={iconFloat}
           initial="initial"
           animate="animate"
         >
-          <div className="bg-black/30 p-4 md:p-8 rounded-3xl backdrop-blur-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-500 transform hover:rotate-12">
-            <WalletIcon className="w-16 h-16 md:w-24 md:h-24 text-green-400" />
+          <div className="bg-black/30 p-4 md:p-8 rounded-3xl backdrop-blur-xl border border-green-500/20 hover:border-green-500/40 transition-all duration-500">
+            <ShieldCheckIcon className="w-16 h-16 md:w-24 md:h-24 text-green-400" />
           </div>
         </motion.div>
 
@@ -131,53 +126,41 @@ const Hero = () => {
           className="text-xl sm:text-2xl md:text-3xl lg:text-4xl mb-8 md:mb-12 text-gray-300 max-w-3xl mx-auto font-light px-4"
           variants={fadeIn}
         >
-          Secure Crypto Transfers, Group Payments, and Smart Savings on Multiple Chains
+          Smart, Secure Crypto Transfers With Built-in Escrow Protection
         </motion.p>
 
         <motion.div 
-          className="flex flex-col sm:flex-row justify-center gap-4 md:gap-8 px-4"
+          className="flex justify-center px-4"
           variants={fadeIn}
         >
-          <motion.button
-            onClick={openTelegramBot}
-            className="group relative bg-[#229ED9] text-white px-6 md:px-10 py-3 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="relative z-10 flex items-center justify-center space-x-2">
-              <FaTelegramPlane className="w-6 h-6" />
-              <span>Open in Telegram</span>
-            </span>
-            <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-[#0088cc] blur-xl group-hover:opacity-75 transition-opacity opacity-0" />
-          </motion.button>
-            <Link href="/transfer" passHref>
-              <motion.a
-              className="group relative bg-black/40 backdrop-blur-xl border border-green-500/20 text-green-400 px-6 md:px-10 py-3 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl hover:border-green-500/40 transition-all duration-300 flex items-center justify-center space-x-2"
+          <Link href="/transfer" passHref>
+            <motion.a
+              className="group relative bg-green-500 text-black px-8 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-semibold text-lg md:text-xl transition-all duration-300 flex items-center justify-center space-x-3"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              >
-              <DocumentIcon className="w-6 h-6" />
-              <span className="relative z-10">Pay Now</span>
-              <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-green-500/5 blur-xl group-hover:opacity-75 transition-opacity opacity-0" />
-              </motion.a>
-            </Link>
+            >
+              <span className="relative z-10">Transfer Now</span>
+              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-0 rounded-xl md:rounded-2xl bg-green-400 blur-md group-hover:opacity-70 transition-opacity opacity-0" />
+            </motion.a>
+          </Link>
         </motion.div>
 
         <motion.div 
-          className="mt-8 md:mt-16 flex justify-center gap-6 md:gap-12 flex-wrap px-4"
+          className="mt-8 md:mt-16 flex justify-center gap-8 md:gap-16 flex-wrap px-4"
           variants={fadeIn}
         >
           {[
-            { icon: ShieldCheckIcon, text: "Secure & Protected" },
-            { icon: SparklesIcon, text: "Username Support" },
-            { icon: UsersIcon, text: "Group Payments" }
+            { icon: ShieldCheckIcon, text: "Funds Protected Until Claimed" },
+            { icon: QrCodeIcon, text: "QR Scan & Pay" },
+            { icon: ScissorsIcon, text: "Split Bills Easily" }
           ].map((item, i) => (
             <motion.div 
               key={i}
               className="flex items-center space-x-2 md:space-x-3 text-sm md:text-base text-gray-400 group"
               whileHover={{ scale: 1.05 }}
             >
-              <item.icon className="w-4 h-4 md:w-6 md:h-6 text-green-400 group-hover:text-green-300 transition-colors" />
+              <item.icon className="w-5 h-5 md:w-6 md:h-6 text-green-400 group-hover:text-green-300 transition-colors" />
               <span className="group-hover:text-green-300 transition-colors">{item.text}</span>
             </motion.div>
           ))}
@@ -186,313 +169,470 @@ const Hero = () => {
 
       <div className="absolute top-1/4 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-green-500/20 rounded-full blur-[100px] animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-96 md:h-96 bg-emerald-500/20 rounded-full blur-[100px] animate-pulse delay-1000" />
-      <div className="absolute top-1/2 left-1/2 w-32 h-32 md:w-64 md:h-64 bg-green-400/10 rounded-full blur-[80px] animate-pulse delay-500" />
     </motion.section>
   );
 };
 
-const Features = () => (
-  <motion.section
-    className="py-12 md:py-20 relative overflow-hidden"
-    variants={stagger}
-    initial="initial"
-    whileInView="animate"
-    viewport={{ once: true, amount: 0.3 }}
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black via-green-950/10 to-black" />
-    <div className="container mx-auto px-4 relative z-10">
-      <motion.h2 
-        className="text-3xl md:text-5xl font-bold mb-8 md:mb-16 text-center"
-        variants={fadeIn}
-      >
-        <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-          Powerful Features
-        </span>
-      </motion.h2>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-        {/* First row focuses on core features */}
-        <FeatureCard
-          icon={<ShieldCheckIcon className="w-10 h-10 md:w-12 md:h-12" />}
-          title="Protected Transfers"
-          description="Send funds securely with escrow-like protection until the recipient claims them. Cancel unclaimed transfers anytime."
-        />
-        <FeatureCard
-          icon={<UsersIcon className="w-10 h-10 md:w-12 md:h-12" />}
-          title="Group Payments"
-          description="Create shared payment pools with automatic distribution when target is met. Perfect for splitting bills and expenses."
-        />
-        <FeatureCard
-          icon={<BanknotesIcon className="w-10 h-10 md:w-12 md:h-12" />}
-          title="Savings Pots"
-          description="Set personal savings goals with locked funds until your target is reached. Track progress and earn rewards."
-        />
-        {/* Second row highlights unique features */}
-        <FeatureCard
-          icon={<ArrowPathIcon className="w-10 h-10 md:w-12 md:h-12" />}
-          title="Multi-Chain Support"
-          description="Seamlessly use the same features across NeoX, Educhain, Flow etc. One interface, multiple chains."
-        />
-        <FeatureCard
-          icon={<UserCircleIcon className="w-10 h-10 md:w-12 md:h-12" />}
-          title="Username Payments"
-          description="Send funds using memorable usernames instead of complex addresses. Usernames work across all supported chains."
-        />
-        <FeatureCard
-          icon={<ChartBarIcon className="w-10 h-10 md:w-12 md:h-12" />}
-          title="Telegram Integration"
-          description="Access all features directly through Telegram. Send, receive, and manage your funds with simple commands."
-        />
-      </div>
-    </div>
-  </motion.section>
-);
-
-const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({
-  icon,
-  title,
-  description
-}) => (
-  <motion.div
-    className="relative group perspective-1000"
-    variants={fadeIn}
-    whileHover={{ scale: 1.02, rotateY: 5 }}
-  >
-    <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl md:rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    
-    <div className="relative bg-black/40 backdrop-blur-xl p-6 md:p-8 rounded-xl md:rounded-2xl border border-green-500/20 group-hover:border-green-500/40 transition-all duration-500 h-full">
-      <motion.div 
-        className="text-green-400 mb-4 md:mb-6 group-hover:text-green-300 transition-colors"
-        variants={iconFloat}
-        initial="initial"
-        animate="animate"
-      >
-        {icon}
-      </motion.div>
-      <h3 className="text-xl md:text-2xl font-semibold mb-3 md:mb-4 text-green-400 group-hover:text-green-300 transition-colors">{title}</h3>
-      <p className="text-sm md:text-base text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">{description}</p>
-    </div>
-  </motion.div>
-);
-
-const EnhancedStepCard: React.FC<{ 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
-  step: number 
-}> = ({
-  icon,
-  title,
-  description,
-  step
-}) => (
-  <motion.div
-    className="relative group perspective-1000"
-    variants={fadeIn}
-    whileHover={{ scale: 1.02, rotateY: 5 }}
-  >
-    <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    
-    <div className="relative bg-black/40 backdrop-blur-xl p-6 md:p-8 rounded-xl border border-green-500/20 group-hover:border-green-500/40 transition-all duration-500">
-      <motion.div 
-        className="text-green-400 mb-4 md:mb-6 group-hover:text-green-300 transition-colors relative"
-        variants={iconFloat}
-      >
-        <div className="absolute inset-0 bg-green-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        {icon}
-      </motion.div>
-      
-      <h4 className="text-xl md:text-2xl font-semibold mb-3 text-green-400 group-hover:text-green-300 transition-colors">{title}</h4>
-      <p className="text-sm md:text-base text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors">{description}</p>
-      
-      <div className="absolute -top-3 -right-3 transform group-hover:scale-110 transition-all duration-300">
-        <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full blur-lg opacity-50" />
-          <div className="relative bg-gradient-to-r from-green-500 to-emerald-500 text-black font-bold px-3 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm">
-            Step {step}
-          </div>
-        </div>
-      </div>
-    </div>
-  </motion.div>
-);
-
-const HowItWorks = () => {
-  const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.8, 1, 1, 0.8]);
-
-  const processes = [
-    {
-      title: "Protected Transfers",
-      subtitle: "Send funds securely across chains",
-      steps: [
-        {
-          icon: <WalletIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Connect Wallet",
-          description: "Connect your wallet and select your preferred blockchain network."
-        },
-        {
-          icon: <ArrowPathIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Choose Recipient",
-          description: "Enter username or wallet address. Recipients can be on any supported chain."
-        },
-        {
-          icon: <CheckCircleIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Secure Transfer",
-          description: "Funds are securely held until claimed. Unclaimed transfers can be refunded."
-        }
-      ]
-    },
-    {
-      title: "Group Payments",
-      subtitle: "Split expenses with friends",
-      steps: [
-        {
-          icon: <UsersIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Create Pool",
-          description: "Set the total amount needed and invite participants to contribute."
-        },
-        {
-          icon: <CurrencyDollarIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Share Link",
-          description: "Share payment link through Telegram or copy pool ID for contributors."
-        },
-        {
-          icon: <ArrowPathIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Auto Distribution",
-          description: "Once target is met, funds are automatically sent to the recipient."
-        }
-      ]
-    },
-    {
-      title: "Savings Pots",
-      subtitle: "Achieve your savings goals",
-      steps: [
-        {
-          icon: <BanknotesIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Set Goal",
-          description: "Create a savings pot with your target amount and timeframe."
-        },
-        {
-          icon: <SparklesIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Regular Savings",
-          description: "Add funds whenever you want, track progress with real-time updates."
-        },
-        {
-          icon: <FireIcon className="w-8 h-8 md:w-12 md:h-12" />,
-          title: "Break Pot",
-          description: "Withdraw your savings anytime or wait until target is reached."
-        }
-      ]
-    }
+const ChainSlider = () => {
+  const chains = [
+    { name: 'NeoX', icon: '/chains/neox.png' },
+    { name: 'EduChain', icon: '/chains/educhain.png' },
+    { name: 'Ancient8', icon: '/chains/ancient8.png' },
+    { name: 'Mantle', icon: '/chains/mantle.png' },
+    { name: 'Kaia', icon: '/chains/kaia.png' },
+    { name: 'Telos', icon: '/chains/telos.png' },
+    { name: 'Linea', icon: '/chains/linea.png' },
+    { name: 'Creator', icon: '/chains/creator.png' },
+    { name: 'CrossFi', icon: '/chains/crossfi.png' },
   ];
 
   return (
+    <section className="py-16 relative overflow-hidden">
+      <div className="container mx-auto px-4 mb-10">
+        <motion.h2 
+          className="text-3xl md:text-5xl font-bold mb-4 text-center"
+          variants={fadeIn}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+        >
+          <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+            Multi-Chain Support
+          </span>
+        </motion.h2>
+        
+        <motion.p
+          className="text-center text-gray-400 max-w-3xl mx-auto mb-8"
+          variants={fadeIn}
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+        >
+          Send and receive funds seamlessly across multiple blockchain networks, all with the same secure interface
+        </motion.p>
+      </div>
+
+      <div className="slider-container">
+        <div className="slider">
+          {/* First copy of logos */}
+          {chains.map((chain, index) => (
+            <div key={`chain-1-${index}`} className="slide">
+              <div className="logo-wrapper group">
+                <Image
+                  src={chain.icon}
+                  alt={chain.name}
+                  width={80}
+                  height={80}
+                  className="logo-image transition-all duration-300 filter grayscale group-hover:grayscale-0 group-hover:scale-110"
+                />
+                <div className="logo-name opacity-70 group-hover:opacity-100 group-hover:text-green-400">
+                  {chain.name}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {/* Second copy of logos (needed for seamless animation) */}
+          {chains.map((chain, index) => (
+            <div key={`chain-2-${index}`} className="slide">
+              <div className="logo-wrapper group">
+                <Image
+                  src={chain.icon}
+                  alt={chain.name}
+                  width={80}
+                  height={80}
+                  className="logo-image transition-all duration-300 filter grayscale group-hover:grayscale-0 group-hover:scale-110"
+                />
+                <div className="logo-name opacity-70 group-hover:opacity-100 group-hover:text-green-400">
+                  {chain.name}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {/* Third copy of logos (for extra buffer) */}
+          {chains.map((chain, index) => (
+            <div key={`chain-3-${index}`} className="slide">
+              <div className="logo-wrapper group">
+                <Image
+                  src={chain.icon}
+                  alt={chain.name}
+                  width={80}
+                  height={80}
+                  className="logo-image transition-all duration-300 filter grayscale group-hover:grayscale-0 group-hover:scale-110"
+                />
+                <div className="logo-name opacity-70 group-hover:opacity-100 group-hover:text-green-400">
+                  {chain.name}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {/* Fourth copy of logos (for extra buffer) */}
+          {chains.map((chain, index) => (
+            <div key={`chain-4-${index}`} className="slide">
+              <div className="logo-wrapper group">
+                <Image
+                  src={chain.icon}
+                  alt={chain.name}
+                  width={80}
+                  height={80}
+                  className="logo-image transition-all duration-300 filter grayscale group-hover:grayscale-0 group-hover:scale-110"
+                />
+                <div className="logo-name opacity-70 group-hover:opacity-100 group-hover:text-green-400">
+                  {chain.name}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <style jsx>{`
+        .slider-container {
+          position: relative;
+          overflow: hidden;
+          padding: 20px 0;
+          width: 100%;
+        }
+        
+        .slider-container::before,
+        .slider-container::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 200px;
+          height: 100%;
+          z-index: 2;
+          pointer-events: none;
+        }
+        
+        .slider-container::before {
+          left: 0;
+          background: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
+        }
+        
+        .slider-container::after {
+          right: 0;
+          background: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+        }
+        
+        .slider {
+          display: flex;
+          animation: scroll 40s linear infinite;
+          width: fit-content;
+        }
+        
+        .slider-container:hover .slider {
+          animation-play-state: paused;
+        }
+        
+        .slide {
+          flex: 0 0 auto;
+          width: 140px;
+          box-sizing: border-box;
+          padding: 0 10px;
+        }
+        
+        .logo-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 10px;
+          border-radius: 12px;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid rgba(128, 128, 128, 0.2);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          height: 120px;
+        }
+        
+        .logo-wrapper:hover {
+          border-color: rgba(74, 222, 128, 0.4);
+          transform: translateY(-5px);
+        }
+        
+        .logo-image {
+          width: 60px;
+          height: 60px;
+          object-fit: contain;
+        }
+        
+        .logo-name {
+          margin-top: 8px;
+          font-size: 14px;
+          text-align: center;
+          color: #6b7280;
+          transition: all 0.3s ease;
+        }
+        
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(calc(-140px * ${chains.length} * 2));
+          }
+        }
+      `}</style>
+    </section>
+  );
+};
+
+const TransferHighlight = () => {
+  return (
     <motion.section
-      ref={sectionRef}
-      className="py-16 md:py-32 relative overflow-hidden"
+      className="py-16 md:py-24 relative overflow-hidden"
       variants={stagger}
       initial="initial"
       whileInView="animate"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.3 }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black via-green-950/10 to-black" />
       
-      <div className="absolute inset-0">
-        <motion.div 
-          className="absolute top-1/4 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-green-500/10 rounded-full blur-[100px]"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div 
-          className="absolute bottom-1/4 right-1/4 w-48 h-48 md:w-96 md:h-96 bg-emerald-500/10 rounded-full blur-[100px]"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.5, 0.3, 0.5],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
+          <motion.div 
+            className="order-2 lg:order-1"
+            variants={fadeIn}
+          >
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+                Protected Transfers
+              </span>
+            </h2>
+            
+            <p className="text-gray-300 text-lg mb-8">
+              Unlike traditional crypto payments, ProtectedPay holds your transfer in escrow until the recipient claims it. No more sending funds to the wrong address or worrying about scams.
+            </p>
+            
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="mt-1 p-2 bg-green-500/20 rounded-lg">
+                  <QrCodeIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-green-400 mb-2">QR Upload & Scan</h3>
+                  <p className="text-gray-400">Share payment links via QR code or scan to pay instantly on mobile. Perfect for in-person transactions.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="mt-1 p-2 bg-green-500/20 rounded-lg">
+                  <ArrowPathIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-green-400 mb-2">Refundable Payments</h3>
+                  <p className="text-gray-400">Sent to the wrong person? Get your funds back instantly if they haven't been claimed yet.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start space-x-4">
+                <div className="mt-1 p-2 bg-green-500/20 rounded-lg">
+                  <UserCircleIcon className="w-6 h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-green-400 mb-2">Username Payments</h3>
+                  <p className="text-gray-400">Send to memorable usernames instead of complicated wallet addresses. Simple and secure.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8">
+              <Link href="/transfer" passHref>
+                <motion.a
+                  className="inline-flex items-center space-x-2 bg-green-500 text-black px-6 py-3 rounded-xl font-semibold text-lg transition-all duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>Try Protected Transfer</span>
+                  <ArrowRightIcon className="w-5 h-5" />
+                </motion.a>
+              </Link>
+            </div>
+          </motion.div>
+          
+          <motion.div 
+            className="order-1 lg:order-2"
+            variants={fadeIn}
+          >
+            <div className="relative">
+              <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full opacity-30" />
+              <div className="relative bg-black/40 backdrop-blur-xl p-6 md:p-8 rounded-2xl border border-green-500/30">
+                <div className="bg-black/70 rounded-xl overflow-hidden shadow-2xl">
+                  <div className="p-4 bg-green-900/30 border-b border-green-500/30 flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="text-green-400 text-sm">Protected Transfer</div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="mb-6 text-center">
+                      <motion.div
+                        className="inline-block"
+                        variants={iconFloat}
+                        initial="initial"
+                        animate="animate"
+                      >
+                        <ShieldCheckIcon className="w-16 h-16 text-green-400 mx-auto mb-4" />
+                      </motion.div>
+                      <h3 className="text-xl font-semibold text-green-400">Secure Transaction</h3>
+                      <p className="text-gray-400 text-sm mt-2">Funds held in escrow until claimed</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-black/50 p-4 rounded-lg border border-green-500/20">
+                        <div className="text-gray-400 text-sm mb-2">Recipient</div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-green-400">crypto.user</div>
+                          <UserCircleIcon className="w-5 h-5 text-green-400" />
+                        </div>
+                      </div>
+                      
+                      <div className="bg-black/50 p-4 rounded-lg border border-green-500/20">
+                        <div className="text-gray-400 text-sm mb-2">Amount</div>
+                        <div className="flex items-center justify-between">
+                          <div className="text-green-400">0.5 GAS</div>
+                          <CurrencyDollarIcon className="w-5 h-5 text-green-400" />
+                        </div>
+                      </div>
+                      
+                      <div className="bg-black/50 p-4 rounded-lg border border-green-500/20">
+                        <div className="text-gray-400 text-sm mb-2">Message</div>
+                        <div className="text-green-400">Payment for design work</div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <button className="w-full bg-green-500 text-black py-3 rounded-lg font-semibold">
+                        Confirm Transfer
+                      </button>
+                      <div className="mt-4 text-center text-gray-500 text-sm">
+                        Refundable until claimed
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
+    </motion.section>
+  );
+};
 
-      <motion.div 
-        className="container mx-auto px-4 relative z-10"
-        style={{ opacity, scale }}
-      >
-        <motion.h2 
-          className="text-3xl md:text-6xl font-bold mb-12 md:mb-24 text-center"
+const AdditionalFeatures = () => {
+  return (
+    <motion.section
+      className="py-16 md:py-24 relative overflow-hidden"
+      variants={stagger}
+      initial="initial"
+      whileInView="animate"
+      viewport={{ once: true, amount: 0.3 }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-green-950/10 to-black" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div
+          className="text-center mb-16"
           variants={fadeIn}
         >
-          <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            How It Works
-          </span>
-        </motion.h2>
-
-        <div className="max-w-5xl mx-auto space-y-16 md:space-y-32">
-          {processes.map((process, processIndex) => (
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+              More Than Just Transfers
+            </span>
+          </h2>
+          
+          <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+            ProtectedPay offers a complete suite of financial tools designed for the crypto ecosystem
+          </p>
+        </motion.div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <motion.div
+            className="bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-green-500/20 hover:border-green-500/40 transition-all duration-500"
+            variants={fadeIn}
+            whileHover={{ y: -10 }}
+          >
             <motion.div
-              key={processIndex}
-              variants={fadeIn}
-              className="relative"
+              className="text-green-400 mb-6"
+              variants={iconFloat}
+              initial="initial"
+              animate="animate"
             >
-              {processIndex < processes.length - 1 && (
-                <div className="absolute left-1/2 bottom-0 w-px h-16 md:h-32 -mb-16 md:-mb-32 bg-gradient-to-b from-green-500/40 to-transparent" />
-              )}
-              
-              <div className="text-center mb-8 md:mb-16">
-                <h3 className="text-2xl md:text-4xl font-bold text-green-400 mb-2 md:mb-4">{process.title}</h3>
-                <p className="text-lg md:text-xl text-gray-400">{process.subtitle}</p>
-                <div className="h-1 w-24 md:w-32 mx-auto mt-4 md:mt-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                {process.steps.map((step, stepIndex) => (
-                  <div key={stepIndex} className="relative">
-                    {stepIndex < process.steps.length - 1 && (
-                      <div className="hidden md:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-green-500/40 to-transparent -mr-4" />
-                    )}
-                    
-                    <EnhancedStepCard
-                      icon={step.icon}
-                      title={step.title}
-                      description={step.description}
-                      step={stepIndex + 1}
-                    />
-                  </div>
-                ))}
-              </div>
+              <UsersIcon className="w-12 h-12" />
             </motion.div>
-          ))}
+            
+            <h3 className="text-2xl font-semibold text-green-400 mb-4">Split Payments</h3>
+            
+            <p className="text-gray-400 mb-6">
+              Easily split bills, share expenses, and collect funds from multiple people. Perfect for group dinners, trips, or shared purchases.
+            </p>
+            
+            <ul className="space-y-3">
+              {[
+                "Create payment pools with multiple contributors",
+                "Automatic distribution when target is reached",
+                "Track who has paid and who hasn't",
+                "Works across all supported blockchains"
+              ].map((item, i) => (
+                <li key={i} className="flex items-start space-x-2">
+                  <CheckCircleIcon className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-300">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+          
+          <motion.div
+            className="bg-black/40 backdrop-blur-xl p-8 rounded-2xl border border-green-500/20 hover:border-green-500/40 transition-all duration-500"
+            variants={fadeIn}
+            whileHover={{ y: -10 }}
+          >
+            <motion.div
+              className="text-green-400 mb-6"
+              variants={iconFloat}
+              initial="initial"
+              animate="animate"
+            >
+              <BanknotesIcon className="w-12 h-12" />
+            </motion.div>
+            
+            <h3 className="text-2xl font-semibold text-green-400 mb-4">Savings Pots</h3>
+            
+            <p className="text-gray-400 mb-6">
+              Create dedicated savings goals with locked funds until your target is reached. A smart way to save for future purchases or projects.
+            </p>
+            
+            <ul className="space-y-3">
+              {[
+                "Set personal savings goals with target amounts",
+                "Track progress with real-time updates",
+                "Break the pot when needed or when goal is reached",
+                "Perfect for vacation funds, emergency savings, and more"
+              ].map((item, i) => (
+                <li key={i} className="flex items-start space-x-2">
+                  <CheckCircleIcon className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-300">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
     </motion.section>
   );
 };
 
 const CallToAction = () => {
-  const openTelegramBot = () => {
-    window.open('https://t.me/protectedpay_bot', '_blank');
-  };
-
   return (
     <motion.section 
-      className="py-12 md:py-20 relative overflow-hidden"
+      className="py-16 md:py-24 relative overflow-hidden"
       variants={fadeIn}
       initial="initial"
       whileInView="animate"
@@ -529,9 +669,9 @@ const CallToAction = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center bg-black/30 backdrop-blur-xl p-10 rounded-3xl border border-green-500/20">
           <motion.h2
-            className="text-3xl md:text-5xl font-bold mb-4 md:mb-8"
+            className="text-3xl md:text-5xl font-bold mb-6"
             variants={fadeIn}
           >
             <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
@@ -540,210 +680,32 @@ const CallToAction = () => {
           </motion.h2>
 
           <motion.p
-            className="text-base md:text-xl mb-8 md:mb-12 text-gray-300 px-4"
+            className="text-xl mb-8 text-gray-300 max-w-2xl mx-auto"
             variants={fadeIn}
           >
-            Join the future of secure, cross-chain payments. Available now on multiple chains.
+            Experience the safest way to send and receive crypto across multiple blockchains
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6"
             variants={fadeIn}
           >
-            <motion.button
-              onClick={openTelegramBot}
-              className="group relative bg-[#229ED9] text-white px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg transition-all duration-300 hover:brightness-110 flex items-center justify-center space-x-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <FaTelegramPlane className="w-6 h-6" />
-              <span>Open in Telegram</span>
-            </motion.button>
-
             <Link href="/transfer" passHref>
               <motion.a
-                className="group relative bg-black/40 backdrop-blur-xl border border-green-500/20 text-green-400 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg hover:border-green-500/40 transition-all duration-300 flex items-center justify-center space-x-2"
+                className="inline-flex items-center space-x-3 bg-green-500 text-black px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <DocumentIcon className="w-6 h-6" />
-                <span>Pay Now</span>
+                <ShieldCheckIcon className="w-6 h-6" />
+                <span>Transfer Now</span>
+                <ArrowRightIcon className="w-5 h-5" />
               </motion.a>
             </Link>
-          </motion.div>
-
-          {/* Network badges */}
-          <motion.div 
-            className="mt-8 flex justify-center items-center gap-4 flex-wrap"
-            variants={fadeIn}
-          >
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/educhain.png"
-                alt="EDU Chain"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">EduChain</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/ancient8.png"
-                alt="Ancient8"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Ancient8</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/neox.png"
-                alt="NeoX"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">NeoX</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/mantle.png"
-                alt="Mantle"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Mantle</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/kaia.png"
-                alt="Kaia Chain"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Kaia</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/telos.png"
-                alt="Telos Chain"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Telos</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/linea.png"
-                alt="Linea Chain"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Linea</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/creator.png"
-                alt="Creator Chain"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">Creator</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-black/30 px-3 py-1.5 rounded-full border border-green-500/20">
-              <Image
-                src="/chains/crossfi.png"
-                alt="CrossFi Chain"
-                width={20}
-                height={20}
-                className="rounded-full"
-              />
-              <span className="text-gray-400 text-sm">CrossFi</span>
-            </div>
+            
+            <p className="mt-6 text-gray-400">
+              Available on NeoX, EduChain, Ancient8, and more blockchains
+            </p>
           </motion.div>
         </div>
-      </div>
-    </motion.section>
-  );
-};
-
-const SupportedChains = () => {
-  const chains = [
-    { name: 'EduChain', icon: '/chains/educhain.png', description: 'Education focused blockchain by Open Campus', status: 'Live' },
-    { name: 'Ancient8', icon: '/chains/ancient8.png', description: 'Gaming-focused Ethereum L2 blockchain set to onboard the next 100 mil users', status: 'Live' },
-    { name: 'NeoX', icon: '/chains/neox.png', description: 'High-performance Neo Smaart Economy EVM chain', status: 'Live' },
-    { name: 'Mantle', icon: '/chains/mantle.png', description: 'Mass adoption of token-governed technologies', status: 'Live' },
-    { name: 'Kaia', icon: '/chains/kaia.png', description: 'Kaia is an EVM L1 designed to bring Web3 to millions', status: 'Live' },
-    { name: 'Telos', icon: '/chains/telos.png', description: 'Scalable utility chain with low latency & low network congestion', status: 'Live' },
-    { name: 'Linea', icon: '/chains/linea.png', description: 'Ethereum core devs built L2 offering web2-like speed and zk technology', status: 'Live' },
-    { name: 'Creator', icon: '/chains/creator.png', description: 'AI Superhero L2 blockchain built on OP Stack with revenue sharing & Phantom X NFTs', status: 'Live' },
-    { name: 'CrossFi', icon: '/chains/crossfi.png', description: 'L1 blockchain with modular architecture consisting of Cosmos and EVM', status: 'Live' }
-  ];
-
-  return (
-    <motion.section
-      className="py-12 relative overflow-hidden"
-      variants={stagger}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
-    >
-      <div className="container mx-auto px-4 relative z-10">
-        <motion.h2 
-          className="text-3xl md:text-5xl font-bold mb-8 md:mb-16 text-center"
-          variants={fadeIn}
-        >
-          <span className="bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-            Supported Chains
-          </span>
-        </motion.h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
-          {chains.map((chain) => (
-            <motion.div
-              key={chain.name}
-              className="relative group"
-              variants={fadeIn}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              <div className="relative bg-black/40 backdrop-blur-xl p-6 rounded-xl border border-green-500/20 group-hover:border-green-500/40 transition-all duration-300">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="relative w-12 h-12">
-                    <Image
-                      src={chain.icon}
-                      alt={chain.name}
-                      fill
-                      className="rounded-full object-contain"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-green-400">{chain.name}</h3>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400">
-                      {chain.status}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-gray-400 text-sm">{chain.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div 
-          className="text-center mt-8 text-gray-400"
-          variants={fadeIn}
-        >
-          More chains coming soon...
-        </motion.div>
       </div>
     </motion.section>
   );
@@ -756,9 +718,9 @@ export default function ProtectedPayLandingPage() {
         <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-900/20 via-black to-black" />
         <div className="relative">
           <Hero />
-          <SupportedChains />
-          <Features />
-          <HowItWorks />
+          <ChainSlider />
+          <TransferHighlight />
+          <AdditionalFeatures />
           <CallToAction />
         </div>
       </div>
