@@ -10,6 +10,8 @@ const CONTRACT_ADDRESSES = {
 	59141: '0xd150d34976Ac00D5e892aDFE565ba47de11c2656', // Linea Testnet
 	4157: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // CrossFi Testnet
 	66665: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // Creator Testnet
+	5201420: '0x186a621d17819788c9aa170065ff3bbEEF37E7B7', // Electroneum Testnet
+	52014: '0xC27106b03AadbFFec555C64F461784fCE850A51b', // Electroneum Mainnet
 } as const;
   
 const CONTRACT_ABI = [
@@ -1153,7 +1155,7 @@ interface TransferEvent {
   const getContractAddress = async (signer: ethers.Signer) => {
 	const chainId = await signer.getChainId();
 	return CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES] 
-	  || CONTRACT_ADDRESSES[12227332]; // Default to NeoX if chain not found
+	  || CONTRACT_ADDRESSES[656476]; // Default to Educhain if chain not found
   };
   
   // Contract instance getter with chain awareness

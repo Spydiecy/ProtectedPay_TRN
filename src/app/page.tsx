@@ -175,6 +175,7 @@ const Hero = () => {
 
 const ChainSlider = () => {
   const chains = [
+    { name: 'Electroneum', icon: '/chains/electroneum.png' },
     { name: 'NeoX', icon: '/chains/neox.png' },
     { name: 'EduChain', icon: '/chains/educhain.png' },
     { name: 'Ancient8', icon: '/chains/ancient8.png' },
@@ -700,10 +701,6 @@ const CallToAction = () => {
                 <ArrowRightIcon className="w-5 h-5" />
               </motion.a>
             </Link>
-            
-            <p className="mt-6 text-gray-400">
-              Available on NeoX, EduChain, Ancient8, and more blockchains
-            </p>
           </motion.div>
         </div>
       </div>
@@ -718,9 +715,9 @@ export default function ProtectedPayLandingPage() {
         <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-900/20 via-black to-black" />
         <div className="relative">
           <Hero />
-          <ChainSlider />
           <TransferHighlight />
           <AdditionalFeatures />
+          <ChainSlider />
           <CallToAction />
         </div>
       </div>

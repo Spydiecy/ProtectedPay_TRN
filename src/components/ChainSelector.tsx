@@ -16,6 +16,24 @@ export interface ChainInfo {
 
 export const supportedChains: ChainInfo[] = [
   {
+    id: 52014,
+    hexId: '0xCB2E',
+    name: 'Electroneum Mainnet',
+    icon: '/chains/electroneum.png',
+    symbol: 'ETN',
+    rpcUrl: 'https://rpc.ankr.com/electroneum',
+    blockExplorerUrl: 'https://blockexplorer.electroneum.com/'
+  },
+  {
+    id: 5201420,
+    hexId: '0x4F5E0C',
+    name: 'Electroneum Testnet',
+    icon: '/chains/electroneum.png',
+    symbol: 'ETN',
+    rpcUrl: 'https://rpc.ankr.com/electroneum_testnet',
+    blockExplorerUrl: 'https://blockexplorer.thesecurityteam.rocks/'
+  },
+  {
     id: 656476,
     hexId: '0xA045C',
     name: 'EduChain Testnet',

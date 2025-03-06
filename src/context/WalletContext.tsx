@@ -262,7 +262,61 @@ const crossFiTestnet = {
   testnet: true,
 } as const;
 
-const chains = [neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet, crossFiTestnet] as const; 
+const electroneumMainnet = {
+  id: 52014,
+  hexId: '0xCB2E',
+  name: 'Electroneum Mainnet',
+  network: 'electroneummainnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'ETN',
+    symbol: 'ETN',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.ankr.com/electroneum']
+    },
+    public: {
+      http: ['https://rpc.ankr.com/electroneum']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Electroneum Explorer',
+      url: 'https://blockexplorer.electroneum.com/'
+    }
+  },
+  testnet: false,
+} as const;
+
+const electroneumTestnet = {
+  id: 5201420,
+  hexId: '0x4F5E0C',
+  name: 'Electroneum Testnet',
+  network: 'electroneumtestnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'ETN',
+    symbol: 'ETN',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.ankr.com/electroneum_testnet']
+    },
+    public: {
+      http: ['https://rpc.ankr.com/electroneum_testnet']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Electroneum Testnet Explorer',
+      url: 'https://blockexplorer.thesecurityteam.rocks/'
+    }
+  },
+  testnet: true,
+} as const;
+
+const chains = [electroneumMainnet, electroneumTestnet, neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet, crossFiTestnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -282,6 +336,8 @@ const wagmiConfig = createConfig({
   connectors,
   chains,
   transports: {
+    [electroneumMainnet.id]: http(),
+    [electroneumTestnet.id]: http(),
     [eduChainTestnet.id]: http(),
     [ancient8Testnet.id]: http(),
     [neoXTestnet.id]: http(),
