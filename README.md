@@ -50,10 +50,7 @@
 
 ### 💰 Savings Pots
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/96d0db31-cec3-432c-90b2-8707ce870e2c" width="400px">
-  <img src="https://github.com/user-attachments/assets/8a7ac6c6-c663-4705-a209-ca5a937087a9" width="400px">
-</div>
+<img align="right" src="https://github.com/user-attachments/assets/4c88cdb7-d21c-4d1e-863f-53d063830e19" width="350px">
 
 - **Goal-Based Savings**: Set targets and track progress visually
 - **Chain-Specific Pots**: Create dedicated savings on each blockchain
@@ -62,6 +59,8 @@
 - **Purpose Tracking**: Organize savings by specific goals or needs
 - **Yield Earning**: Option to earn yield on your savings, increasing chain TVL
 - **Progress Visualization**: Watch your savings grow in real-time
+
+<br clear="right"/>
 
 ### 🔄 Cross-Chain User Experience
 
@@ -78,10 +77,7 @@
 
 ### 📱 QR Code System
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/bc4e425b-d6f7-49b8-a4fe-8831ba9e5548" width="400px">
-  <img src="https://github.com/user-attachments/assets/f645759e-47bf-4fb1-9e87-b46f7c0bc6a7" width="400px">
-</div>
+<img align="right" src="https://github.com/user-attachments/assets/bc4e425b-d6f7-49b8-a4fe-8831ba9e5548" width="200px">
 
 - **Profile QR Codes**: Generate codes containing payment details
 - **In-App Scanner**: Scan QR codes via camera or image uploads
@@ -89,6 +85,12 @@
 - **Secure Verification**: Validate codes before processing payments
 - **Share Anywhere**: Easy to share via messenger or print
 - **Instant Recognition**: Fast processing of payment information
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/f645759e-47bf-4fb1-9e87-b46f7c0bc6a7" width="400px">
+</div>
+
+<br clear="right"/>
 
 ## 🔗 Supported Blockchains
 
