@@ -1,149 +1,264 @@
-# ProtectedPay  
+# ProtectedPay
 
-ProtectedPay is a multi-chain DeFi platform designed to provide secure transfers, group payments, and smart savings features across multiple blockchains. Prioritizing advanced security and an intuitive user experience, it empowers users to manage and protect their crypto assets effectively.  
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/eb3dbd55-6522-4d3b-b6f9-6ec63157e565" alt="ProtectedPay Logo" width="650px">
+  
+  <h3>Smart. Secure Crypto Transfers</h3>
+  
+  <p>A revolutionary DeFi platform for secure transfers, group payments, and smart savings across multiple blockchains.</p>
+</div>
 
-![image](https://github.com/user-attachments/assets/eb3dbd55-6522-4d3b-b6f9-6ec63157e565)
+## 📋 Contents
+
+- [Features](#-features)
+- [Supported Blockchains](#-supported-blockchains)
+- [How It Works](#-how-it-works)
+- [User Interface](#-user-interface)
+- [Security](#-security)
+- [Deployed Contracts](#-deployed-contracts)
+- [Demo](#-demo)
+- [Support](#-support)
+
+## ✨ Features
+
+### 🛡️ Protected Cross-Chain Transfers
+
+<img align="right" src="https://github.com/user-attachments/assets/bdb20bd8-fa93-488a-b720-46615b9918de" width="350px">
+
+- **Escrow-Like Protection**: Funds remain secure until claimed by recipient
+- **Multi-Chain Support**: Send assets seamlessly across different blockchains
+- **Easy Identification**: Transfer using usernames instead of complex addresses
+- **Customizable Remarks**: Add notes to help identify your transfers
+- **Refund Safety Net**: Easily recover unclaimed funds
+- **QR Integration**: Scan to pay functionality for quick transfers
+- **Transaction Privacy**: Keep your transfer details confidential
+
+<br clear="right"/>
+
+### 👥 Group Payments
+
+<img align="right" src="https://github.com/user-attachments/assets/56141ff7-ad4b-4a1e-bfac-5abdd92b22a9" width="350px">
+
+- **Split Expenses Easily**: Divide costs among friends or colleagues
+- **Cross-Chain Contributors**: Accept payments from any supported blockchain
+- **Automatic Distribution**: Funds released when target amount is reached
+- **Real-Time Tracking**: Monitor contributions as they happen
+- **Transparent History**: View all group payment activity
+- **Flexible Participation**: Join existing payment groups with minimal setup
+
+<br clear="right"/>
+
+### 💰 Savings Pots
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/96d0db31-cec3-432c-90b2-8707ce870e2c" width="400px">
+  <img src="https://github.com/user-attachments/assets/8a7ac6c6-c663-4705-a209-ca5a937087a9" width="400px">
+</div>
+
+- **Goal-Based Savings**: Set targets and track progress visually
+- **Chain-Specific Pots**: Create dedicated savings on each blockchain
+- **Flexible Contributions**: Add funds on your own schedule
+- **Emergency Access**: Withdraw when needed without penalties
+- **Purpose Tracking**: Organize savings by specific goals or needs
+- **Yield Earning**: Option to earn yield on your savings, increasing chain TVL
+- **Progress Visualization**: Watch your savings grow in real-time
+
+### 🔄 Cross-Chain User Experience
+
+<img align="right" src="https://github.com/user-attachments/assets/35cbdaad-5e05-4dc6-9a13-18b2f0b4a919" width="350px">
+
+- **Universal Username**: One identity across all supported chains
+- **Unified Dashboard**: View all activities in a single interface
+- **Real-Time Balances**: Track your assets across all networks
+- **Chain-Aware Design**: UI adapts to the selected blockchain
+- **Seamless Switching**: Change networks without changing interfaces
+- **Comprehensive History**: View transactions across all chains
+
+<br clear="right"/>
+
+### 📱 QR Code System
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/bc4e425b-d6f7-49b8-a4fe-8831ba9e5548" width="400px">
+  <img src="https://github.com/user-attachments/assets/f645759e-47bf-4fb1-9e87-b46f7c0bc6a7" width="400px">
+</div>
+
+- **Profile QR Codes**: Generate codes containing payment details
+- **In-App Scanner**: Scan QR codes via camera or image uploads
+- **Quick Transfers**: Auto-fill payment information from scanned codes
+- **Secure Verification**: Validate codes before processing payments
+- **Share Anywhere**: Easy to share via messenger or print
+- **Instant Recognition**: Fast processing of payment information
+
+## 🔗 Supported Blockchains
+
+ProtectedPay operates seamlessly across multiple blockchains, delivering consistent functionality regardless of your preferred network.
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="/public/chains/electroneum.png" width="50px"><br><b>Electroneum</b></td>
+      <td align="center"><img src="/public/chains/educhain.png" width="50px"><br><b>EduChain</b></td>
+      <td align="center"><img src="/public/chains/neox.png" width="50px"><br><b>NeoX</b></td>
+      <td align="center"><img src="/public/chains/kaia.png" width="50px"><br><b>KAIA</b></td>
+      <td align="center"><img src="/public/chains/telos.png" width="50px"><br><b>Telos</b></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="/public/chains/ancient8.png" width="50px"><br><b>Ancient8</b></td>
+      <td align="center"><img src="/public/chains/mantle.png" width="50px"><br><b>Mantle</b></td>
+      <td align="center"><img src="/public/chains/linea.png" width="50px"><br><b>Linea</b></td>
+      <td align="center"><img src="/public/chains/creator.png" width="50px"><br><b>Creator</b></td>
+      <td align="center"><img src="/public/chains/crossfi.png" width="50px"><br><b>CrossFi</b></td>
+    </tr>
+  </table>
+</div>
+
+## 🚀 How It Works
+
+### Protected Transfers in 3 Simple Steps
+
+1. **Connect & Select**: Choose your blockchain network and connect your wallet
+2. **Enter Details**: Specify recipient (username, address, or QR scan) and amount
+3. **Confirm & Send**: The recipient securely claims funds when ready
+
+### Group Payments Made Easy
+
+1. **Create Pool**: Set up a payment group with target amount and participants
+2. **Share & Collect**: Participants contribute from any supported chain
+3. **Auto-Distribution**: Funds are automatically sent to the recipient when the target is reached
+
+### Smart Savings Pots
+
+1. **Set Goals**: Choose a blockchain and set your savings target
+2. **Contribute**: Add funds at your own pace with real-time progress tracking
+3. **Yield Option**: Opt to earn yield on your savings, helping grow both your funds and the chain's TVL
+4. **Flexible Access**: Withdraw partially or completely whenever needed
+
+## 💻 User Interface
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/c87a5393-76dd-4cde-9895-80481511cc2c" width="700px">
+  <p><i>Modern, intuitive interface with glassmorphism design</i></p>
+</div>
+
+### Design Philosophy
+
+- **Chain-Responsive**: UI themes adapt to the selected blockchain
+- **Glassmorphism**: Modern, clean aesthetics with depth and transparency
+- **Responsive Layout**: Perfect experience on any device
+- **Intuitive Navigation**: Easily access all features with minimal learning curve
+
+### Dashboard Experience
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/21ce5262-c766-4a5a-bc5a-4b10f776188b" width="700px">
+  <p><i>Comprehensive dashboard with multi-chain activity tracking</i></p>
+</div>
+
+- **Activity Feed**: Real-time updates across all chains
+- **Asset Overview**: Quick view of balances on each network
+- **Status Indicators**: Clear visual cues for transaction states
+- **Network Switching**: Seamlessly change blockchains within the interface
+
+## 🔒 Security
+
+ProtectedPay prioritizes security at every level:
+
+- **Smart Contract Safety**: Chain-specific contracts with rigorous security measures
+- **Non-Custodial Architecture**: Users always maintain control of their funds
+- **Protected Transfers**: Built-in escrow functionality keeps funds secure
+- **QR Verification**: Thorough validation of all scanned payment codes
+- **Cross-Chain Safeguards**: Secure bridging between different blockchains
+- **Transparent Transactions**: Clear visibility of all operation stages
+
+## 📃 Deployed Contracts
+
+<div align="center">
+  <table>
+    <tr>
+      <th>Network</th>
+      <th>Contract Address</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/electroneum.png" width="20"> Electrneum Mainnet</td>
+      <td><code>0x03c4fb7563e593ca0625C1c64959AC56081785cE</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/electroneum.png" width="20"> Electrneum Testnet</td>
+      <td><code>0x03c4fb7563e593ca0625C1c64959AC56081785cE</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/educhain.png" width="20"> Educhain Testnet</td>
+      <td><code>0x03c4fb7563e593ca0625C1c64959AC56081785cE</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/ancient8.png" width="20"> Ancient8 Testnet</td>
+      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/neox.png" width="20"> NeoX Testnet</td>
+      <td><code>0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/mantle.png" width="20"> Mantle Testnet</td>
+      <td><code>0x74689f77e03D8213DF5037b681F05b80bAAe3504</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/kaia.png" width="20"> KAIA Testnet</td>
+      <td><code>0xca36dd890f987edce1d6d7c74fb9df627c216bf6</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/telos.png" width="20"> Telos Testnet</td>
+      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/linea.png" width="20"> Linea Testnet</td>
+      <td><code>0xd150d34976Ac00D5e892aDFE565ba47de11c2656</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/crossfi.png" width="20"> CrossFi Testnet</td>
+      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td><img src="/public/chains/creator.png" width="20"> Creator Testnet</td>
+      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
+      <td>✅ Active</td>
+    </tr>
+  </table>
+</div>
+
+## 🎬 Demo
+
+See ProtectedPay in action:
+
+<div align="center">
+  <a href="https://youtu.be/TJgnpVpa51c?si=ojjzXsVgQBj_BSGN">
+    <img src="https://img.youtube.com/vi/TJgnpVpa51c/0.jpg" alt="ProtectedPay Demo Video" width="500px">
+  </a>
+  <p><b>Click to watch the demo video</b></p>
+</div>
+
+## 📞 Support
+
+Need assistance or have questions? We're here to help:
+
+- **Email**: [protectedpay.business@gmail.com](mailto:protectedpay.business@gmail.com)
+- **Report Issues**: [GitHub Issues](https://github.com/username/protectedpay/issues)
 
 ---
 
-## Supported Chains  
-
-ProtectedPay supports the following blockchains:  
-
-<p align="left">
-    <img align="left" src="/public/chains/electroneum.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/neox.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/kaia.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/telos.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/ancient8.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/mantle.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/linea.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/creator.png" width="40" height="40" style="margin-right: 10px;"></img>
-    <img align="left" src="/public/chains/crossfi.png" width="40" height="40" style="margin-right: 10px;"></img>
-</p>
-
-<br clear="left"/>
-
----
-
-## Key Features  
-
-### 1. Protected Cross-Chain Transfers  
-- Secure asset transfers across multiple blockchains.  
-- Smart contract protection ensures funds are held securely until claimed.  
-- Transfers can be initiated using usernames or wallet addresses.  
-- Customizable remarks for tracking and easy refunds for unclaimed transfers.  
-- QR code integration for scanning and payment processing.  
-- ![image](https://github.com/user-attachments/assets/bdb20bd8-fa93-488a-b720-46615b9918de)
-
-
-### 2. Group Payments  
-- Multi-chain payment pools with automatic expense splitting.  
-- Real-time tracking of contributions and instant distribution upon completion.  
-- Support for cross-chain participants.  
-- ![image](https://github.com/user-attachments/assets/56141ff7-ad4b-4a1e-bfac-5abdd92b22a9)
-
-
-### 3. Savings Pots  
-- Set chain-specific savings goals with progress tracking.  
-- Flexible contributions and emergency withdrawal options.  
-- Track purpose-specific savings effortlessly.  
-- ![image](https://github.com/user-attachments/assets/96d0db31-cec3-432c-90b2-8707ce870e2c)
-- ![image](https://github.com/user-attachments/assets/8a7ac6c6-c663-4705-a209-ca5a937087a9)
-
----
-
-## User Features  
-
-### Core Functionalities
-![image](https://github.com/user-attachments/assets/35cbdaad-5e05-4dc6-9a13-18b2f0b4a919)
-- Cross-chain username system for seamless transfers.  
-- Unified multi-chain transaction history and activity dashboard.  
-- Real-time, network-specific balance tracking.  
-- Chain-aware progress visualizations for user insights.  
-
-### QR Code System  
-![image](https://github.com/user-attachments/assets/bc4e425b-d6f7-49b8-a4fe-8831ba9e5548)
-![image](https://github.com/user-attachments/assets/f645759e-47bf-4fb1-9e87-b46f7c0bc6a7)
-- Generate unique profile QR codes containing payment details.  
-- In-app QR code scanning via camera or image uploads.  
-- Auto-fill transfer details for quick and secure payments.   
-
----
-
-## How It Works  
-
-### 1. Protected Transfers  
-- Select the blockchain and connect your wallet.  
-- Send assets using a username, wallet address, or QR code scan.  
-- Funds are claimed securely, with refunds available for unclaimed transfers.  
-
-### 2. Group Payments  
-- Create a multi-chain payment pool with participants and target amounts.  
-- Accept cross-chain contributions and distribute funds automatically.  
-
-### 3. Savings Pots  
-- Choose a blockchain, set a savings target, and track progress.
-- Can choose to earn yield on your savings pot too, increasing the tvl of the chain aswell.
-- Withdraw funds flexibly as needed.  
-
----
-
-## User Interface  
-
-### Modern Design  
-- Glassmorphism effects with responsive layouts and chain-specific theming.  
-- Real-time cross-chain updates with integrated QR code functionality.  
-
-![image](https://github.com/user-attachments/assets/c87a5393-76dd-4cde-9895-80481511cc2c)
-
-### Dashboard Features  
-- Comprehensive multi-chain activity tracking.  
-- Status indicators and network switching for seamless navigation.
-
-![image](https://github.com/user-attachments/assets/21ce5262-c766-4a5a-bc5a-4b10f776188b)
-
----
-
-## Security  
-
-ProtectedPay ensures user safety through:  
-- Chain-specific smart contracts for secure operations.  
-- Non-custodial architecture, keeping users in control of their funds.  
-- Built-in safeguards for cross-chain transfers and secure QR code verification.  
-
----
-
-## Deployed Contracts  
-
-| Network       | Contract Address                                   |  
-|---------------|----------------------------------------------------|      
-| Electrneum Mainnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`  |  
-| Electrneum Testnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`  |  
-| Educhain Testnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`    |  
-| Ancient8 Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`    | 
-| NeoX Testnet  | `0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9`       |
-| Mantle Testnet | `0x74689f77e03D8213DF5037b681F05b80bAAe3504`      | 
-| KAIA Testnet  | `0xca36dd890f987edce1d6d7c74fb9df627c216bf6`       |  
-| Telos Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`       |  
-| Linea Testnet | `0xd150d34976Ac00D5e892aDFE565ba47de11c2656`       |  
-| CrossFi Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`     |  
-| Creator Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`     |  
-
----
-
-## Quick Links  
-
-- **[Mobile Demo Video](https://youtu.be/TJgnpVpa51c?si=ojjzXsVgQBj_BSGN)**
-
----
-
-## Support  
-
-For queries or issues, reach out at:  
-- **Email**: protectedpay.business@gmail.com  
-
----
-
-**ProtectedPay** - Revolutionizing secure multi-chain asset management! 🚀  
+<div align="center">
+  <p>© 2025 ProtectedPay</p>
+  <h3>Revolutionizing secure multi-chain asset management</h3>
+</div>
