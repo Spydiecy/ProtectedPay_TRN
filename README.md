@@ -2,7 +2,7 @@
 
 ProtectedPay is a multi-chain DeFi platform designed to provide secure transfers, group payments, and smart savings features across multiple blockchains. Prioritizing advanced security and an intuitive user experience, it empowers users to manage and protect their crypto assets effectively.  
 
-![image](https://github.com/user-attachments/assets/ddcdbaa4-aee1-4f6f-b711-e1125d72f239)
+![image](https://github.com/user-attachments/assets/eb3dbd55-6522-4d3b-b6f9-6ec63157e565)
 
 ---
 
@@ -11,6 +11,7 @@ ProtectedPay is a multi-chain DeFi platform designed to provide secure transfers
 ProtectedPay supports the following blockchains:  
 
 <p align="left">
+    <img align="left" src="/public/chains/electroneum.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/educhain.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/neox.png" width="40" height="40" style="margin-right: 10px;"></img>
     <img align="left" src="/public/chains/kaia.png" width="40" height="40" style="margin-right: 10px;"></img>
@@ -34,7 +35,7 @@ ProtectedPay supports the following blockchains:
 - Transfers can be initiated using usernames or wallet addresses.  
 - Customizable remarks for tracking and easy refunds for unclaimed transfers.  
 - QR code integration for scanning and payment processing.  
-- ![transfer](https://github.com/user-attachments/assets/e432751e-bd4a-483e-bb4d-16d724cddfde)
+- ![image](https://github.com/user-attachments/assets/bdb20bd8-fa93-488a-b720-46615b9918de)
 
 
 ### 2. Group Payments  
@@ -56,7 +57,7 @@ ProtectedPay supports the following blockchains:
 ## User Features  
 
 ### Core Functionalities
-![image](https://github.com/user-attachments/assets/a3f64a6a-5504-4a0c-988e-a76364ea4879)
+![image](https://github.com/user-attachments/assets/35cbdaad-5e05-4dc6-9a13-18b2f0b4a919)
 - Cross-chain username system for seamless transfers.  
 - Unified multi-chain transaction history and activity dashboard.  
 - Real-time, network-specific balance tracking.  
@@ -67,15 +68,7 @@ ProtectedPay supports the following blockchains:
 ![image](https://github.com/user-attachments/assets/f645759e-47bf-4fb1-9e87-b46f7c0bc6a7)
 - Generate unique profile QR codes containing payment details.  
 - In-app QR code scanning via camera or image uploads.  
-- Auto-fill transfer details for quick and secure payments.  
-
----
-
-## Telegram Integration  
-![image](https://github.com/user-attachments/assets/9ea2c83d-271c-4c5f-ba2f-0b436d69d9a0)
-- Access ProtectedPay services via **@protectedpay_bot**.  
-- Send and receive assets across chains effortlessly.  
-- Track transactions, manage funds, and receive instant notifications.  
+- Auto-fill transfer details for quick and secure payments.   
 
 ---
 
@@ -103,13 +96,13 @@ ProtectedPay supports the following blockchains:
 - Glassmorphism effects with responsive layouts and chain-specific theming.  
 - Real-time cross-chain updates with integrated QR code functionality.  
 
-![User Interface](https://github.com/user-attachments/assets/30e60cb0-f90f-4e7a-9484-d24e31d3fcf9)  
+![image](https://github.com/user-attachments/assets/c87a5393-76dd-4cde-9895-80481511cc2c)
 
 ### Dashboard Features  
 - Comprehensive multi-chain activity tracking.  
 - Status indicators and network switching for seamless navigation.
 
-![image](https://github.com/user-attachments/assets/1862a47f-beef-4664-aac1-38bdbed67b93)
+![image](https://github.com/user-attachments/assets/21ce5262-c766-4a5a-bc5a-4b10f776188b)
 
 ---
 
@@ -125,7 +118,9 @@ ProtectedPay ensures user safety through:
 ## Deployed Contracts  
 
 | Network       | Contract Address                                   |  
-|---------------|----------------------------------------------------|  
+|---------------|----------------------------------------------------|      
+| Electrneum Mainnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`  |  
+| Electrneum Testnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`  |  
 | Educhain Testnet | `0x03c4fb7563e593ca0625C1c64959AC56081785cE`    |  
 | Ancient8 Testnet | `0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6`    | 
 | NeoX Testnet  | `0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9`       |
@@ -140,7 +135,6 @@ ProtectedPay ensures user safety through:
 
 ## Quick Links  
 
-- **[Telegram Bot](https://t.me/protectedpay_bot)**  
 - **[Mobile Demo Video](https://youtu.be/TJgnpVpa51c?si=ojjzXsVgQBj_BSGN)**
 
 ---
