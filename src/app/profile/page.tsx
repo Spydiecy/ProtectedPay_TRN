@@ -558,14 +558,14 @@ const SavingsPotCard: React.FC<SavingsPotCardProps> = ({ pot }) => {
           <StatsCard
             icon={<WalletIcon className="w-6 h-6" />}
             label="Current Balance"
-            value={`${balance || '0'} ${currentChain.symbol}`}
+            value={`${(parseFloat(balance ?? '0') || 0).toFixed(4)} ${currentChain.symbol}`}
           />
           <StatsCard
             icon={<ArrowUpIcon className="w-6 h-6" />}
             label="Total Transfers"
             value={transfers.length.toString()}
             percentage={transfers.length > 0 ? 
-              ((transfers.filter(t => t.timestamp > Date.now()/1000 - 86400).length / transfers.length) * 100) : 0
+              parseFloat(((transfers.filter(t => t.timestamp > Date.now()/1000 - 86400).length / transfers.length) * 100).toFixed(4)) : 0
             }
           />
           <StatsCard
