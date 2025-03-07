@@ -184,12 +184,12 @@ ProtectedPay prioritizes security at every level:
     </tr>
     <tr>
       <td><img src="/public/chains/electroneum.png" width="20"> Electrneum Mainnet</td>
-      <td><code>0x03c4fb7563e593ca0625C1c64959AC56081785cE</code></td>
+      <td><code>0x186a621d17819788c9aa170065ff3bbEEF37E7B7</code></td>
       <td>✅ Active</td>
     </tr>
     <tr>
       <td><img src="/public/chains/electroneum.png" width="20"> Electrneum Testnet</td>
-      <td><code>0x03c4fb7563e593ca0625C1c64959AC56081785cE</code></td>
+      <td><code>0xC27106b03AadbFFec555C64F461784fCE850A51b</code></td>
       <td>✅ Active</td>
     </tr>
     <tr>
