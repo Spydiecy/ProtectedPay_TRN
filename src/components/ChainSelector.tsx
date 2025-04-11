@@ -34,9 +34,18 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://blockexplorer.thesecurityteam.rocks/'
   },
   {
+    id: 41923,
+    hexId: '0xA3C3',
+    name: 'EDU Chain Mainnet',
+    icon: '/chains/educhain.png',
+    symbol: 'EDU',
+    rpcUrl: 'https://rpc.edu-chain.raas.gelato.cloud',
+    blockExplorerUrl: 'https://educhain.blockscout.com/'
+  },
+  {
     id: 656476,
     hexId: '0xA045C',
-    name: 'EduChain Testnet',
+    name: 'EDU Chain Testnet',
     icon: '/chains/educhain.png',
     symbol: 'EDU',
     rpcUrl: 'https://open-campus-codex-sepolia.drpc.org/',
@@ -79,15 +88,6 @@ export const supportedChains: ChainInfo[] = [
     blockExplorerUrl: 'https://kairos.kaiascope.com/',
   },
   {
-    id: 41,
-    hexId: '0x29',
-    name: 'Telos Testnet',
-    icon: '/chains/telos.png',
-    symbol: 'TLOS',
-    rpcUrl: 'https://testnet.telos.net/evm',
-    blockExplorerUrl: 'https://testnet.teloscan.io/',
-  },
-  {
     id: 59141,
     hexId: '0xE705',
     name: 'Linea Sepolia',
@@ -104,15 +104,6 @@ export const supportedChains: ChainInfo[] = [
     symbol: 'CETH',
     rpcUrl: 'https://66665.rpc.thirdweb.com',
     blockExplorerUrl: 'https://explorer.creatorchain.io'
-  },
-  {
-    id: 4157,
-    hexId: '0x103D',
-    name: 'CrossFi Testnet',
-    icon: '/chains/crossfi.png',
-    symbol: 'XFI',
-    rpcUrl: 'https://rpc.testnet.ms',
-    blockExplorerUrl: 'https://test.xfiscan.com'
   },
 ] as const
 

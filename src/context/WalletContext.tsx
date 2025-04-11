@@ -48,6 +48,32 @@ const neoXTestnet = {
   testnet: true,
 } as const;
 
+const eduChainMainnet = {
+  id: 41923,
+  name: 'EDU Chain',
+  network: 'educhain',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'EDU',
+    symbol: 'EDU',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.edu-chain.raas.gelato.cloud']
+    },
+    public: {
+      http: ['https://rpc.edu-chain.raas.gelato.cloud']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'EDU Chain Explorer',
+      url: 'https://educhain.blockscout.com'
+    }
+  },
+  testnet: false,
+} as const;
+
 const eduChainTestnet = {
   id: 656476,
   name: 'EDU Chain Testnet',
@@ -96,33 +122,6 @@ const kaiatestnet = {
     default: {
       name: 'KAIA Testnet Explorer',
       url: 'https://kairos.kaiascope.com/'
-    }
-  },
-  testnet: true,
-} as const;
-
-const telosTestnet = {
-  id: 41,
-  hexId: '0x29',
-  name: 'Telos Testnet',
-  network: 'telostestnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'TLOS',
-    symbol: 'TLOS',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://testnet.telos.net/evm']
-    },
-    public: {
-      http: ['https://testnet.telos.net/evm']
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: 'Telos Testnet Explorer',
-      url: 'https://testnet.teloscan.io/'
     }
   },
   testnet: true,
@@ -235,33 +234,6 @@ const lineaSepoliaTestnet = {
   testnet: true,
 } as const;
 
-const crossFiTestnet = {
-  id: 4157,
-  hexId: '0x103D',
-  name: 'CrossFi Testnet',
-  network: 'crossfitestnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'XFI',
-    symbol: 'XFI',
-  },
-  rpcUrls: {
-    default: {
-      http: ['https://rpc.testnet.ms']
-    },
-    public: {
-      http: ['https://rpc.testnet.ms']
-    }
-  },
-  blockExplorers: {
-    default: {
-      name: 'CrossFi Explorer',
-      url: 'https://test.xfiscan.com'
-    }
-  },
-  testnet: true,
-} as const;
-
 const electroneumMainnet = {
   id: 52014,
   hexId: '0xCB2E',
@@ -316,7 +288,7 @@ const electroneumTestnet = {
   testnet: true,
 } as const;
 
-const chains = [electroneumMainnet, electroneumTestnet, neoXTestnet, eduChainTestnet, kaiatestnet, telosTestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet, crossFiTestnet] as const; 
+const chains = [electroneumMainnet, electroneumTestnet, neoXTestnet, eduChainTestnet, kaiatestnet, ancient8Testnet, mantleSepoliaTestnet, lineaSepoliaTestnet, creatorChainTestnet, eduChainMainnet] as const; 
 
 const projectId = 'b8ad206ba9492e6096fa0aa0f868586c';
 
@@ -343,10 +315,9 @@ const wagmiConfig = createConfig({
     [neoXTestnet.id]: http(),
     [kaiatestnet.id]: http(),
     [mantleSepoliaTestnet.id]: http(),
-    [telosTestnet.id]: http(),
     [lineaSepoliaTestnet.id]: http(),
     [creatorChainTestnet.id]: http(),
-    [crossFiTestnet.id]: http(),
+    [eduChainMainnet.id]: http(),
   },
 });
 
