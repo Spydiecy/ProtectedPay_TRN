@@ -628,17 +628,6 @@ export default function TransferPage() {
               <UserCircleIcon className="w-5 h-5 mr-2" />
               Sender Identifier
             </label>
-            
-            <motion.button
-              type="button"
-              onClick={() => document.getElementById('qr-scanner-trigger')?.click()}
-              className="text-sm flex items-center bg-green-500/10 px-2 py-1 rounded-lg text-green-400 hover:bg-green-500/20"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <QrCodeIcon className="w-4 h-4 mr-1" />
-              Scan QR
-            </motion.button>
           </div>
           
           <input
