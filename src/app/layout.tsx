@@ -1,6 +1,6 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import Navbar from '@/components/Navbar';
+import LandingNavbar from '@/components/LandingNavbar';
 import RootClientLayout from './RootClientLayout'; // Import the client wrapper
 
 const inter = Inter({ 
@@ -29,16 +29,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
         <RootClientLayout>
-          {/* Main Content */}
-          <div className="relative min-h-screen flex flex-col">
-            <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-green-500/10 bg-black/20">
-              <Navbar />
-            </div>
-            <main className="flex-grow relative z-10">
-              {children}
-            </main>
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
-          </div>
+          {children}
         </RootClientLayout>
       </body>
     </html>

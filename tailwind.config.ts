@@ -6,12 +6,11 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
-      colors: {
-        primary: '#10B981', // Neon green
-        secondary: '#1F2937',
-        background: '#111827',
+      fontFamily: {
+        sans: ['var(--font-inter)'],
       },
     },
   },
