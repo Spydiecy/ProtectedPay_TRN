@@ -292,7 +292,6 @@ const ChainSlider = () => {
     { name: 'Ancient8', icon: '/chains/ancient8.png' },
     { name: 'Mantle', icon: '/chains/mantle.png' },
     { name: 'Kaia', icon: '/chains/kaia.png' },
-    { name: 'Telos', icon: '/chains/telos.png' },
     { name: 'Linea', icon: '/chains/linea.png' },
     { name: 'Creator', icon: '/chains/creator.png' },
   ];

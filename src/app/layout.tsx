@@ -12,7 +12,7 @@ const inter = Inter({
 export const metadata = {
   title: 'ProtectedPay | Secure Crypto Transfers on multiple evm chains',
   description: 'Secure crypto transfers, group payments, and smart savings on the multiple evm chains',
-  keywords: 'crypto, payments, blockchain, neox, educhain, flow, kaia, telos, DeFi, secure transfers, group payments',
+  keywords: 'crypto, payments, blockchain, electroneum, educhain, flow, kaia, ancient8, DeFi, secure transfers, group payments',
   authors: [{ name: 'ProtectedPay' }],
 };
 
