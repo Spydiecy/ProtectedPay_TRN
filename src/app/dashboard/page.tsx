@@ -1,24 +1,28 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useEffect, useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ArrowRightIcon, 
   UsersIcon, 
   BanknotesIcon,
   ClockIcon,
   ShieldCheckIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  QrCodeIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { useAccount } from 'wagmi'
 import { useWallet } from '@/context/WalletContext'
 import { 
   getUserTransfers,
-  getUserByAddress
+  getUserByAddress,
+  registerUsername
 } from '@/utils/contract'
 import { ethers } from 'ethers';
 import { useChain } from '@/hooks/useChain';
+import ProfileQR from '@/components/qr/ProfileQR';
 
 // Animation variants
 const fadeIn = {
@@ -55,6 +59,32 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [recentActivity, setRecentActivity] = useState<Activity[]>([])
   const [username, setUsername] = useState<string>('');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [registrationError, setRegistrationError] = useState('');
+  const [showQR, setShowQR] = useState(false);
+
+  // Modal refs for click outside detection
+  const usernameModalRef = useRef<HTMLDivElement>(null);
+  const qrModalRef = useRef<HTMLDivElement>(null);
+
+  // Handle clicks outside modals
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (usernameModalRef.current && !usernameModalRef.current.contains(event.target as Node)) {
+        setShowUsernameModal(false);
+      }
+      if (qrModalRef.current && !qrModalRef.current.contains(event.target as Node)) {
+        setShowQR(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Fetch wallet balance and activity
   useEffect(() => {
@@ -122,6 +152,25 @@ export default function DashboardPage() {
       fetchBalanceAndActivity()
     }
   }, [signer, address, nativeToken])
+
+  // Handle username registration
+  const handleRegisterUsername = async () => {
+    if (!signer || !newUsername || newUsername.trim() === '') return;
+    
+    setIsRegistering(true);
+    setRegistrationError('');
+    
+    try {
+      await registerUsername(signer, newUsername.trim());
+      setUsername(newUsername.trim());
+      setShowUsernameModal(false);
+    } catch (err: any) {
+      console.error('Error registering username:', err);
+      setRegistrationError(err.message || 'Failed to register username. Please try again.');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
 
   // Quick action card component
   const QuickActionCard = ({ 
@@ -260,29 +309,32 @@ export default function DashboardPage() {
                 <div className="text-3xl font-bold text-[rgb(var(--foreground))]">
                   {balance} {nativeToken}
                 </div>
-                {username && (
+                {username ? (
                   <div className="text-sm text-[rgb(var(--muted-foreground))] mt-1">
                     Username: <span className="text-[rgb(var(--primary))]">@{username}</span>
                   </div>
+                ) : (
+                  <motion.button
+                    onClick={() => setShowUsernameModal(true)}
+                    className="mt-2 text-sm px-3 py-1 rounded-lg border border-[rgb(var(--primary))]/30 text-[rgb(var(--primary))] hover:bg-[rgb(var(--primary))]/10 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Register Username
+                  </motion.button>
                 )}
               </div>
               
               <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
-                <Link 
-                  href="/dashboard/transfer" 
+                <motion.button
+                  onClick={() => setShowQR(true)}
                   className="btn-primary flex items-center px-4 py-2 rounded-xl"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <ArrowRightIcon className="w-4 h-4 mr-2" />
-                  <span>Send</span>
-                </Link>
-                
-                <Link 
-                  href="/dashboard/group-payments" 
-                  className="btn-outline flex items-center px-4 py-2 rounded-xl border border-[rgb(var(--border))]"
-                >
-                  <UsersIcon className="w-4 h-4 mr-2" />
-                  <span>Group Pay</span>
-                </Link>
+                  <QrCodeIcon className="w-4 h-4 mr-2" />
+                  <span>My QR</span>
+                </motion.button>
               </div>
             </div>
           </motion.div>
@@ -377,6 +429,118 @@ export default function DashboardPage() {
           </motion.section>
         </>
       )}
+
+      {/* Username Registration Modal */}
+      <AnimatePresence>
+        {showUsernameModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              ref={usernameModalRef}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="card backdrop-blur-lg p-6 rounded-xl border border-[rgb(var(--border))]/50 max-w-md w-full"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-[rgb(var(--foreground))]">Register Username</h3>
+                <button 
+                  onClick={() => setShowUsernameModal(false)}
+                  className="p-1 rounded-full hover:bg-[rgb(var(--muted))]/10"
+                >
+                  <XMarkIcon className="w-5 h-5 text-[rgb(var(--muted-foreground))]" />
+                </button>
+              </div>
+              
+              <p className="text-[rgb(var(--muted-foreground))] mb-4">
+                Choose a username to make receiving payments easier. Your username will be used across all supported blockchains.
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-[rgb(var(--foreground))] mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    className="w-full px-4 py-2 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-lg text-[rgb(var(--foreground))] focus:ring-[rgb(var(--primary))] focus:border-[rgb(var(--primary))] outline-none"
+                    placeholder="Enter a username"
+                  />
+                </div>
+                
+                {registrationError && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                    {registrationError}
+                  </div>
+                )}
+                
+                <button
+                  onClick={handleRegisterUsername}
+                  disabled={isRegistering || !newUsername.trim()}
+                  className="w-full py-2 px-4 btn-primary rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isRegistering ? (
+                    <span className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Registering...
+                    </span>
+                  ) : (
+                    'Register Username'
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* QR Code Modal */}
+      <AnimatePresence>
+        {showQR && address && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              ref={qrModalRef}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="card backdrop-blur-lg p-4 sm:p-6 rounded-xl border border-[rgb(var(--border))]/50 max-w-xl w-full overflow-hidden"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg sm:text-xl font-bold text-[rgb(var(--foreground))]">Your Payment QR Code</h3>
+                <button 
+                  onClick={() => setShowQR(false)}
+                  className="p-1 rounded-full hover:bg-[rgb(var(--muted))]/10"
+                >
+                  <XMarkIcon className="w-5 h-5 text-[rgb(var(--muted-foreground))]" />
+                </button>
+              </div>
+              
+              <div className="flex justify-center overflow-hidden">
+                <ProfileQR 
+                  username={username || address} 
+                  address={address} 
+                  onClose={() => setShowQR(false)}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

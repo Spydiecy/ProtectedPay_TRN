@@ -228,7 +228,7 @@ const ChainSelector = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <motion.button
-        className="flex items-center justify-between space-x-2 px-3 py-2 rounded-xl bg-black/30 border border-green-500/20 hover:bg-black/40 transition-colors w-full md:w-auto min-w-[120px]"
+        className="flex items-center justify-between space-x-2 px-3 py-2 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))]/30 hover:bg-[rgb(var(--card-hover))] transition-colors w-full md:w-auto min-w-[120px]"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -243,12 +243,12 @@ const ChainSelector = () => {
               className="rounded-full object-contain"
             />
           </div>
-          <span className="text-green-400 font-medium text-sm">
+          <span className="text-[rgb(var(--foreground))] font-medium text-sm">
             {isMobile ? currentChain.symbol : currentChain.name}
           </span>
         </div>
         <ChevronDownIcon 
-          className={`w-4 h-4 text-green-400 transition-transform duration-200 ${
+          className={`w-4 h-4 text-[rgb(var(--foreground))] transition-transform duration-200 ${
             isDropdownOpen ? 'rotate-180' : ''
           }`}
         />
@@ -259,7 +259,7 @@ const ChainSelector = () => {
           isMobile ? (
             // Mobile Dropdown - Improved scrollable design
             <motion.div
-              className="fixed inset-x-0 top-16 bottom-0 z-50 bg-black/95 backdrop-blur-xl"
+              className="fixed inset-x-0 top-16 bottom-0 z-50 bg-[rgb(var(--background))]/95 backdrop-blur-xl"
               variants={mobileDropdownVariants}
               initial="hidden"
               animate="visible"
@@ -267,8 +267,8 @@ const ChainSelector = () => {
               transition={{ duration: 0.2 }}
             >
               <div className="flex flex-col h-full">
-                <div className="px-4 py-3 border-b border-green-500/20">
-                  <h3 className="text-green-400 font-medium text-lg">Select Network</h3>
+                <div className="px-4 py-3 border-b border-[rgb(var(--border))]/30">
+                  <h3 className="text-[rgb(var(--foreground))] font-medium text-lg">Select Network</h3>
                 </div>
                 
                 <div className="flex-1 overflow-y-auto scrollbar-hide">
@@ -279,8 +279,8 @@ const ChainSelector = () => {
                         onClick={() => handleSwitchNetwork(chain)}
                         className={`w-full px-4 py-3 flex items-center space-x-3 rounded-xl border ${
                           chain.id === currentChainId 
-                            ? 'border-green-500/30 bg-green-500/5 text-green-400' 
-                            : 'border-transparent text-gray-400 active:bg-green-500/5'
+                            ? 'border-[rgb(var(--primary))]/30 bg-[rgb(var(--primary))]/5 text-[rgb(var(--primary))]' 
+                            : 'border-transparent text-[rgb(var(--muted-foreground))] active:bg-[rgb(var(--primary))]/5'
                         } ${isSwitching ? 'opacity-50' : ''}`}
                         disabled={isSwitching}
                         whileTap={{ scale: 0.98 }}
@@ -299,7 +299,7 @@ const ChainSelector = () => {
                         </div>
                         {chain.id === currentChainId && (
                           <motion.div
-                            className="w-2 h-2 rounded-full bg-green-500"
+                            className="w-2 h-2 rounded-full bg-[rgb(var(--primary))]"
                             layoutId="activeChain"
                           />
                         )}
@@ -308,10 +308,10 @@ const ChainSelector = () => {
                   </div>
                 </div>
                 
-                <div className="p-4 border-t border-green-500/20">
+                <div className="p-4 border-t border-[rgb(var(--border))]/30">
                   <button
                     onClick={() => setIsDropdownOpen(false)}
-                    className="w-full py-3 px-4 rounded-xl bg-green-500/10 text-green-400 font-medium active:bg-green-500/20"
+                    className="w-full py-3 px-4 rounded-xl bg-[rgb(var(--primary))]/10 text-[rgb(var(--primary))] font-medium active:bg-[rgb(var(--primary))]/20"
                   >
                     Close
                   </button>
@@ -326,7 +326,7 @@ const ChainSelector = () => {
               animate="visible"
               exit="exit"
               transition={{ duration: 0.2 }}
-              className="absolute right-0 mt-2 w-64 rounded-xl bg-black/95 backdrop-blur-xl border border-green-500/20 shadow-xl overflow-hidden z-50"
+              className="absolute right-0 mt-2 w-64 rounded-xl bg-[rgb(var(--card))]/95 backdrop-blur-xl border border-[rgb(var(--border))]/30 shadow-xl overflow-hidden z-50"
             >
               <div className="py-2 max-h-96 overflow-y-auto scrollbar-hide">
                 {supportedChains.map((chain) => (
@@ -334,7 +334,7 @@ const ChainSelector = () => {
                     key={chain.id}
                     onClick={() => handleSwitchNetwork(chain)}
                     className={`w-full px-4 py-2 flex items-center space-x-3 ${
-                      chain.id === currentChainId ? 'text-green-400 bg-green-500/5' : 'text-gray-400 hover:bg-green-500/10'
+                      chain.id === currentChainId ? 'text-[rgb(var(--primary))] bg-[rgb(var(--primary))]/5' : 'text-[rgb(var(--muted-foreground))] hover:bg-[rgb(var(--primary))]/10'
                     } ${isSwitching ? 'opacity-50' : ''}`}
                     whileHover={{ x: 4 }}
                     disabled={isSwitching}
@@ -350,7 +350,7 @@ const ChainSelector = () => {
                     <span className="flex-1 text-left text-sm">{chain.name}</span>
                     {chain.id === currentChainId && (
                       <motion.div
-                        className="w-2 h-2 rounded-full bg-green-500"
+                        className="w-2 h-2 rounded-full bg-[rgb(var(--primary))]"
                         layoutId="activeChain"
                       />
                     )}
