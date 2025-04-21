@@ -89,19 +89,21 @@ const slideIn = {
 
 export default function TransferPage() {
   const [activeTab, setActiveTab] = useState<TransferTabs>(TransferTabs.SEND)
-  const [recipient, setRecipient] = useState('')
-  const [amount, setAmount] = useState('')
-  const [remarks, setRemarks] = useState('')
+  const [recipient, setRecipient] = useState<string>('')
+  const [amount, setAmount] = useState<string>('')
+  const [remarks, setRemarks] = useState<string>('')
   const [transferId, setTransferId] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [pendingTransfers, setPendingTransfers] = useState<Transfer[]>([])
   const [pendingSentTransfers, setPendingSentTransfers] = useState<Transfer[]>([])
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showTransactions, setShowTransactions] = useState(true)
-  const [formStep, setFormStep] = useState(1) // For multi-step send form
-  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [formStep, setFormStep] = useState<number>(1)
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
+  const [showQrScanner, setShowQrScanner] = useState<boolean>(false)
+  const [scannerMessage, setScannerMessage] = useState<{type: 'success' | 'error', text: string} | null>(null)
   const { signer, address } = useWallet()
   const { currentChain } = useChainInfo();
   const formRef = useRef<HTMLDivElement>(null)
@@ -358,36 +360,45 @@ export default function TransferPage() {
   }
 
   const renderSendForm = () => {
+    const isNextButtonDisabled = () => {
+      if (formStep === 1) {
+        return !recipient || recipient.trim() === ''
+      } else if (formStep === 2) {
+        return !amount || parseFloat(amount) <= 0
+      }
+      return false
+    }
+
     return (
       <AnimatePresence mode="wait">
         {showConfirmation ? (
-          <motion.div
+          <motion.div 
             key="confirmation"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             className="space-y-6"
           >
-            <div className="bg-green-500/5 p-4 rounded-xl border border-green-500/20">
-              <h3 className="text-lg font-medium text-green-400 mb-4 flex items-center">
+            <div className="bg-[rgb(var(--primary))]/5 p-4 rounded-xl border border-[rgb(var(--primary))]/20">
+              <h3 className="text-lg font-medium text-[rgb(var(--primary))] mb-4 flex items-center">
                 <ShieldCheckIcon className="w-5 h-5 mr-2" />
                 Confirm Your Transfer
               </h3>
 
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between items-center bg-black/30 p-3 rounded-lg">
-                  <span className="text-gray-400">Recipient</span>
-                  <span className="text-white font-medium">{recipient.startsWith('0x') ? truncateText(recipient) : recipient}</span>
+                <div className="flex justify-between items-center bg-[rgb(var(--card))]/70 p-3 rounded-lg">
+                  <span className="text-[rgb(var(--muted-foreground))]">Recipient</span>
+                  <span className="text-[rgb(var(--foreground))] font-medium">{recipient.startsWith('0x') ? truncateText(recipient) : recipient}</span>
                 </div>
 
-                <div className="flex justify-between items-center bg-black/30 p-3 rounded-lg">
-                  <span className="text-gray-400">Amount</span>
-                  <span className="text-white font-medium">{amount} {currentChain.symbol}</span>
+                <div className="flex justify-between items-center bg-[rgb(var(--card))]/70 p-3 rounded-lg">
+                  <span className="text-[rgb(var(--muted-foreground))]">Amount</span>
+                  <span className="text-[rgb(var(--foreground))] font-medium">{amount} {currentChain.symbol}</span>
                 </div>
 
-                <div className="bg-black/30 p-3 rounded-lg">
-                  <div className="text-gray-400 mb-1">Message</div>
-                  <div className="text-white">{remarks}</div>
+                <div className="bg-[rgb(var(--card))]/70 p-3 rounded-lg">
+                  <div className="text-[rgb(var(--muted-foreground))] mb-1">Message</div>
+                  <div className="text-[rgb(var(--foreground))]">{remarks}</div>
                 </div>
               </div>
 
@@ -402,7 +413,7 @@ export default function TransferPage() {
                 <motion.button
                   type="button"
                   onClick={() => setShowConfirmation(false)}
-                  className="flex-1 bg-black/50 border border-gray-700 text-gray-300 px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-black/70"
+                  className="flex-1 bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--muted-foreground))] px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-[rgb(var(--card))]/70"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -413,7 +424,7 @@ export default function TransferPage() {
                 <motion.button
                   type="button"
                   onClick={handleSend}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-black px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-70"
+                  className="flex-1 bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] px-4 py-3 rounded-xl font-medium flex items-center justify-center space-x-2 hover:bg-[rgb(var(--primary))]/90 disabled:opacity-70"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={isLoading}
@@ -455,44 +466,65 @@ export default function TransferPage() {
                   >
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <label className="text-green-400 font-medium flex items-center">
+                        <label className="text-[rgb(var(--foreground))] font-medium flex items-center">
                           <UserCircleIcon className="w-5 h-5 mr-2" />
                           Recipient
                         </label>
                       </div>
                       
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={recipient}
-                          onChange={(e) => setRecipient(e.target.value)}
-                          className="w-full px-4 py-3 rounded-xl bg-black/50 border border-green-500/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/40"
-                          placeholder="0x... or username"
-                          required
-                        />
-                        {recipient && (
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs px-2 py-1 rounded bg-green-500/10 text-green-400">
-                            {recipient.startsWith('0x') ? 'Address' : 'Username'}
-                          </div>
-                        )}
+                      <div className="flex items-center space-x-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            value={recipient}
+                            onChange={(e) => setRecipient(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--foreground))] placeholder-[rgb(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))]/40"
+                            placeholder="0x... or username"
+                            required
+                          />
+                          {recipient && (
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs px-2 py-1 rounded bg-[rgb(var(--primary))]/10 text-[rgb(var(--primary))]">
+                              {recipient.startsWith('0x') ? 'Address' : 'Username'}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <motion.button
+                          type="button"
+                          onClick={() => document.getElementById('qr-scanner-trigger')?.click()}
+                          className="p-3 bg-[rgb(var(--card))] border border-[rgb(var(--border))] rounded-xl text-[rgb(var(--primary))] hover:bg-[rgb(var(--primary))]/10 transition-colors"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <QrCodeIcon className="w-5 h-5" />
+                        </motion.button>
                       </div>
                       
-                      <p className="mt-2 text-xs text-gray-400 flex items-center">
+                      <p className="mt-2 text-xs text-[rgb(var(--muted-foreground))] flex items-center">
                         <InformationCircleIcon className="w-4 h-4 mr-1" />
                         Enter wallet address or registered username
                       </p>
                     </div>
-
+                    
+                    {/* Hidden trigger for QR scanner */}
+                    <button 
+                      id="qr-scanner-trigger" 
+                      className="hidden" 
+                      onClick={() => document.querySelector('.fixed.bottom-8.right-8')?.dispatchEvent(
+                        new MouseEvent('click', { bubbles: true })
+                      )}
+                    />
+                    
                     <motion.button
                       type="button"
                       onClick={() => recipient ? setFormStep(2) : null}
                       disabled={!recipient}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:bg-[rgb(var(--primary))]/90 disabled:opacity-50 disabled:cursor-not-allowed"
                       whileHover={recipient ? { scale: 1.02 } : undefined}
                       whileTap={recipient ? { scale: 0.98 } : undefined}
                     >
-                      <ArrowRightIcon className="w-5 h-5" />
                       <span>Continue</span>
+                      <ArrowRightIcon className="w-5 h-5" />
                     </motion.button>
                   </motion.div>
                 )}
@@ -912,6 +944,35 @@ export default function TransferPage() {
     );
   };
 
+  // Handle QR scan
+  const handleQRScan = (data: string) => {
+    console.log("QR Scanned:", data);
+    // Check if it's a valid address (starts with 0x)
+    if (data && data.startsWith('0x')) {
+      setRecipient(data);
+      setActiveTab(TransferTabs.SEND);
+      setFormStep(1);
+      setSuccess('Address scanned successfully');
+      setTimeout(() => setSuccess(''), 3000);
+    } else if (data) {
+      // If it's not an address but some other data (possibly a transfer ID)
+      setTransferId(data);
+      setActiveTab(TransferTabs.CLAIM);
+      setSuccess('QR code scanned successfully');
+      setTimeout(() => setSuccess(''), 3000);
+    } else {
+      setError('Invalid QR code format');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+  
+  // Handle QR scan error
+  const handleQRError = (error: string) => {
+    console.error("QR Scan Error:", error);
+    setError(`QR Scan error: ${error}`);
+    setTimeout(() => setError(''), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900 via-black to-green-950 overflow-x-hidden">
       <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] pointer-events-none opacity-30" />
@@ -1158,15 +1219,8 @@ export default function TransferPage() {
 
       {/* QR Scanner */}
       <QRScanner 
-        onScan={(data) => {
-          if (activeTab === TransferTabs.SEND) {
-            setRecipient(data);
-            setFormStep(1);
-          } else {
-            setTransferId(data);
-          }
-        }}
-        onError={(error) => setError(error)}
+        onScan={handleQRScan}
+        onError={handleQRError}
       />
 
       {/* Custom Scrollbar Styles */}
