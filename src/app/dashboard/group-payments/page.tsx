@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UsersIcon, 
   PlusIcon, 
@@ -13,7 +13,10 @@ import {
   ClockIcon,
   UserGroupIcon,
   InformationCircleIcon,
-  ExclamationCircleIcon
+  ExclamationCircleIcon,
+  ClipboardDocumentIcon,
+  XMarkIcon,
+  UserPlusIcon
 } from '@heroicons/react/24/outline'
 import { useAccount } from 'wagmi'
 import { ethers } from 'ethers'
@@ -62,6 +65,7 @@ interface GroupPayment {
 export default function GroupPaymentsPage() {
   const { address, isConnected } = useAccount()
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
+  const [isContributingToGroup, setIsContributingToGroup] = useState(false)
   const { nativeToken } = useChain();
   const [recipient, setRecipient] = useState('')
   const [participants, setParticipants] = useState('')
@@ -74,6 +78,10 @@ export default function GroupPaymentsPage() {
   const [signer, setSigner] = useState<ethers.Signer | null>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [userContributions, setUserContributions] = useState<Record<string, boolean>>({})
+  const [copiedPaymentId, setCopiedPaymentId] = useState<string | null>(null);
+  const [paymentIdToContribute, setPaymentIdToContribute] = useState('');
+  const [contributionAmount, setContributionAmount] = useState('');
+  const [isLoadingAmount, setIsLoadingAmount] = useState(false);
   
   // Get signer instance
   useEffect(() => {
@@ -250,6 +258,80 @@ export default function GroupPaymentsPage() {
     }
   }
   
+  const handleCopyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedPaymentId(id);
+      setTimeout(() => setCopiedPaymentId(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      setError('Failed to copy to clipboard');
+    }
+  };
+  
+  // Handle payment ID change to automatically fetch amount
+  const handlePaymentIdChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const id = e.target.value;
+    setPaymentIdToContribute(id);
+    setContributionAmount('');
+    
+    // Only try to fetch if it looks like a valid payment ID
+    if (id.length === 66 && id.startsWith('0x')) {
+      try {
+        setIsLoadingAmount(true);
+        const payment = await getGroupPaymentDetails(signer!, id);
+        if (payment) {
+          setContributionAmount(payment.amountPerPerson);
+        }
+      } catch (err) {
+        console.error('Error fetching payment details:', err);
+        // Don't show error yet, let them finish typing
+      } finally {
+        setIsLoadingAmount(false);
+      }
+    }
+  };
+  
+  const handleContributeToId = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!signer) {
+      setError('Please connect your wallet to contribute');
+      return;
+    }
+    
+    if (!paymentIdToContribute) {
+      setError('Please enter a payment ID');
+      return;
+    }
+    
+    if (!contributionAmount) {
+      setError('Please enter a contribution amount');
+      return;
+    }
+    
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const tx = await contributeToGroupPayment(signer, paymentIdToContribute, contributionAmount);
+      await tx;
+      setSuccess('Contribution successful!');
+      fetchGroupPayments();
+      
+      // Reset form and close popup
+      setPaymentIdToContribute('');
+      setContributionAmount('');
+      setIsContributingToGroup(false);
+    } catch (err) {
+      console.error('Error contributing to group payment:', err);
+      setError(handleContractError(err));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   // Format date to readable string
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
@@ -332,10 +414,10 @@ export default function GroupPaymentsPage() {
         </motion.div>
       ) : (
         <>
-          {/* Create Group Button */}
-          {!isCreatingGroup && (
+          {/* Action Buttons Row */}
+          {!isCreatingGroup && !isContributingToGroup && (
             <motion.div 
-              className="mb-6"
+              className="mb-6 flex flex-wrap gap-3"
               variants={fadeIn}
             >
               <button 
@@ -345,6 +427,15 @@ export default function GroupPaymentsPage() {
               >
                 <PlusIcon className="w-5 h-5 mr-2" />
                 Create Group Payment
+              </button>
+              
+              <button 
+                onClick={() => setIsContributingToGroup(true)}
+                className="btn-secondary py-3 px-6 rounded-xl flex items-center"
+                disabled={isLoading}
+              >
+                <UserPlusIcon className="w-5 h-5 mr-2" />
+                Contribute to Payment
               </button>
             </motion.div>
           )}
@@ -450,6 +541,93 @@ export default function GroupPaymentsPage() {
             </motion.div>
           )}
           
+          {/* Contribute to Group Form Popup */}
+          {isContributingToGroup && (
+            <motion.div 
+              className="card backdrop-blur-lg p-6 mb-8"
+              variants={fadeIn}
+              initial="initial"
+              animate="animate"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold text-[rgb(var(--foreground))]">
+                  Contribute to Group Payment
+                </h2>
+                <button 
+                  onClick={() => setIsContributingToGroup(false)}
+                  className="text-[rgb(var(--muted-foreground))] hover:text-[rgb(var(--foreground))] transition-colors"
+                  disabled={isLoading}
+                >
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleContributeToId} className="space-y-4">
+                <div>
+                  <label className="block text-[rgb(var(--muted-foreground))] mb-2 text-sm">Payment ID</label>
+                  <input
+                    type="text"
+                    value={paymentIdToContribute}
+                    onChange={handlePaymentIdChange}
+                    className="w-full bg-[rgb(var(--card))]/80 border border-[rgb(var(--border))]/50 rounded-xl px-4 py-3 text-[rgb(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))]/50 font-mono"
+                    placeholder="0x..."
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-[rgb(var(--muted-foreground))] mb-2 text-sm">Contribution Amount</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={contributionAmount}
+                      onChange={(e) => setContributionAmount(e.target.value)}
+                      className="w-full bg-[rgb(var(--card))]/80 border border-[rgb(var(--border))]/50 rounded-xl px-4 py-3 text-[rgb(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))]/50"
+                      placeholder="0.0"
+                      step="0.00001"
+                      required
+                      disabled={isLoading}
+                    />
+                    {isLoadingAmount && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--muted-foreground))]">
+                        <ArrowPathIcon className="w-5 h-5 animate-spin" />
+                      </div>
+                    )}
+                    {!isLoadingAmount && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--muted-foreground))]">
+                        <span>{nativeToken}</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-[rgb(var(--muted-foreground))] mt-1">
+                    Enter a valid Payment ID to automatically get the required contribution amount
+                  </p>
+                </div>
+                
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    className="btn-primary py-3 px-4 rounded-xl w-full flex items-center justify-center"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <ArrowPathIcon className="w-5 h-5 mr-2 animate-spin" />
+                        Contributing...
+                      </>
+                    ) : (
+                      <>
+                        <UserPlusIcon className="w-5 h-5 mr-2" />
+                        Contribute
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          )}
+          
           {/* Group Payments List */}
           <motion.div
             className="space-y-6"
@@ -492,6 +670,27 @@ export default function GroupPaymentsPage() {
                     </div>
                   </div>
                   
+                  {/* Payment ID with Copy Button */}
+                  <div className="bg-[rgb(var(--card))]/50 p-3 rounded-lg border border-[rgb(var(--border))]/50 mb-4">
+                    <div className="flex justify-between items-center mb-1">
+                      <div className="text-sm text-[rgb(var(--muted-foreground))]">Payment ID</div>
+                      <motion.button
+                        onClick={() => handleCopyId(payment.paymentId)}
+                        className="text-xs text-[rgb(var(--primary))] hover:text-[rgb(var(--primary))]/80 transition-colors flex items-center space-x-1 px-2 py-1 rounded-lg bg-[rgb(var(--primary))]/10 hover:bg-[rgb(var(--primary))]/20"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span className="flex items-center space-x-1">
+                          <ClipboardDocumentIcon className="w-4 h-4" />
+                          <span>Copy ID</span>
+                        </span>
+                      </motion.button>
+                    </div>
+                    <div className="font-mono text-xs text-[rgb(var(--foreground))] break-all">
+                      {payment.paymentId}
+                    </div>
+                  </div>
+                  
                   {/* Progress Bar */}
                   <div className="mb-4">
                     <div className="flex justify-between mb-1 text-sm">
@@ -510,8 +709,8 @@ export default function GroupPaymentsPage() {
                     </div>
                   </div>
                   
-                  <div className="flex justify-between items-center">
-                    <div className="text-sm text-[rgb(var(--muted-foreground))] space-x-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div className="text-sm text-[rgb(var(--muted-foreground))] space-y-1 sm:space-y-0 sm:space-x-4">
                       <span>
                         <UserGroupIcon className="w-4 h-4 inline mr-1" />
                         {payment.numParticipants} participants needed
@@ -522,26 +721,32 @@ export default function GroupPaymentsPage() {
                       </span>
                     </div>
                     
-                    <button 
-                      className={`${
-                        userContributions[payment.paymentId] 
-                          ? 'bg-[rgb(var(--muted))]/20 text-[rgb(var(--muted-foreground))]' 
-                          : 'btn-primary'
-                      } py-2 px-4 rounded-lg text-sm`}
-                      onClick={() => handleContribute(payment.paymentId, payment.amountPerPerson)}
-                      disabled={isLoading || userContributions[payment.paymentId]}
-                    >
-                      {isLoading ? (
-                        <ArrowPathIcon className="w-4 h-4 animate-spin inline" />
-                      ) : userContributions[payment.paymentId] ? (
-                        <>
-                          <CheckCircleIcon className="w-4 h-4 mr-1 inline" />
-                          Contributed
-                        </>
-                      ) : (
-                        'Contribute'
-                      )}
-                    </button>
+                    <div className="flex space-x-2 w-full sm:w-auto">
+                      {/* Contribute to Payment button */}
+                      <button 
+                        className={`${
+                          userContributions[payment.paymentId] 
+                            ? 'bg-[rgb(var(--muted))]/20 text-[rgb(var(--muted-foreground))]' 
+                            : 'btn-primary'
+                        } py-2 px-4 rounded-lg text-sm flex-1 sm:flex-none flex items-center justify-center`}
+                        onClick={() => handleContribute(payment.paymentId, payment.amountPerPerson)}
+                        disabled={isLoading || userContributions[payment.paymentId]}
+                      >
+                        {isLoading ? (
+                          <ArrowPathIcon className="w-4 h-4 animate-spin inline" />
+                        ) : userContributions[payment.paymentId] ? (
+                          <>
+                            <CheckCircleIcon className="w-4 h-4 mr-1 inline" />
+                            Contributed
+                          </>
+                        ) : (
+                          <>
+                            <UserGroupIcon className="w-4 h-4 mr-1 inline" />
+                            Contribute
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))
@@ -559,6 +764,19 @@ export default function GroupPaymentsPage() {
             )}
           </motion.div>
         </>
+      )}
+
+      {/* Copy Notification Toast */}
+      {copiedPaymentId && (
+        <motion.div
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] px-4 py-2 rounded-lg shadow-lg"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+        >
+          Payment ID copied to clipboard!
+        </motion.div>
       )}
     </div>
   )

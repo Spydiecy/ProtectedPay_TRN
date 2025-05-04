@@ -407,6 +407,21 @@ export default function GroupPaymentsPage() {
                                   <div className="text-green-400 font-semibold">
                                     {formatAmount(payment.amountPerPerson)} {currentChain.symbol} per person
                                   </div>
+                                  
+                                  {/* Payment ID with copy button */}
+                                  <div className="flex items-center mt-2 text-xs text-gray-500">
+                                    <span className="mr-1">ID:</span>
+                                    <span className="font-mono">{truncateAddress(payment.id)}</span>
+                                    <motion.button
+                                      onClick={() => handleCopyId(payment.id)}
+                                      className="ml-1 text-green-400 hover:text-green-300"
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.9 }}
+                                      title="Copy payment ID"
+                                    >
+                                      <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                                    </motion.button>
+                                  </div>
                                 </div>
                                 <span className={`px-3 py-1 rounded-full text-sm ${
                                   payment.status === 0 
@@ -430,8 +445,27 @@ export default function GroupPaymentsPage() {
                                   <ClockIcon className="w-4 h-4" />
                                   <span>{new Date(payment.timestamp * 1000).toLocaleString()}</span>
                                 </div>
-                                <div>
-                                  {payment.numParticipants} participants
+                                <div className="flex items-center space-x-2">
+                                  <div>
+                                    {payment.numParticipants} participants
+                                  </div>
+                                  
+                                  {/* Add Contribute button */}
+                                  {payment.status === 0 && Number(payment.amountCollected) < Number(payment.totalAmount) && (
+                                    <motion.button
+                                      onClick={() => {
+                                        setPaymentId(payment.id);
+                                        setAmount(payment.amountPerPerson);
+                                        setActiveTab(PaymentTabs.CONTRIBUTE);
+                                      }}
+                                      className="ml-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 px-2 py-0.5 rounded text-xs flex items-center"
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                    >
+                                      <UserPlusIcon className="w-3 h-3 mr-1" />
+                                      <span>Contribute</span>
+                                    </motion.button>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -550,8 +584,19 @@ export default function GroupPaymentsPage() {
                               <div className="relative bg-black/30 backdrop-blur-xl p-4 rounded-xl border border-green-500/10 group-hover:border-green-500/20">
                                 <div className="flex justify-between items-start mb-3">
                                   <div>
-                                    <div className="text-sm text-gray-400 mb-1">
-                                      Payment ID: {truncateAddress(payment.id)}
+                                    {/* Payment ID with copy button */}
+                                    <div className="text-sm text-gray-400 mb-1 flex items-center">
+                                      <span>Payment ID:</span>
+                                      <span className="font-mono ml-1">{truncateAddress(payment.id)}</span>
+                                      <motion.button
+                                        onClick={() => handleCopyId(payment.id)}
+                                        className="ml-1 text-green-400 hover:text-green-300"
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                        title="Copy payment ID"
+                                      >
+                                        <ClipboardDocumentIcon className="w-3.5 h-3.5" />
+                                      </motion.button>
                                     </div>
                                     <div className="text-green-400 font-semibold">
                                       {formatAmount(payment.amountPerPerson)} {currentChain.symbol} required
@@ -565,7 +610,7 @@ export default function GroupPaymentsPage() {
                                       whileTap={{ scale: 0.95 }}
                                       disabled={isLoading}
                                     >
-                                      <CheckCircleIcon className="w-4 h-4" />
+                                      <UserPlusIcon className="w-4 h-4" />
                                       <span>Contribute</span>
                                     </motion.button>
                                   )}
@@ -627,6 +672,25 @@ export default function GroupPaymentsPage() {
                               <p className="text-gray-400">Amount per Person: {formatAmount(payment.amountPerPerson)} {currentChain.symbol}</p>
                               <p className="text-gray-400">Total Amount: {formatAmount(payment.totalAmount)} {currentChain.symbol}</p>
                             </div>
+                            
+                            {/* Payment ID with copy button */}
+                            <div className="mt-4 p-3 rounded-xl bg-black/30 border border-green-500/20">
+                              <div className="flex justify-between items-center">
+                                <div className="text-sm text-gray-400">Payment ID</div>
+                                <motion.button
+                                  onClick={() => handleCopyId(payment.id)}
+                                  className="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center space-x-1 px-2 py-1 rounded-lg bg-green-500/10 hover:bg-green-500/20"
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  <span className="flex items-center space-x-1">
+                                    <ClipboardDocumentIcon className="w-4 h-4" />
+                                    <span>Copy ID</span>
+                                  </span>
+                                </motion.button>
+                              </div>
+                              <div className="mt-1 font-mono text-green-400 break-all text-xs">{payment.id}</div>
+                            </div>
                           </div>
                           <div>
                             <div className="flex justify-between items-center mb-4">
@@ -657,39 +721,23 @@ export default function GroupPaymentsPage() {
                                 {payment.numParticipants} participants
                               </span>
                             </div>
-                            {payment.id && (
-                              <div className="mt-4 p-3 rounded-xl bg-black/30 border border-green-500/20">
-                              <div className="flex justify-between items-center">
-                                <div className="text-sm text-gray-400">Payment ID</div>
-                                <motion.button
-                                onClick={() => handleCopyId(payment.id)}
-                                className="text-xs text-green-400 hover:text-green-300 transition-colors flex items-center space-x-1 px-2 py-1 rounded-lg bg-green-500/10 hover:bg-green-500/20"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                >
-                                <span className="flex items-center space-x-1">
-                                  <ClipboardDocumentIcon className="w-4 h-4" />
-                                  <span>Copy ID</span>
-                                </span>
-                                </motion.button>
-                              </div>
-                              <div className="mt-1 font-mono text-green-400 break-all">{payment.id}</div>
-                              </div>
+                            
+                            {/* Add Contribute to Payment button */}
+                            {payment.status === 0 && Number(payment.amountCollected) < Number(payment.totalAmount) && (
+                              <motion.button
+                                onClick={() => {
+                                  setPaymentId(payment.id);
+                                  setAmount(payment.amountPerPerson);
+                                  setActiveTab(PaymentTabs.CONTRIBUTE);
+                                }}
+                                className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-500 text-black px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:brightness-110"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <UserPlusIcon className="w-5 h-5" />
+                                <span>Contribute to Payment</span>
+                              </motion.button>
                             )}
-
-                            <AnimatePresence>
-                              {copiedPaymentId === payment.id && (
-                                <motion.div
-                                  className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-black px-4 py-2 rounded-lg shadow-lg"
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  exit={{ opacity: 0, y: 20 }}
-                                  transition={{ duration: 0.3 }}
-                                >
-                                  ID copied to clipboard!
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
                           </div>
                         </div>
                       </div>
