@@ -23,7 +23,7 @@
 
 ### 🛡️ Protected Transfers on The Root Network
 
-<img align="right" src="https://github.com/user-attachments/assets/c5c1630d-0ace-4a95-a0ab-075d00605311" width="350px">
+<img align="right" src="https://github.com/user-attachments/assets/b725710f-e4c1-4ab3-9e6d-3f34d7028658" width="350px">
 
 - **Escrow-Like Protection**: Funds remain secure until claimed by recipient
 - **Refundable Transfers**: Easily recover funds if sent to the wrong address
@@ -37,7 +37,8 @@
 
 ### 👥 Group Payments
 
-<img align="right" src="https://github.com/user-attachments/assets/26daca67-e41d-49ea-8203-369f8afc9249" width="350px">
+<img align="right" src="https://github.com/user-attachments/assets/19acd325-70a3-49d3-8acc-b43a84285d80" width="350px">
+
 
 - **Split Expenses Easily**: Divide costs among friends or colleagues
 - **Simple Contributors**: Accept payments from any TRN user
@@ -50,7 +51,7 @@
 
 ### 💰 Savings Pots
 
-<img align="right" src="https://github.com/user-attachments/assets/ec386240-4093-4c25-bb63-21d6ede14e5c" width="350px">
+<img align="right" src="https://github.com/user-attachments/assets/7104d01e-9db0-451e-bd25-1d61efc7a9d6" width="350px">
 
 - **Goal-Based Savings**: Set targets and track progress visually
 - **TRN-Optimized**: Create dedicated savings on The Root Network
@@ -74,7 +75,7 @@
 - **Instant Recognition**: Fast processing of payment information
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/f09258a5-936c-4162-bf56-9a89835fdfe2" width="400px">
+  <img src="https://github.com/user-attachments/assets/b09552d2-18e3-4ef4-8457-097fe2528fa3" width="400px">
 </div>
 
 <br clear="right"/>
@@ -92,7 +93,7 @@ ProtectedPay is built exclusively for The Root Network (TRN) blockchain ecosyste
 </div>
 
 <div align="ledt">
-  <img src="https://github.com/user-attachments/assets/67edf085-97a7-443b-8f9b-48eb8351890f" width="700px">
+  <img src="https://github.com/user-attachments/assets/2080945c-5960-4fab-909a-941ff2318b56" width="700px">
   <p><i>Comprehensive dashboard with activity tracking</i></p>
 </div>
 
@@ -120,7 +121,8 @@ ProtectedPay is built exclusively for The Root Network (TRN) blockchain ecosyste
 ## 💻 User Interface
 
 <div align="left">
-  <img src="https://github.com/user-attachments/assets/9dc7d205-f19f-4893-8e97-ff2918cd9708" width="700px">
+  <img src="https://github.com/user-attachments/assets/ed1cf203-99d8-4998-9420-fc8bdcc996b0" width="700px">
+
   <p><i>Modern, intuitive interface with glassmorphism design</i></p>
 </div>
 
@@ -134,7 +136,7 @@ ProtectedPay is built exclusively for The Root Network (TRN) blockchain ecosyste
 ### Dashboard Experience
 
 <div align="ledt">
-  <img src="https://github.com/user-attachments/assets/7fbe5d00-b6e7-479d-9949-a4e9ef90e962" width="700px">
+  <img src="https://github.com/user-attachments/assets/a2bfc37b-4640-423e-a12c-11a616e5215e" width="700px">
   <p><i>Comprehensive dashboard with activity tracking</i></p>
 </div>
 
