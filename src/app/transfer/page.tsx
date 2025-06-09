@@ -29,8 +29,24 @@ import {
   claimTransferById,
   refundTransfer,
   getPendingTransfers,
-  getTransferDetails
+  getTransferDetails,
+  sendTokenToAddress,
+  sendTokenToUsername,
+  claimTokenTransferByAddress,
+  claimTokenTransferByUsername,
+  claimTokenTransfer,
+  refundTokenTransfer,
+  getPendingTokenTransfers,
+  getTokenTransferDetails,
+  getTokenBalance,
+  canTransferToken
 } from '@/utils/contract'
+import { SUPPORTED_TOKENS, type Token } from '@/utils/constants'
+import { 
+  formatAmount,
+  truncateAddress,
+  handleError
+} from '@/utils/helpers'
 import { useChainInfo } from '@/utils/useChainInfo';
 import QRScanner from '@/components/qr/QRScanner';
 
@@ -48,6 +64,8 @@ interface Transfer {
   timestamp: number;
   remarks: string;
   status: number;
+  token?: Token;
+  isNativeToken?: boolean;
 }
 
 // Animation variants
@@ -104,6 +122,9 @@ export default function TransferPage() {
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false)
   const [showQrScanner, setShowQrScanner] = useState<boolean>(false)
   const [scannerMessage, setScannerMessage] = useState<{type: 'success' | 'error', text: string} | null>(null)
+  const [selectedToken, setSelectedToken] = useState<Token>(SUPPORTED_TOKENS[0])
+  const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({})
+  const [activeTransferType, setActiveTransferType] = useState<'native' | 'token'>('native')
   const { signer, address } = useWallet()
   const { currentChain } = useChainInfo();
   const formRef = useRef<HTMLDivElement>(null)
@@ -116,78 +137,161 @@ export default function TransferPage() {
     setFormStep(1); // Reset form step when tab changes
   }, [activeTab]);
 
+  // Fetch token balances for all supported tokens
+  const fetchTokenBalances = useCallback(async () => {
+    if (!signer || !address) return
+
+    try {
+      const balances: Record<string, string> = {}
+      
+      for (const token of SUPPORTED_TOKENS) {
+        try {
+          const balance = await getTokenBalance(signer, token.address, address)
+          balances[token.address] = balance
+        } catch (err) {
+          console.error(`Error fetching balance for ${token.symbol}:`, err)
+          balances[token.address] = '0'
+        }
+      }
+      
+      setTokenBalances(balances)
+    } catch (err) {
+      console.error('Error fetching token balances:', err)
+    }
+  }, [signer, address])
+
   const fetchPendingTransfers = useCallback(async () => {
     if (!signer || !address) return
 
     try {
       setIsLoading(true)
-      // Get all pending transfer IDs for the connected wallet
-      const transferIds = await getPendingTransfers(signer, address)
       
-      if (!transferIds || transferIds.length === 0) {
-        setPendingTransfers([])
-        setPendingSentTransfers([])
-        return
+      // Get both native and token transfer IDs
+      const [nativeTransferIds, tokenTransferIds] = await Promise.all([
+        getPendingTransfers(signer, address),
+        getPendingTokenTransfers(signer, address)
+      ])
+
+      let allTransfers: Transfer[] = []
+
+      // Process native transfers
+      if (nativeTransferIds && nativeTransferIds.length > 0) {
+        const nativeTransfers = await Promise.all(
+          nativeTransferIds.map(async (id: string) => {
+            try {
+              const details = await getTransferDetails(signer, id)
+              
+              return {
+                id,
+                sender: details.sender || '',
+                recipient: details.recipient || '',
+                amount: details.amount ? details.amount.toString() : '0',
+                timestamp: details.timestamp ? 
+                  (typeof details.timestamp === 'number' ? details.timestamp : 
+                   details.timestamp.toNumber ? details.timestamp.toNumber() : 
+                   details.timestamp.getTime ? details.timestamp.getTime() : 0) : 0,
+                remarks: details.remarks || '',
+                status: details.status !== undefined ? 
+                  (typeof details.status === 'number' ? details.status : 
+                   details.status.toNumber ? details.status.toNumber() : 0) : 0,
+                isNativeToken: true,
+                token: SUPPORTED_TOKENS[0] // Native XRP
+              }
+            } catch (err) {
+              console.error(`Error fetching transfer details for ${id}:`, err)
+              return null
+            }
+          })
+        )
+        
+        const validNativeTransfers = nativeTransfers.filter(transfer => transfer !== null) as Transfer[]
+        allTransfers = [...allTransfers, ...validNativeTransfers]
       }
 
-      // For each transfer ID, get the full details and parse them
-      const transfers = await Promise.all(
-        transferIds.map(async (id: string) => {
-          try {
-            const details = await getTransferDetails(signer, id)
-            
-            // Format the details into our Transfer interface format
-            return {
-              id,
-              sender: details.sender || '',
-              recipient: details.recipient || '',
-              amount: details.amount ? details.amount.toString() : '0',
-              timestamp: details.timestamp ? 
-                (typeof details.timestamp === 'number' ? details.timestamp : 
-                 details.timestamp.toNumber ? details.timestamp.toNumber() : 
-                 details.timestamp.getTime ? details.timestamp.getTime() : 0) : 0,
-              remarks: details.remarks || '',
-              status: details.status !== undefined ? 
-                (typeof details.status === 'number' ? details.status : 
-                 details.status.toNumber ? details.status.toNumber() : 0) : 0
-            } as Transfer
-          } catch (err) {
-            console.error(`Error fetching details for transfer ${id}:`, err)
-            return null
-          }
-        })
+      // Process token transfers
+      if (tokenTransferIds && tokenTransferIds.length > 0) {
+        const tokenTransfers = await Promise.all(
+          tokenTransferIds.map(async (id: string) => {
+            try {
+              const details = await getTokenTransferDetails(signer, id)
+              
+              // Find token by address
+              const token = SUPPORTED_TOKENS.find(t => 
+                t.address.toLowerCase() === details.token?.toLowerCase()
+              ) || SUPPORTED_TOKENS[0]
+              
+              return {
+                id,
+                sender: details.sender || '',
+                recipient: details.recipient || '',
+                amount: details.amount ? details.amount.toString() : '0',
+                timestamp: details.timestamp ? 
+                  (typeof details.timestamp === 'number' ? details.timestamp : 
+                   details.timestamp.toNumber ? details.timestamp.toNumber() : 
+                   details.timestamp.getTime ? details.timestamp.getTime() : 0) : 0,
+                remarks: details.remarks || '',
+                status: details.status !== undefined ? 
+                  (typeof details.status === 'number' ? details.status : 
+                   details.status.toNumber ? details.status.toNumber() : 0) : 0,
+                isNativeToken: false,
+                token: token
+              }
+            } catch (err) {
+              console.error(`Error fetching token transfer details for ${id}:`, err)
+              return null
+            }
+          })
+        )
+        
+        const validTokenTransfers = tokenTransfers.filter(transfer => transfer !== null) as Transfer[]
+        allTransfers = [...allTransfers, ...validTokenTransfers]
+      }
+
+      // Separate by sender/recipient status
+      const receivedTransfers = allTransfers.filter(transfer => 
+        transfer.recipient.toLowerCase() === address.toLowerCase()
       )
-      
-      // Filter out any failed transfers and split into received vs sent transfers
-      const validTransfers = transfers.filter(t => t !== null) as Transfer[]
-      
-      // Transfers where the current address is the recipient
-      const receivedTransfers = validTransfers.filter(t => 
-        t.recipient.toLowerCase() === address.toLowerCase() && 
-        t.status === 0 // Pending status
+      const sentTransfers = allTransfers.filter(transfer => 
+        transfer.sender.toLowerCase() === address.toLowerCase()
       )
-      
-      // Transfers where the current address is the sender
-      const sentTransfers = validTransfers.filter(t => 
-        t.sender.toLowerCase() === address.toLowerCase() && 
-        t.status === 0 // Pending status
-      )
-      
+
       setPendingTransfers(receivedTransfers)
       setPendingSentTransfers(sentTransfers)
       
     } catch (err) {
-      console.error('Error fetching transfers:', err)
+      console.error('Error fetching pending transfers:', err)
+      setError(handleContractError(err))
     } finally {
       setIsLoading(false)
     }
   }, [signer, address])
 
+  // Helper function to handle contract errors
+  const handleContractError = (err: any): string => {
+    if (err?.message) {
+      if (err.message.includes('insufficient funds')) {
+        return 'Insufficient balance for this transaction'
+      }
+      if (err.message.includes('allowance')) {
+        return 'Token allowance insufficient. Please approve tokens first.'
+      }
+      if (err.message.includes('user rejected')) {
+        return 'Transaction was cancelled'
+      }
+      return err.message
+    }
+    return 'An error occurred. Please try again.'
+  }
+
+  // Effect to load data when wallet connects
   useEffect(() => {
     if (signer && address) {
+      fetchTokenBalances()
       fetchPendingTransfers()
     }
-  }, [fetchPendingTransfers, signer, address])
+  }, [signer, address, fetchTokenBalances, fetchPendingTransfers])
+
+
 
   const handleTabChange = (tab: TransferTabs) => {
     setActiveTab(tab)
@@ -200,6 +304,8 @@ export default function TransferPage() {
     setAmount('')
     setRemarks('')
     setTransferId('')
+    setSelectedToken(SUPPORTED_TOKENS[0]) // Reset to native token
+    setActiveTransferType('native')
     setError('')
     setSuccess('')
     setFormStep(1)
@@ -241,17 +347,30 @@ export default function TransferPage() {
     setSuccess('')
 
     try {
-      if (recipient.startsWith('0x')) {
-        await sendToAddress(signer, recipient, amount, remarks)
+      if (selectedToken.isNative) {
+        // Native transfer
+        if (recipient.startsWith('0x')) {
+          await sendToAddress(signer, recipient, amount, remarks)
+        } else {
+          await sendToUsername(signer, recipient, amount, remarks)
+        }
       } else {
-        await sendToUsername(signer, recipient, amount, remarks)
+        // Token transfer
+        if (recipient.startsWith('0x')) {
+          await sendTokenToAddress(signer, recipient, selectedToken.address, amount, remarks)
+        } else {
+          await sendTokenToUsername(signer, recipient, selectedToken.address, amount, remarks)
+        }
       }
       
-      setSuccess('Transfer initiated successfully!')
+      setSuccess(`${selectedToken.symbol} transfer initiated successfully!`)
       setShowConfirmation(false)
       resetForm()
       // Let's wait a bit before fetching to ensure transaction is indexed
-      setTimeout(() => fetchPendingTransfers(), 2000)
+      setTimeout(() => {
+        fetchPendingTransfers()
+        fetchTokenBalances()
+      }, 2000)
     } catch (error) {
       console.error('Transfer error:', error)
       setError(error instanceof Error ? error.message : 'Failed to initiate transfer')
@@ -270,16 +389,38 @@ export default function TransferPage() {
     setSuccess('')
 
     try {
+      // Try to claim as both native and token transfer
       if (id.startsWith('0x') && id.length === 66) {
-        await claimTransferById(signer, id)
+        // Transfer ID - try both native and token
+        try {
+          await claimTransferById(signer, id)
+        } catch (err) {
+          // If native fails, try token
+          await claimTokenTransfer(signer, id)
+        }
       } else if (id.startsWith('0x')) {
-        await claimTransferByAddress(signer, id)
+        // Address - try both native and token
+        try {
+          await claimTransferByAddress(signer, id)
+        } catch (err) {
+          // If native fails, try token
+          await claimTokenTransferByAddress(signer, id)
+        }
       } else {
-        await claimTransferByUsername(signer, id)
+        // Username - try both native and token
+        try {
+          await claimTransferByUsername(signer, id)
+        } catch (err) {
+          // If native fails, try token
+          await claimTokenTransferByUsername(signer, id)
+        }
       }
       setSuccess('Transfer claimed successfully!')
       resetForm()
-      setTimeout(() => fetchPendingTransfers(), 2000)
+      setTimeout(() => {
+        fetchPendingTransfers()
+        fetchTokenBalances()
+      }, 2000)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to claim transfer')
     } finally {
@@ -297,10 +438,19 @@ export default function TransferPage() {
     setSuccess('')
 
     try {
-      await refundTransfer(signer, id)
+      // Try to refund as both native and token transfer
+      try {
+        await refundTransfer(signer, id)
+      } catch (err) {
+        // If native fails, try token
+        await refundTokenTransfer(signer, id)
+      }
       setSuccess('Transfer refunded successfully!')
       resetForm()
-      setTimeout(() => fetchPendingTransfers(), 2000)
+      setTimeout(() => {
+        fetchPendingTransfers()
+        fetchTokenBalances()
+      }, 2000)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to refund transfer')
     } finally {
@@ -317,30 +467,6 @@ export default function TransferPage() {
       .catch(err => {
         console.error('Failed to copy text: ', err)
       })
-  }
-
-  // Helper to truncate long addresses/ids
-  const truncateText = (text: string, startChars = 6, endChars = 4) => {
-    if (!text) return '';
-    if (text.length <= startChars + endChars) return text;
-    return `${text.substring(0, startChars)}...${text.substring(text.length - endChars)}`;
-  }
-
-  const formatAmount = (amount: string) => {
-    if (!amount) return '0';
-    // Try to parse the amount and format it to a maximum of 6 decimal places
-    try {
-      const parsed = parseFloat(amount);
-      if (isNaN(parsed)) return amount;
-      
-      // If it's a whole number, show no decimals
-      if (parsed % 1 === 0) return parsed.toString();
-      
-      // Otherwise show up to 6 decimal places
-      return parsed.toFixed(6).replace(/\.?0+$/, '');
-    } catch (e) {
-      return amount;
-    }
   }
 
   const getTabLabel = () => {
@@ -388,12 +514,12 @@ export default function TransferPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between items-center bg-[rgb(var(--card))]/70 p-3 rounded-lg">
                   <span className="text-[rgb(var(--muted-foreground))]">Recipient</span>
-                  <span className="text-[rgb(var(--foreground))] font-medium">{recipient.startsWith('0x') ? truncateText(recipient) : recipient}</span>
+                  <span className="text-[rgb(var(--foreground))] font-medium">{recipient.startsWith('0x') ? truncateAddress(recipient) : recipient}</span>
                 </div>
 
                 <div className="flex justify-between items-center bg-[rgb(var(--card))]/70 p-3 rounded-lg">
                   <span className="text-[rgb(var(--muted-foreground))]">Amount</span>
-                  <span className="text-[rgb(var(--foreground))] font-medium">{amount} {currentChain.symbol}</span>
+                  <span className="text-[rgb(var(--foreground))] font-medium">{amount} {selectedToken.symbol}</span>
                 </div>
 
                 <div className="bg-[rgb(var(--card))]/70 p-3 rounded-lg">
@@ -505,6 +631,46 @@ export default function TransferPage() {
                         Enter wallet address or registered username
                       </p>
                     </div>
+
+                    {/* Token Selection */}
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="text-[rgb(var(--foreground))] font-medium flex items-center">
+                          <CurrencyDollarIcon className="w-5 h-5 mr-2" />
+                          Asset to Send
+                        </label>
+                      </div>
+                      
+                      <div className="relative">
+                        <select
+                          value={selectedToken.address}
+                          onChange={(e) => {
+                            const token = SUPPORTED_TOKENS.find(t => t.address === e.target.value)
+                            if (token) {
+                              setSelectedToken(token)
+                              setActiveTransferType(token.isNative ? 'native' : 'token')
+                            }
+                          }}
+                          className="w-full px-4 py-3 rounded-xl bg-[rgb(var(--card))] border border-[rgb(var(--border))] text-[rgb(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary))]/40 appearance-none"
+                        >
+                          {SUPPORTED_TOKENS.map((token) => (
+                            <option key={token.address} value={token.address}>
+                              {token.symbol} - {token.name} 
+                              {tokenBalances[token.address] !== undefined 
+                                ? ` (Balance: ${parseFloat(tokenBalances[token.address] || '0').toFixed(6)})` 
+                                : ''}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDownIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[rgb(var(--muted-foreground))] pointer-events-none" />
+                      </div>
+                      
+                      {selectedToken && tokenBalances[selectedToken.address] !== undefined && (
+                        <p className="mt-2 text-xs text-[rgb(var(--muted-foreground))] text-right">
+                          Available: {parseFloat(tokenBalances[selectedToken.address] || '0').toFixed(6)} {selectedToken.symbol}
+                        </p>
+                      )}
+                    </div>
                     
                     {/* Hidden trigger for QR scanner */}
                     <button 
@@ -541,7 +707,7 @@ export default function TransferPage() {
                     <div>
                       <label className="mb-2 text-green-400 font-medium flex items-center">
                         <CurrencyDollarIcon className="w-5 h-5 mr-2" />
-                        Amount ({currentChain.symbol})
+                        Amount ({selectedToken.symbol})
                       </label>
                       <input
                         type="number"
@@ -555,7 +721,7 @@ export default function TransferPage() {
                       />
                       {amount && parseFloat(amount) > 0 && (
                         <p className="mt-2 text-xs text-green-400 flex justify-end">
-                          ≈ {formatAmount(amount)} {currentChain.symbol}
+                          ≈ {formatAmount(amount)} {selectedToken.symbol}
                         </p>
                       )}
                     </div>
@@ -854,10 +1020,17 @@ export default function TransferPage() {
                   <div className="text-sm text-gray-400 mb-1">
                     {activeTab === TransferTabs.CLAIM || 
                      (activeTab === TransferTabs.SEND && transfer.sender.toLowerCase() !== address?.toLowerCase()) ? 
-                      `From: ${truncateText(transfer.sender)}` : 
-                      `To: ${truncateText(transfer.recipient)}`}
+                      `From: ${truncateAddress(transfer.sender)}` : 
+                      `To: ${truncateAddress(transfer.recipient)}`}
                   </div>
-                  <div className="text-green-400 font-semibold">{formatAmount(transfer.amount)} {currentChain.symbol}</div>
+                  <div className="text-green-400 font-semibold">
+                    {formatAmount(transfer.amount)} {transfer.token?.symbol || currentChain.symbol}
+                    {!transfer.isNativeToken && (
+                      <span className="ml-2 px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs">
+                        TOKEN
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <motion.button
                   onClick={() => {
@@ -896,7 +1069,7 @@ export default function TransferPage() {
               {/* Transfer ID with copy button */}
               <div className="flex items-center space-x-2 mb-2 bg-black/40 p-2 rounded-lg">
                 <div className="text-xs text-gray-400 overflow-hidden text-ellipsis">
-                  ID: {truncateText(transfer.id, 8, 8)}
+                  ID: {truncateAddress(transfer.id, 8)}
                 </div>
                 <motion.button
                   onClick={() => copyToClipboard(transfer.id)}

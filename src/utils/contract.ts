@@ -3,7 +3,785 @@ import { ethers } from 'ethers';
 const CONTRACT_ADDRESSES = {
 	7672: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // Root Network Porcini (Testnet)
 } as const;
-  
+
+const TOKEN_CONTRACT_ADDRESSES = {
+	7672: '0x16f16b1742ECA434faf9442a9f9d933A766acfCA', // Root Network Porcini (Testnet)
+} as const;
+
+const TOKEN_CONTRACT_ABI =  [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			}
+		],
+		"name": "addSupportedToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_transferId",
+				"type": "bytes32"
+			}
+		],
+		"name": "claimTokenTransfer",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_senderAddress",
+				"type": "address"
+			}
+		],
+		"name": "claimTokenTransferByAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_senderUsername",
+				"type": "string"
+			}
+		],
+		"name": "claimTokenTransferByUsername",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_baseContract",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			}
+		],
+		"name": "removeSupportedToken",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "SafeERC20FailedOperation",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_transferId",
+				"type": "bytes32"
+			}
+		],
+		"name": "refundTokenTransfer",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_remarks",
+				"type": "string"
+			}
+		],
+		"name": "sendTokenToAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_username",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_remarks",
+				"type": "string"
+			}
+		],
+		"name": "sendTokenToUsername",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "TokenAdded",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "TokenRemoved",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "transferId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "TokenTransferClaimed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "transferId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "remarks",
+				"type": "string"
+			}
+		],
+		"name": "TokenTransferInitiated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "transferId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "TokenTransferRefunded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "baseContract",
+		"outputs": [
+			{
+				"internalType": "contract ProtectedPay",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "canTransferToken",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
+			}
+		],
+		"name": "getPendingTokenTransfers",
+		"outputs": [
+			{
+				"internalType": "bytes32[]",
+				"name": "",
+				"type": "bytes32[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getRootTokenAllowance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getRootTokenBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_transferId",
+				"type": "bytes32"
+			}
+		],
+		"name": "getTokenTransferDetails",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum ProtectedPayTokens.TokenTransferStatus",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "string",
+				"name": "remarks",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "isNativeToken",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_userAddress",
+				"type": "address"
+			}
+		],
+		"name": "getUserByAddress",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_username",
+				"type": "string"
+			}
+		],
+		"name": "getUserByUsername",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getUserTokenTransferIds",
+		"outputs": [
+			{
+				"internalType": "bytes32[]",
+				"name": "",
+				"type": "bytes32[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getUserTokenTransfers",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "recipient",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "enum ProtectedPayTokens.TokenTransferStatus",
+						"name": "status",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "remarks",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isNativeToken",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct ProtectedPayTokens.TokenTransfer[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "pendingTokenTransfersBySender",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "ROOT_TOKEN",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "supportedTokens",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenTransferIdsByUser",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "tokenTransfers",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum ProtectedPayTokens.TokenTransferStatus",
+				"name": "status",
+				"type": "uint8"
+			},
+			{
+				"internalType": "string",
+				"name": "remarks",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "isNativeToken",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
 const CONTRACT_ABI = [
 	{
 		"inputs": [
@@ -807,88 +1585,13 @@ const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"name": "groupPayments",
+		"inputs": [],
+		"name": "owner",
 		"outputs": [
 			{
-				"internalType": "bytes32",
-				"name": "paymentId",
-				"type": "bytes32"
-			},
-			{
 				"internalType": "address",
-				"name": "creator",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amountPerPerson",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "numParticipants",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amountCollected",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "remarks",
-				"type": "string"
-			},
-			{
-				"internalType": "enum ProtectedPay.GroupPaymentStatus",
-				"name": "status",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "_paymentId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "hasContributedToGroupPayment",
-		"outputs": [
-			{
-				"internalType": "bool",
 				"name": "",
-				"type": "bool"
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -919,54 +1622,56 @@ const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "ROOT_TOKEN",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "supportedTokens",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenTransferIdsByUser",
+		"outputs": [
 			{
 				"internalType": "bytes32",
 				"name": "",
 				"type": "bytes32"
-			}
-		],
-		"name": "savingsPots",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "potId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "targetAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "currentAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "timestamp",
-				"type": "uint256"
-			},
-			{
-				"internalType": "enum ProtectedPay.PotStatus",
-				"name": "status",
-				"type": "uint8"
-			},
-			{
-				"internalType": "string",
-				"name": "remarks",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -1595,3 +2300,202 @@ interface TransferEvent {
 	
 	return 'An unexpected error occurred';
   };
+
+// Token Contract Functions
+const getTokenContractAddress = async (signer: ethers.Signer) => {
+  const chainId = await signer.getChainId();
+  return TOKEN_CONTRACT_ADDRESSES[chainId as keyof typeof TOKEN_CONTRACT_ADDRESSES] 
+    || TOKEN_CONTRACT_ADDRESSES[7672]; // Default to Root Network if chain not found
+};
+
+// Token contract instance getter with chain awareness
+export const getTokenContract = async (signer: ethers.Signer) => {
+  const address = await getTokenContractAddress(signer);
+  return new ethers.Contract(address, TOKEN_CONTRACT_ABI, signer);
+};
+
+// ERC20 Token Transfer Functions
+export const sendTokenToAddress = async (
+  signer: ethers.Signer, 
+  recipient: string, 
+  tokenAddress: string, 
+  amount: string, 
+  remarks: string
+) => {
+  const contract = await getTokenContract(signer);
+  const tx = await contract.sendTokenToAddress(
+    recipient, 
+    tokenAddress, 
+    ethers.utils.parseEther(amount), 
+    remarks
+  );
+  await tx.wait();
+};
+
+export const sendTokenToUsername = async (
+  signer: ethers.Signer, 
+  username: string, 
+  tokenAddress: string, 
+  amount: string, 
+  remarks: string
+) => {
+  const contract = await getTokenContract(signer);
+  const tx = await contract.sendTokenToUsername(
+    username, 
+    tokenAddress, 
+    ethers.utils.parseEther(amount), 
+    remarks
+  );
+  await tx.wait();
+};
+
+export const claimTokenTransfer = async (signer: ethers.Signer, transferId: string) => {
+  const contract = await getTokenContract(signer);
+  const tx = await contract.claimTokenTransfer(transferId);
+  await tx.wait();
+};
+
+export const claimTokenTransferByAddress = async (signer: ethers.Signer, senderAddress: string) => {
+  const contract = await getTokenContract(signer);
+  const tx = await contract.claimTokenTransferByAddress(senderAddress);
+  await tx.wait();
+};
+
+export const claimTokenTransferByUsername = async (signer: ethers.Signer, senderUsername: string) => {
+  const contract = await getTokenContract(signer);
+  const tx = await contract.claimTokenTransferByUsername(senderUsername);
+  await tx.wait();
+};
+
+export const refundTokenTransfer = async (signer: ethers.Signer, transferId: string) => {
+  const contract = await getTokenContract(signer);
+  const tx = await contract.refundTokenTransfer(transferId);
+  await tx.wait();
+};
+
+export const getPendingTokenTransfers = async (signer: ethers.Signer, userAddress: string) => {
+  const contract = await getTokenContract(signer);
+  return await contract.getPendingTokenTransfers(userAddress);
+};
+
+export const getTokenTransferDetails = async (signer: ethers.Signer, transferId: string) => {
+  const contract = await getTokenContract(signer);
+  const details = await contract.getTokenTransferDetails(transferId);
+  return {
+    sender: details.sender,
+    recipient: details.recipient,
+    token: details.token,
+    amount: ethers.utils.formatEther(details.amount),
+    timestamp: details.timestamp.toNumber(),
+    status: details.status,
+    remarks: details.remarks,
+    isNativeToken: details.isNativeToken
+  };
+};
+
+// Token balance and allowance functions
+export const getTokenBalance = async (signer: ethers.Signer, tokenAddress: string, userAddress: string) => {
+  // For native token, get ETH balance
+  if (tokenAddress === 'NATIVE') {
+    const balance = await signer.provider?.getBalance(userAddress);
+    return balance ? ethers.utils.formatEther(balance) : '0';
+  }
+  
+  // For ERC20 tokens, use the contract's balance function
+  const contract = await getTokenContract(signer);
+  
+  // Check if it's ROOT token (has specific balance function)
+  if (tokenAddress === '0xcCcCCccC00000001000000000000000000000000') {
+    const balance = await contract.getRootTokenBalance(userAddress);
+    return ethers.utils.formatEther(balance);
+  }
+  
+  // For other ERC20 tokens, use standard ERC20 interface
+  const erc20Contract = new ethers.Contract(tokenAddress, [
+    'function balanceOf(address) view returns (uint256)'
+  ], signer);
+  const balance = await erc20Contract.balanceOf(userAddress);
+  return ethers.utils.formatEther(balance);
+};
+
+export const approveToken = async (
+  signer: ethers.Signer, 
+  tokenAddress: string, 
+  spenderAddress: string, 
+  amount: string
+) => {
+  // For native tokens, no approval needed
+  if (tokenAddress === 'NATIVE') {
+    return;
+  }
+  
+  const erc20Contract = new ethers.Contract(tokenAddress, [
+    'function approve(address spender, uint256 amount) returns (bool)'
+  ], signer);
+  
+  const tx = await erc20Contract.approve(spenderAddress, ethers.utils.parseEther(amount));
+  await tx.wait();
+};
+
+export const getTokenAllowance = async (
+  signer: ethers.Signer, 
+  tokenAddress: string, 
+  ownerAddress: string, 
+  spenderAddress: string
+) => {
+  // For native tokens, return max allowance
+  if (tokenAddress === 'NATIVE') {
+    return ethers.constants.MaxUint256.toString();
+  }
+  
+  // Check if it's ROOT token (has specific allowance function)
+  if (tokenAddress === '0xcCcCCccC00000001000000000000000000000000') {
+    const contract = await getTokenContract(signer);
+    const allowance = await contract.getRootTokenAllowance(ownerAddress);
+    return ethers.utils.formatEther(allowance);
+  }
+  
+  // For other ERC20 tokens, use standard ERC20 interface
+  const erc20Contract = new ethers.Contract(tokenAddress, [
+    'function allowance(address owner, address spender) view returns (uint256)'
+  ], signer);
+  
+  const allowance = await erc20Contract.allowance(ownerAddress, spenderAddress);
+  return ethers.utils.formatEther(allowance);
+};
+
+// Get user's token transfer history
+export const getUserTokenTransfers = async (signer: ethers.Signer, userAddress: string) => {
+  const contract = await getTokenContract(signer);
+  const transfers = await contract.getUserTokenTransfers(userAddress);
+  
+  return transfers.map((transfer: any) => ({
+    sender: transfer.sender,
+    recipient: transfer.recipient,
+    token: transfer.token,
+    amount: ethers.utils.formatEther(transfer.amount),
+    timestamp: transfer.timestamp.toNumber(),
+    status: transfer.status,
+    remarks: transfer.remarks,
+    isNativeToken: transfer.isNativeToken
+  }));
+};
+
+// Check if token transfer is possible
+export const canTransferToken = async (
+  signer: ethers.Signer, 
+  senderAddress: string, 
+  tokenAddress: string, 
+  amount: string
+) => {
+  const contract = await getTokenContract(signer);
+  const result = await contract.canTransferToken(
+    senderAddress, 
+    tokenAddress, 
+    ethers.utils.parseEther(amount)
+  );
+  return {
+    canTransfer: result[0],
+    reason: result[1]
+  };
+};

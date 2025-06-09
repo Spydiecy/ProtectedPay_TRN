@@ -23,8 +23,10 @@ import {
   handleContractError,
   getUserTransfers,
   getGroupPaymentDetails,
-  getSavingsPotDetails
+  getSavingsPotDetails,
+  getUserTokenTransfers
 } from '../../../utils/contract'
+import { SUPPORTED_TOKENS } from '../../../utils/constants'
 import { useWallet } from '@/context/WalletContext'
 import { useChain } from '@/hooks/useChain'
 
@@ -55,6 +57,8 @@ interface TransactionItem {
   status: number;
   otherParty?: string;
   description?: string;
+  token?: string; // Token address for ERC20 transfers
+  isNativeToken?: boolean; // Flag to distinguish transfer types
 }
 
 export default function HistoryPage() {
@@ -64,7 +68,7 @@ export default function HistoryPage() {
   const [transactions, setTransactions] = useState<TransactionItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeFilter, setActiveFilter] = useState<'all' | 'transfer' | 'group_payment' | 'savings_pot'>('all')
+  const [activeFilter, setActiveFilter] = useState<'all' | 'native' | 'token' | 'transfer' | 'group_payment' | 'savings_pot'>('all')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 5 // Show only 5 transactions per page
 
@@ -76,11 +80,15 @@ export default function HistoryPage() {
     setError(null)
     
     try {
-      // Get transfer history
-      const transfersData = await getUserTransfers(signer, address)
+      // Get both native and token transfer history
+      const [transfersData, tokenTransfersData] = await Promise.all([
+        getUserTransfers(signer, address),
+        getUserTokenTransfers(signer, address)
+      ])
+      
       let allTransactions: TransactionItem[] = []
       
-      // Process transfer transactions
+      // Process native transfer transactions
       if (transfersData && transfersData.length > 0) {
         const transferTransactions = transfersData.map((transfer: any) => {
           const isSender = transfer.sender.toLowerCase() === address.toLowerCase()
@@ -92,10 +100,32 @@ export default function HistoryPage() {
             amount: transfer.amount,
             status: transfer.status,
             otherParty: isSender ? transfer.recipient : transfer.sender,
-            description: transfer.remarks
+            description: transfer.remarks,
+            isNativeToken: true,
+            token: 'NATIVE'
           } as TransactionItem
         })
         allTransactions = [...allTransactions, ...transferTransactions]
+      }
+
+      // Process token transfer transactions
+      if (tokenTransfersData && tokenTransfersData.length > 0) {
+        const tokenTransferTransactions = tokenTransfersData.map((transfer: any) => {
+          const isSender = transfer.sender.toLowerCase() === address.toLowerCase()
+          return {
+            id: transfer.id || `token-transfer-${Date.now()}-${Math.random()}`,
+            type: 'transfer',
+            subtype: isSender ? 'sent' : 'received',
+            timestamp: transfer.timestamp,
+            amount: transfer.amount,
+            status: transfer.status,
+            otherParty: isSender ? transfer.recipient : transfer.sender,
+            description: transfer.remarks,
+            isNativeToken: false,
+            token: transfer.token // Token contract address
+          } as TransactionItem
+        })
+        allTransactions = [...allTransactions, ...tokenTransferTransactions]
       }
       
       // Get group payment data
@@ -177,9 +207,15 @@ export default function HistoryPage() {
   
   // Filter transactions based on active filter
   const filteredTransactions = useMemo(() => {
-    return activeFilter === 'all' 
-      ? transactions 
-      : transactions.filter(tx => tx.type === activeFilter)
+    if (activeFilter === 'all') {
+      return transactions
+    } else if (activeFilter === 'native') {
+      return transactions.filter(tx => tx.type === 'transfer' && tx.isNativeToken)
+    } else if (activeFilter === 'token') {
+      return transactions.filter(tx => tx.type === 'transfer' && !tx.isNativeToken)
+    } else {
+      return transactions.filter(tx => tx.type === activeFilter)
+    }
   }, [transactions, activeFilter])
 
   // Calculate pagination values
@@ -302,6 +338,13 @@ export default function HistoryPage() {
     return 'bg-gray-500/20 text-gray-500 dark:text-gray-400'
   }
   
+  // Get token symbol by address
+  const getTokenSymbol = (tokenAddress: string) => {
+    if (tokenAddress === 'NATIVE') return nativeToken
+    const token = SUPPORTED_TOKENS.find(t => t.address.toLowerCase() === tokenAddress.toLowerCase())
+    return token ? token.symbol : 'UNKNOWN'
+  }
+
   // Get transaction description
   const getTransactionTitle = (transaction: TransactionItem) => {
     if (transaction.type === 'transfer') {
@@ -393,6 +436,28 @@ export default function HistoryPage() {
               </button>
               
               <button
+                onClick={() => setActiveFilter('native')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeFilter === 'native' 
+                    ? 'bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))]' 
+                    : 'bg-[rgb(var(--muted))]/20 text-[rgb(var(--muted-foreground))] hover:bg-[rgb(var(--muted))]/30'
+                }`}
+              >
+                Native Transfers
+              </button>
+              
+              <button
+                onClick={() => setActiveFilter('token')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeFilter === 'token' 
+                    ? 'bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))]' 
+                    : 'bg-[rgb(var(--muted))]/20 text-[rgb(var(--muted-foreground))] hover:bg-[rgb(var(--muted))]/30'
+                }`}
+              >
+                Token Transfers
+              </button>
+              
+              <button
                 onClick={() => setActiveFilter('transfer')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   activeFilter === 'transfer' 
@@ -400,7 +465,7 @@ export default function HistoryPage() {
                     : 'bg-[rgb(var(--muted))]/20 text-[rgb(var(--muted-foreground))] hover:bg-[rgb(var(--muted))]/30'
                 }`}
               >
-                Transfers
+                All Transfers
               </button>
               
               <button
@@ -442,7 +507,9 @@ export default function HistoryPage() {
           >
             <h2 className="text-xl font-semibold mb-5 text-[rgb(var(--foreground))]">
               {activeFilter === 'all' ? 'All Transactions' : 
-               activeFilter === 'transfer' ? 'Transfers' :
+               activeFilter === 'native' ? 'Native Transfers' :
+               activeFilter === 'token' ? 'Token Transfers' :
+               activeFilter === 'transfer' ? 'All Transfers' :
                activeFilter === 'group_payment' ? 'Group Payments' : 'Savings Pots'}
             </h2>
             
@@ -475,6 +542,17 @@ export default function HistoryPage() {
                               {formatDate(transaction.timestamp)}
                             </span>
                             
+                            {/* Transfer Type Badge */}
+                            {transaction.type === 'transfer' && (
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                transaction.isNativeToken 
+                                  ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400' 
+                                  : 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
+                              }`}>
+                                {transaction.isNativeToken ? 'Native' : 'Token'}
+                              </span>
+                            )}
+                            
                             <span className={`px-2 py-0.5 rounded-full ${getStatusClasses(transaction.type, transaction.status)}`}>
                               {getStatusText(transaction.type, transaction.status)}
                             </span>
@@ -490,11 +568,14 @@ export default function HistoryPage() {
                       
                       <div className="text-right">
                         <p className="font-medium text-[rgb(var(--foreground))]">
-                          {transaction.amount} {nativeToken}
+                          {transaction.amount} {transaction.type === 'transfer' && transaction.token 
+                            ? getTokenSymbol(transaction.token) 
+                            : nativeToken}
                         </p>
                         
                         <p className="text-xs text-[rgb(var(--muted-foreground))] mt-1">
-                          {transaction.type === 'transfer' ? 'Transfer' : 
+                          {transaction.type === 'transfer' ? 
+                            (transaction.isNativeToken ? 'Native Transfer' : 'Token Transfer') : 
                            transaction.type === 'group_payment' ? 'Group Payment' : 
                            'Savings Pot'}
                         </p>
@@ -550,6 +631,10 @@ export default function HistoryPage() {
                 <p className="text-[rgb(var(--muted-foreground))]">
                   {activeFilter === 'all' 
                     ? "You don't have any transactions yet" 
+                    : activeFilter === 'native'
+                    ? "You don't have any native transfer transactions yet"
+                    : activeFilter === 'token'
+                    ? "You don't have any token transfer transactions yet"
                     : `You don't have any ${activeFilter.replace('_', ' ')} transactions yet`}
                 </p>
               </div>

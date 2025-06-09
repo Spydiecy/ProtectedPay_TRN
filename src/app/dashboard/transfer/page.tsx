@@ -15,7 +15,8 @@ import {
   CurrencyDollarIcon,
   ShieldCheckIcon,
   ChatBubbleBottomCenterTextIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount } from 'wagmi'
@@ -29,15 +30,27 @@ import {
   refundTransfer,
   getPendingTransfers,
   getTransferDetails,
-  getUserTransfers
+  getUserTransfers,
+  // Token functions
+  sendTokenToAddress,
+  sendTokenToUsername,
+  claimTokenTransfer,
+  claimTokenTransferByAddress,
+  claimTokenTransferByUsername,
+  refundTokenTransfer,
+  getPendingTokenTransfers,
+  getTokenTransferDetails,
+  getTokenBalance,
+  getUserTokenTransfers
 } from '@/utils/contract'
+import { SUPPORTED_TOKENS, Token } from '@/utils/constants'
 import { useChainInfo } from '@/utils/useChainInfo';
 import QRScanner from '@/components/qr/QRScanner'
 import { shortenAddress, isValidAddress } from '@/utils/address'
 import { useChain } from '@/hooks/useChain'
 import { ethers } from 'ethers'
 
-// Transfer interface matching the one in transfer/page.tsx
+// Transfer interface for both native and token transfers
 interface Transfer {
   id: string;
   sender: string;
@@ -46,6 +59,8 @@ interface Transfer {
   timestamp: number;
   remarks: string;
   status: number;
+  token?: string; // Token address for ERC20 transfers
+  isNativeToken?: boolean; // Flag to distinguish transfer types
 }
 
 // Animation variants
@@ -72,6 +87,9 @@ export default function TransferPage() {
   const [amount, setAmount] = useState('')
   const [remarks, setRemarks] = useState('')
   const [claimInput, setClaimInput] = useState('')
+  const [selectedToken, setSelectedToken] = useState<Token>(SUPPORTED_TOKENS[0]) // Default to native XRP
+  const [tokenBalances, setTokenBalances] = useState<Record<string, string>>({})
+  const [activeTransferType, setActiveTransferType] = useState<'native' | 'token'>('native')
   const [isLoading, setIsLoading] = useState(false)
   const [isClaimLoading, setIsClaimLoading] = useState(false)
   const [error, setError] = useState('')
@@ -79,6 +97,7 @@ export default function TransferPage() {
   const [success, setSuccess] = useState('')
   const [claimSuccess, setClaimSuccess] = useState('')
   const [recentActivity, setRecentActivity] = useState<Transfer[]>([])
+  const [showTokenDropdown, setShowTokenDropdown] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [showQrScanner, setShowQrScanner] = useState(false)
   const { address: wagmiAddress } = useAccount()
@@ -87,8 +106,32 @@ export default function TransferPage() {
   
   // Scroll to form when tab changes
   const formRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const isUserConnected = !!wagmiAddress
+
+  // Fetch token balances for all supported tokens
+  const fetchTokenBalances = useCallback(async () => {
+    if (!signer || !wagmiAddress) return
+
+    try {
+      const balances: Record<string, string> = {}
+      
+      for (const token of SUPPORTED_TOKENS) {
+        try {
+          const balance = await getTokenBalance(signer, token.address, wagmiAddress)
+          balances[token.address] = balance
+        } catch (err) {
+          console.error(`Error fetching balance for ${token.symbol}:`, err)
+          balances[token.address] = '0'
+        }
+      }
+      
+      setTokenBalances(balances)
+    } catch (err) {
+      console.error('Error fetching token balances:', err)
+    }
+  }, [signer, wagmiAddress])
 
   const fetchRecentActivity = useCallback(async () => {
     if (!signer || !wagmiAddress) return
@@ -97,63 +140,71 @@ export default function TransferPage() {
       setIsLoading(true)
       console.log('Fetching pending transfers for address:', wagmiAddress)
 
-      // Direct implementation from transfer/page.tsx
-      // Get all pending transfer IDs for the connected wallet
-      const transferIds = await getPendingTransfers(signer, wagmiAddress)
-      console.log('Transfer IDs:', transferIds)
+      // Get native transfers
+      const nativeTransferIds = await getPendingTransfers(signer, wagmiAddress)
+      console.log('Native Transfer IDs:', nativeTransferIds)
       
-      if (!transferIds || transferIds.length === 0) {
-        console.log('No pending transfers found')
-        setRecentActivity([])
-        setIsLoading(false)
-        return
-      }
-
-      // For each transfer ID, get the full details and parse them
-      const transfers = await Promise.all(
-        transferIds.map(async (id: string) => {
+      // Get token transfers
+      const tokenTransferIds = await getPendingTokenTransfers(signer, wagmiAddress)
+      console.log('Token Transfer IDs:', tokenTransferIds)
+      
+      // Process native transfers
+      const nativeTransfers = await Promise.all(
+        (nativeTransferIds || []).map(async (id: string) => {
           try {
             const details = await getTransferDetails(signer, id)
-            console.log('Transfer details for ID', id, ':', details)
-            
-            // Format the details into our Transfer interface format
             return {
               id,
               sender: details.sender,
               recipient: details.recipient,
-              amount: details.amount, // Already formatted in getTransferDetails
-              timestamp: details.timestamp, // Already converted in getTransferDetails
+              amount: details.amount,
+              timestamp: details.timestamp,
               remarks: details.remarks,
-              status: details.status
+              status: details.status,
+              isNativeToken: true
             }
           } catch (err) {
-            console.error(`Error fetching details for transfer ${id}:`, err)
+            console.error(`Error fetching native transfer details for ${id}:`, err)
+            return null
+          }
+        })
+      )
+      
+      // Process token transfers
+      const tokenTransfers = await Promise.all(
+        (tokenTransferIds || []).map(async (id: string) => {
+          try {
+            const details = await getTokenTransferDetails(signer, id)
+            return {
+              id,
+              sender: details.sender,
+              recipient: details.recipient,
+              amount: details.amount,
+              timestamp: details.timestamp,
+              remarks: details.remarks,
+              status: details.status,
+              token: details.token,
+              isNativeToken: details.isNativeToken
+            }
+          } catch (err) {
+            console.error(`Error fetching token transfer details for ${id}:`, err)
             return null
           }
         })
       )
 
-      // Filter out any failed transfers and split into received vs sent transfers
-      const validTransfers = transfers.filter(t => t !== null) as Transfer[]
+      // Combine and filter transfers
+      const allTransfers = [...nativeTransfers, ...tokenTransfers]
+        .filter(t => t !== null) as Transfer[]
       
-      // Transfers where the current address is the recipient
-      const receivedTransfers = validTransfers.filter(t => 
-        t.recipient.toLowerCase() === wagmiAddress.toLowerCase() && 
-        t.status === 0 // Pending status
-      )
-      
-      // Transfers where the current address is the sender
-      const sentTransfers = validTransfers.filter(t => 
-        t.sender.toLowerCase() === wagmiAddress.toLowerCase() && 
-        t.status === 0 // Pending status
-      )
+      // Filter for pending transfers only
+      const pendingTransfers = allTransfers.filter(t => t.status === 0)
       
       // Sort by timestamp (newest first)
-      const allPendingTransfers = [...receivedTransfers, ...sentTransfers]
-      allPendingTransfers.sort((a, b) => b.timestamp - a.timestamp)
+      pendingTransfers.sort((a, b) => b.timestamp - a.timestamp)
       
-      console.log('Resolved pending transfers:', allPendingTransfers)
-      setRecentActivity(allPendingTransfers)
+      console.log('All pending transfers:', pendingTransfers)
+      setRecentActivity(pendingTransfers)
     } catch (err) {
       console.error('Error fetching transfers:', err)
       setRecentActivity([])
@@ -162,26 +213,43 @@ export default function TransferPage() {
     }
   }, [signer, wagmiAddress])
 
-  // Directly using the effect pattern from transfer/page.tsx
+  // Fetch activity and balances when wallet connects
   useEffect(() => {
     if (signer && wagmiAddress) {
       fetchRecentActivity()
+      fetchTokenBalances()
       
       // Simple refresh interval
       const interval = setInterval(() => {
-        console.log('Refreshing transfers...')
+        console.log('Refreshing transfers and balances...')
         fetchRecentActivity()
+        fetchTokenBalances()
       }, 15000) // every 15 seconds
       
       return () => clearInterval(interval)
     }
-  }, [signer, wagmiAddress, fetchRecentActivity])
+  }, [signer, wagmiAddress, fetchRecentActivity, fetchTokenBalances])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowTokenDropdown(false)
+      }
+    }
+
+    if (showTokenDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showTokenDropdown])
 
   const resetForm = () => {
     setRecipient('')
     setAmount('')
     setRemarks('')
     setClaimInput('')
+    setSelectedToken(SUPPORTED_TOKENS[0]) // Reset to native token
     setError('')
     setSuccess('')
   }
@@ -209,22 +277,34 @@ export default function TransferPage() {
     setSuccess('')
     
     try {
-      // Direct implementation from transfer/page.tsx
-      if (isValidAddress(recipient)) {
-        await sendToAddress(signer, recipient, amount, remarks || '')
+      if (selectedToken.isNative) {
+        // Native transfer
+        if (isValidAddress(recipient)) {
+          await sendToAddress(signer, recipient, amount, remarks || '')
+        } else {
+          await sendToUsername(signer, recipient, amount, remarks || '')
+        }
       } else {
-        await sendToUsername(signer, recipient, amount, remarks || '')
+        // Token transfer
+        if (isValidAddress(recipient)) {
+          await sendTokenToAddress(signer, recipient, selectedToken.address, amount, remarks || '')
+        } else {
+          await sendTokenToUsername(signer, recipient, selectedToken.address, amount, remarks || '')
+        }
       }
       
-      setSuccess('Transfer sent successfully! The recipient must claim the transfer to complete it.')
+      setSuccess(`${selectedToken.symbol} transfer sent successfully! The recipient must claim the transfer to complete it.`)
       resetForm()
-      setTimeout(() => fetchRecentActivity(), 2000)
+      setTimeout(() => {
+        fetchRecentActivity()
+        fetchTokenBalances()
+      }, 2000)
     } catch (err: any) {
       console.error('Error sending transfer:', err)
       
       // Provide specific error messages for common issues
       if (err.message?.includes('insufficient funds') || err.message?.includes('insufficient balance')) {
-        setError('Insufficient balance. Please check your wallet balance and try again.')
+        setError(`Insufficient ${selectedToken.symbol} balance. Please check your wallet balance and try again.`)
       } else if (err.message?.includes('user not found') || err.message?.includes('not registered')) {
         setError(`Username "${recipient}" does not exist. Please verify the username and try again.`)
       } else if (err.message?.includes('gas')) {
@@ -239,7 +319,7 @@ export default function TransferPage() {
     }
   }
 
-  const handleClaimTransfer = async (id: string) => {
+  const handleClaimTransfer = async (id: string, isNativeToken: boolean = true) => {
     if (!signer) {
       setError('Please connect your wallet first')
       return
@@ -250,10 +330,16 @@ export default function TransferPage() {
     setSuccess('')
     
     try {
-      // Direct implementation from transfer/page.tsx
-      await claimTransferById(signer, id)
+      if (isNativeToken) {
+        await claimTransferById(signer, id)
+      } else {
+        await claimTokenTransfer(signer, id)
+      }
       setSuccess('Transfer claimed successfully!')
-      setTimeout(() => fetchRecentActivity(), 2000)
+      setTimeout(() => {
+        fetchRecentActivity()
+        fetchTokenBalances()
+      }, 2000)
     } catch (err: any) {
       console.error('Error claiming transfer:', err)
       
@@ -281,25 +367,42 @@ export default function TransferPage() {
     setClaimSuccess('')
     
     try {
-      // Detect input type based on format
+      // Try both native and token claiming methods
       if (isValidAddress(claimInput)) {
-        // Input is a wallet address
-        await claimTransferByAddress(signer, claimInput)
+        // Input is a wallet address - try both native and token
+        try {
+          await claimTransferByAddress(signer, claimInput)
+        } catch (err) {
+          // If native fails, try token
+          await claimTokenTransferByAddress(signer, claimInput)
+        }
       } else if (claimInput.length >= 64 || claimInput.startsWith('0x')) {
-        // Input appears to be a transfer ID (long hash)
-        await claimTransferById(signer, claimInput)
+        // Input appears to be a transfer ID (long hash) - try both
+        try {
+          await claimTransferById(signer, claimInput)
+        } catch (err) {
+          // If native fails, try token
+          await claimTokenTransfer(signer, claimInput)
+        }
       } else {
-        // Input is likely a username
-        await claimTransferByUsername(signer, claimInput)
+        // Input is likely a username - try both
+        try {
+          await claimTransferByUsername(signer, claimInput)
+        } catch (err) {
+          // If native fails, try token
+          await claimTokenTransferByUsername(signer, claimInput)
+        }
       }
       
-      // Transaction is already completed in the utility functions
       setClaimSuccess('Transfer claimed successfully!')
       // Reset form field
       setClaimInput('')
       
       // Refresh the transfer list after a short delay
-      setTimeout(() => fetchRecentActivity(), 2000)
+      setTimeout(() => {
+        fetchRecentActivity()
+        fetchTokenBalances()
+      }, 2000)
     } catch (err: any) {
       console.error('Error claiming transfer:', err)
       
@@ -320,8 +423,8 @@ export default function TransferPage() {
     }
   }
 
-  // Exact implementation from transfer/page.tsx
-  const handleRefundTransfer = async (id: string) => {
+  // Updated refund function to handle both native and token transfers
+  const handleRefundTransfer = async (id: string, isNativeToken: boolean = true) => {
     if (!signer) {
       setError('Please connect your wallet first')
       return
@@ -332,9 +435,16 @@ export default function TransferPage() {
     setSuccess('')
 
     try {
-      await refundTransfer(signer, id)
+      if (isNativeToken) {
+        await refundTransfer(signer, id)
+      } else {
+        await refundTokenTransfer(signer, id)
+      }
       setSuccess('Transfer refunded successfully!')
-      setTimeout(() => fetchRecentActivity(), 2000)
+      setTimeout(() => {
+        fetchRecentActivity()
+        fetchTokenBalances()
+      }, 2000)
     } catch (error) {
       console.error('Refund error:', error)
       setError(error instanceof Error ? error.message : 'Failed to refund transfer')
@@ -383,22 +493,22 @@ export default function TransferPage() {
         initial="initial"
         animate="animate"
       >
-        <h1 className="text-3xl md:text-4xl font-bold text-[rgb(var(--foreground))] mb-2">Transfer</h1>
-        <p className="text-[rgb(var(--muted-foreground))]">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">Transfer</h1>
+        <p className="text-gray-600 dark:text-gray-400">
           Send, claim, and manage secure crypto transfers across chains
         </p>
       </motion.div>
 
       {!isUserConnected ? (
         <motion.div 
-          className="card backdrop-blur-lg p-8 text-center"
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 text-center shadow-sm"
           variants={fadeIn}
           initial="initial"
           animate="animate"
         >
-          <UserCircleIcon className="w-16 h-16 text-[rgb(var(--primary))] mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Connect Your Wallet</h2>
-          <p className="text-[rgb(var(--muted-foreground))] mb-4">
+          <UserCircleIcon className="w-16 h-16 text-green-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Connect Your Wallet</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             Please connect your wallet to send or manage transfers.
           </p>
           <ConnectButton />
@@ -437,21 +547,85 @@ export default function TransferPage() {
                   </div>
                 </div>
                 
-                <div>
+                {/* Amount Input with Integrated Token Selection */}
+                <div ref={dropdownRef}>
                   <label className="block text-[rgb(var(--muted-foreground))] mb-2 text-sm">Amount</label>
                   <div className="relative">
                     <input
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full bg-[rgb(var(--muted))]/20 border border-[rgb(var(--border))]/50 rounded-xl px-4 py-3 text-[rgb(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))]/50"
+                      className="w-full bg-[rgb(var(--muted))]/20 border border-[rgb(var(--border))]/50 rounded-xl px-4 py-3 pr-32 text-[rgb(var(--foreground))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--ring))]/50"
                       placeholder="0.0"
                       step="0.00001"
                     />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(var(--muted-foreground))]">
-                      <CurrencyDollarIcon className="w-5 h-5" />
+                    
+                    {/* Token Selector Button */}
+                    <div className="absolute right-1 top-1 bottom-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowTokenDropdown(!showTokenDropdown)}
+                        className="h-full px-3 bg-[rgb(var(--muted))]/30 hover:bg-[rgb(var(--muted))]/40 border border-[rgb(var(--border))]/30 rounded-lg flex items-center space-x-2 text-[rgb(var(--foreground))] transition-colors"
+                      >
+                        <img
+                          src={selectedToken.logo}
+                          alt={selectedToken.symbol}
+                          className="w-5 h-5 rounded-full"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                        <span className="text-sm font-medium">{selectedToken.symbol}</span>
+                        <ChevronDownIcon className={`w-4 h-4 transition-transform ${showTokenDropdown ? 'rotate-180' : ''}`} />
+                      </button>
                     </div>
+                    
+                    {/* Token Dropdown */}
+                    {showTokenDropdown && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-[rgb(var(--background))] border border-[rgb(var(--border))] rounded-xl shadow-lg z-50 max-h-64 overflow-y-auto">
+                        {SUPPORTED_TOKENS.map((token) => (
+                          <button
+                            key={token.address}
+                            type="button"
+                            onClick={() => {
+                              setSelectedToken(token)
+                              setShowTokenDropdown(false)
+                            }}
+                            className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-[rgb(var(--muted))]/20 transition-colors text-left"
+                          >
+                            <img
+                              src={token.logo}
+                              alt={token.symbol}
+                              className="w-6 h-6 rounded-full"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none'
+                              }}
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <span className="font-medium text-[rgb(var(--foreground))]">{token.symbol}</span>
+                                  <span className="text-sm text-[rgb(var(--muted-foreground))] ml-2">{token.name}</span>
+                                </div>
+                                {tokenBalances[token.address] && (
+                                  <span className="text-sm text-[rgb(var(--muted-foreground))]">
+                                    {parseFloat(tokenBalances[token.address]).toFixed(4)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  
+                  {/* Available Balance */}
+                  {tokenBalances[selectedToken.address] && (
+                    <p className="mt-1 text-sm text-[rgb(var(--muted-foreground))] text-right">
+                      Available: {parseFloat(tokenBalances[selectedToken.address]).toFixed(6)} {selectedToken.symbol}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
@@ -492,7 +666,7 @@ export default function TransferPage() {
                   ) : (
                     <>
                       <ShieldCheckIcon className="w-5 h-5 mr-2" />
-                      <span>Send Secure Transfer</span>
+                      <span>Send {selectedToken.symbol} Transfer</span>
                     </>
                   )}
                 </button>
@@ -565,25 +739,40 @@ export default function TransferPage() {
                           const isRecipient = transfer.recipient.toLowerCase() === wagmiAddress?.toLowerCase()
                           const isSender = transfer.sender.toLowerCase() === wagmiAddress?.toLowerCase()
                           
+                          // Get token info for display
+                          const tokenInfo = transfer.isNativeToken 
+                            ? SUPPORTED_TOKENS[0] // Native XRP
+                            : SUPPORTED_TOKENS.find(t => t.address === transfer.token) || SUPPORTED_TOKENS[0]
+                          
                           return (
                             <div key={transfer.id} className="bg-white/5 p-4 rounded-lg border border-[rgb(var(--border))]/50">
                               <div className="flex justify-between mb-3">
                                 <div>
-                                  <div className="text-sm text-[rgb(var(--muted-foreground))] mb-1">
+                                  <div className="text-sm text-[rgb(var(--muted-foreground))] mb-1 flex items-center">
                                     {isRecipient ? 'From: ' : 'To: '}
-                                    <span className="font-mono">
+                                    <span className="font-mono ml-1">
                                       {shortenAddress(isRecipient ? transfer.sender : transfer.recipient)}
                                     </span>
+                                    {!transfer.isNativeToken && (
+                                      <span className="ml-2 px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs">
+                                        TOKEN
+                                      </span>
+                                    )}
                                   </div>
                                   <div className="text-lg font-semibold">
-                                    {transfer.amount} {nativeToken}
+                                    {transfer.amount} {tokenInfo.symbol}
                                   </div>
+                                  {!transfer.isNativeToken && (
+                                    <div className="text-xs text-[rgb(var(--muted-foreground))]">
+                                      {tokenInfo.name}
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="flex space-x-2">
                                   {isRecipient && (
                                     // Claim button for recipient
                                     <button
-                                      onClick={() => handleClaimTransfer(transfer.id)}
+                                      onClick={() => handleClaimTransfer(transfer.id, transfer.isNativeToken)}
                                       className="bg-[rgb(var(--primary))]/10 hover:bg-[rgb(var(--primary))]/20 text-[rgb(var(--primary))] px-3 py-1 rounded-lg text-sm font-medium transition-colors"
                                     >
                                       Claim
@@ -592,7 +781,7 @@ export default function TransferPage() {
                                   {isSender && (
                                     // Refund button for sender
                                     <button
-                                      onClick={() => handleRefundTransfer(transfer.id)}
+                                      onClick={() => handleRefundTransfer(transfer.id, transfer.isNativeToken)}
                                       className="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
                                     >
                                       Refund

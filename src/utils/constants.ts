@@ -25,3 +25,41 @@ export const STATUS_LABELS = {
   export const ANIMATION_DURATION = 0.5;
   export const STAGGER_DELAY = 0.1;
   export const MIN_PARTICIPANTS = 2;
+
+// Supported ERC20 tokens for transfers
+export const SUPPORTED_TOKENS = [
+  {
+    address: 'NATIVE',
+    symbol: 'XRP',
+    name: 'XRP (Native)',
+    decimals: 18,
+    logo: '/chains/trn.png', // Using TRN logo for native token
+    isNative: true
+  },
+  {
+    address: '0xcCcCCccC00000001000000000000000000000000',
+    symbol: 'ROOT',
+    name: 'Root Token',
+    decimals: 18,
+    logo: '/chains/trn.png', // Will be updated with ROOT logo
+    isNative: false
+  },
+  {
+    address: '0xCCcCCcCC00000C64000000000000000000000000',
+    symbol: 'STYLO',
+    name: 'Stylo Token',
+    decimals: 18,
+    logo: '/chains/trn.png', // Placeholder, will be updated
+    isNative: false
+  },
+  {
+    address: '0xcCcCCccC00004464000000000000000000000000',
+    symbol: 'ASTO',
+    name: 'Asto Token',
+    decimals: 18,
+    logo: '/chains/trn.png', // Placeholder, will be updated
+    isNative: false
+  }
+] as const;
+
+export type Token = typeof SUPPORTED_TOKENS[number];
