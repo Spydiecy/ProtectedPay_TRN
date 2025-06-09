@@ -1984,7 +1984,9 @@ interface TransferEvent {
 	userAddress: string
   ) => {
 	const contract = await getContract(signer);
-	return await contract.hasContributedToGroupPayment(paymentId, userAddress);
+	const contribution = await contract.getGroupPaymentContribution(paymentId, userAddress);
+	// If contribution is greater than 0, user has contributed
+	return contribution.gt(0);
   };
   
   export const getGroupPaymentContribution = async (

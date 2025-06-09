@@ -110,44 +110,52 @@ export default function GroupPaymentsPage() {
       setIsRefreshing(true)
       const profile = await getUserProfile(signer, address)
       
-      if (!profile || !profile.groupPaymentIds || profile.groupPaymentIds.length === 0) {
+      if (!profile) {
         setGroupPayments([])
         return
       }
       
-      const payments = await Promise.all(
-        profile.groupPaymentIds.map(async (id) => {
-          try {
-            const payment = await getGroupPaymentDetails(signer, id)
-            
-            // Check if user has contributed to this payment
-            const hasContributed = await hasContributedToGroupPayment(signer, id, address)
-            setUserContributions(prev => ({...prev, [id]: hasContributed}))
-            
-            return payment
-          } catch (err) {
-            console.error(`Error fetching payment ${id}:`, err)
-            return null
-          }
-        })
-      )
+      let payments: (GroupPayment | null)[] = []
+      let participatedPayments: (GroupPayment | null)[] = []
+      
+      // Fetch created group payments
+      if (profile.groupPaymentIds && profile.groupPaymentIds.length > 0) {
+        payments = await Promise.all(
+          profile.groupPaymentIds.map(async (id) => {
+            try {
+              const payment = await getGroupPaymentDetails(signer, id)
+              
+              // Check if user has contributed to this payment
+              const hasContributed = await hasContributedToGroupPayment(signer, id, address)
+              setUserContributions(prev => ({...prev, [id]: hasContributed}))
+              
+              return payment
+            } catch (err) {
+              console.error(`Error fetching payment ${id}:`, err)
+              return null
+            }
+          })
+        )
+      }
       
       // Also fetch participated payments
-      const participatedPayments = await Promise.all(
-        (profile.participatedGroupPayments || []).map(async (id) => {
-          try {
-            const payment = await getGroupPaymentDetails(signer, id)
-            
-            // User has definitely contributed to these
-            setUserContributions(prev => ({...prev, [id]: true}))
-            
-            return payment
-          } catch (err) {
-            console.error(`Error fetching participated payment ${id}:`, err)
-            return null
-          }
-        })
-      )
+      if (profile.participatedGroupPayments && profile.participatedGroupPayments.length > 0) {
+        participatedPayments = await Promise.all(
+          profile.participatedGroupPayments.map(async (id) => {
+            try {
+              const payment = await getGroupPaymentDetails(signer, id)
+              
+              // User has definitely contributed to these
+              setUserContributions(prev => ({...prev, [id]: true}))
+              
+              return payment
+            } catch (err) {
+              console.error(`Error fetched participated payment ${id}:`, err)
+              return null
+            }
+          })
+        )
+      }
       
       // Filter out nulls and combine arrays removing duplicates
       const allPayments = [...payments, ...participatedPayments]

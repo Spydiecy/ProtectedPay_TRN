@@ -17,9 +17,11 @@ import { useAccount } from 'wagmi'
 import { useWallet } from '@/context/WalletContext'
 import { 
   getUserTransfers,
+  getUserTokenTransfers,
   getUserByAddress,
   registerUsername
 } from '@/utils/contract'
+import { SUPPORTED_TOKENS } from '@/utils/constants'
 import { ethers } from 'ethers';
 import { useChain } from '@/hooks/useChain';
 import ProfileQR from '@/components/qr/ProfileQR';
@@ -115,20 +117,19 @@ export default function DashboardPage() {
         }
 
         // Get all transfers for this address (includes both pending and completed transfers)
-        const allTransfers = await getUserTransfers(signer, address)
+        const [allTransfers, allTokenTransfers] = await Promise.all([
+          getUserTransfers(signer, address),
+          getUserTokenTransfers(signer, address)
+        ])
         
-        if (!allTransfers || allTransfers.length === 0) {
-          setRecentActivity([])
-          setIsLoading(false)
-          return
-        }
-
-        // Format transfers and get the 4 most recent ones
-        const activities = allTransfers
-          .map(transfer => {
+        let activities: Activity[] = []
+        
+        // Process native transfers
+        if (allTransfers && allTransfers.length > 0) {
+          const nativeActivities = allTransfers.map(transfer => {
             const isSender = transfer.sender.toLowerCase() === address.toLowerCase()
             return {
-              id: `${transfer.sender}-${transfer.recipient}-${transfer.timestamp}`,
+              id: `native-${transfer.sender}-${transfer.recipient}-${transfer.timestamp}`,
               type: isSender ? 'sent' : 'received',
               amount: `${parseFloat(transfer.amount).toFixed(4)} ${nativeToken}`,
               timestamp: transfer.timestamp,
@@ -136,11 +137,38 @@ export default function DashboardPage() {
               status: transfer.status
             } as Activity
           })
+          activities = [...activities, ...nativeActivities]
+        }
+        
+        // Process token transfers
+        if (allTokenTransfers && allTokenTransfers.length > 0) {
+          const tokenActivities = allTokenTransfers.map((transfer: any) => {
+            const isSender = transfer.sender.toLowerCase() === address.toLowerCase()
+            
+            // Find token info from SUPPORTED_TOKENS
+            const token = SUPPORTED_TOKENS.find(t => 
+              t.address.toLowerCase() === transfer.token?.toLowerCase()
+            ) || { symbol: 'UNKNOWN', name: 'Unknown Token' }
+            
+            return {
+              id: `token-${transfer.sender}-${transfer.recipient}-${transfer.timestamp}`,
+              type: isSender ? 'sent' : 'received',
+              amount: `${parseFloat(transfer.amount).toFixed(4)} ${token.symbol}`,
+              timestamp: transfer.timestamp,
+              otherParty: isSender ? transfer.recipient : transfer.sender,
+              status: transfer.status
+            } as Activity
+          })
+          activities = [...activities, ...tokenActivities]
+        }
+        
+        // Sort by timestamp and get the 4 most recent ones
+        const recentActivities = activities
           .sort((a, b) => b.timestamp - a.timestamp)
           .slice(0, 4)
         
         // Set state with the recent activities
-        setRecentActivity(activities)
+        setRecentActivity(recentActivities)
       } catch (err) {
         console.error('Error fetching data:', err)
       } finally {
