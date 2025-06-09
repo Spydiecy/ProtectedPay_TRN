@@ -119,7 +119,9 @@ export default function TransferPage() {
       
       for (const token of SUPPORTED_TOKENS) {
         try {
+          console.log(`Fetching balance for ${token.symbol} (${token.address})`)
           const balance = await getTokenBalance(signer, token.address, wagmiAddress)
+          console.log(`Balance for ${token.symbol}: ${balance}`)
           balances[token.address] = balance
         } catch (err) {
           console.error(`Error fetching balance for ${token.symbol}:`, err)

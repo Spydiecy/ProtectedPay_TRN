@@ -1,4 +1,8 @@
 // utils./constants.ts
+import { assetIdToERC20Address } from "@therootnetwork/evm";
+
+const ROOT_ASSET_ID = 1;
+const ROOT_CONTRACT_ADDRESS = assetIdToERC20Address(ROOT_ASSET_ID);
 
 export const STATUS_LABELS = {
     0: 'Pending',
@@ -37,10 +41,10 @@ export const SUPPORTED_TOKENS = [
     isNative: true
   },
   {
-    address: '0xcCcCCccC00000001000000000000000000000000',
+    address: ROOT_CONTRACT_ADDRESS,
     symbol: 'ROOT',
     name: 'Root Token',
-    decimals: 18,
+    decimals: 6,
     logo: '/chains/trn.png', // Will be updated with ROOT logo
     isNative: false
   },

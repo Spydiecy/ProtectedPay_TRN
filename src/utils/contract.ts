@@ -2314,6 +2314,16 @@ export const getTokenContract = async (signer: ethers.Signer) => {
   return new ethers.Contract(address, TOKEN_CONTRACT_ABI, signer);
 };
 
+// Helper function to parse token amount with correct decimals
+const parseTokenAmount = (amount: string, tokenAddress: string): ethers.BigNumber => {
+  // Check if it's ROOT token (uses 6 decimals)
+  if (tokenAddress.toLowerCase() === '0xcCcCCccC00000001000000000000000000000000'.toLowerCase()) {
+    return ethers.utils.parseUnits(amount, 6);
+  }
+  // For other tokens, use 18 decimals
+  return ethers.utils.parseEther(amount);
+};
+
 // ERC20 Token Transfer Functions
 export const sendTokenToAddress = async (
   signer: ethers.Signer, 
@@ -2326,7 +2336,7 @@ export const sendTokenToAddress = async (
   const tx = await contract.sendTokenToAddress(
     recipient, 
     tokenAddress, 
-    ethers.utils.parseEther(amount), 
+    parseTokenAmount(amount, tokenAddress), 
     remarks
   );
   await tx.wait();
@@ -2343,7 +2353,7 @@ export const sendTokenToUsername = async (
   const tx = await contract.sendTokenToUsername(
     username, 
     tokenAddress, 
-    ethers.utils.parseEther(amount), 
+    parseTokenAmount(amount, tokenAddress), 
     remarks
   );
   await tx.wait();
@@ -2378,6 +2388,16 @@ export const getPendingTokenTransfers = async (signer: ethers.Signer, userAddres
   return await contract.getPendingTokenTransfers(userAddress);
 };
 
+// Helper function to format token amount with correct decimals
+const formatTokenAmount = (amount: ethers.BigNumber, tokenAddress: string): string => {
+  // Check if it's ROOT token (uses 6 decimals)
+  if (tokenAddress.toLowerCase() === '0xcCcCCccC00000001000000000000000000000000'.toLowerCase()) {
+    return ethers.utils.formatUnits(amount, 6);
+  }
+  // For other tokens, use 18 decimals
+  return ethers.utils.formatEther(amount);
+};
+
 export const getTokenTransferDetails = async (signer: ethers.Signer, transferId: string) => {
   const contract = await getTokenContract(signer);
   const details = await contract.getTokenTransferDetails(transferId);
@@ -2385,7 +2405,7 @@ export const getTokenTransferDetails = async (signer: ethers.Signer, transferId:
     sender: details.sender,
     recipient: details.recipient,
     token: details.token,
-    amount: ethers.utils.formatEther(details.amount),
+    amount: formatTokenAmount(details.amount, details.token),
     timestamp: details.timestamp.toNumber(),
     status: details.status,
     remarks: details.remarks,
@@ -2395,27 +2415,48 @@ export const getTokenTransferDetails = async (signer: ethers.Signer, transferId:
 
 // Token balance and allowance functions
 export const getTokenBalance = async (signer: ethers.Signer, tokenAddress: string, userAddress: string) => {
+  console.log(`getTokenBalance called for token: ${tokenAddress}, user: ${userAddress}`);
+  
   // For native token, get ETH balance
   if (tokenAddress === 'NATIVE') {
     const balance = await signer.provider?.getBalance(userAddress);
-    return balance ? ethers.utils.formatEther(balance) : '0';
+    const formattedBalance = balance ? ethers.utils.formatEther(balance) : '0';
+    console.log(`Native token balance: ${formattedBalance}`);
+    return formattedBalance;
   }
   
   // For ERC20 tokens, use the contract's balance function
   const contract = await getTokenContract(signer);
   
-  // Check if it's ROOT token (has specific balance function)
-  if (tokenAddress === '0xcCcCCccC00000001000000000000000000000000') {
-    const balance = await contract.getRootTokenBalance(userAddress);
-    return ethers.utils.formatEther(balance);
+  // Check if it's ROOT token (has specific balance function and uses 6 decimals)
+  if (tokenAddress.toLowerCase() === '0xcCcCCccC00000001000000000000000000000000'.toLowerCase()) {
+    try {
+      console.log('Fetching ROOT token balance using getRootTokenBalance...');
+      const balance = await contract.getRootTokenBalance(userAddress);
+      // ROOT token uses 6 decimals, not 18
+      const formattedBalance = ethers.utils.formatUnits(balance, 6);
+      console.log(`ROOT token balance from contract: ${formattedBalance}`);
+      return formattedBalance;
+    } catch (error) {
+      console.error('Error fetching ROOT token balance:', error);
+      // Fallback to standard ERC20 balanceOf
+      console.log('Falling back to standard ERC20 balanceOf for ROOT token...');
+    }
   }
   
   // For other ERC20 tokens, use standard ERC20 interface
-  const erc20Contract = new ethers.Contract(tokenAddress, [
-    'function balanceOf(address) view returns (uint256)'
-  ], signer);
-  const balance = await erc20Contract.balanceOf(userAddress);
-  return ethers.utils.formatEther(balance);
+  try {
+    const erc20Contract = new ethers.Contract(tokenAddress, [
+      'function balanceOf(address) view returns (uint256)'
+    ], signer);
+    const balance = await erc20Contract.balanceOf(userAddress);
+    const formattedBalance = ethers.utils.formatEther(balance);
+    console.log(`ERC20 token balance for ${tokenAddress}: ${formattedBalance}`);
+    return formattedBalance;
+  } catch (error) {
+    console.error(`Error fetching ERC20 balance for ${tokenAddress}:`, error);
+    return '0';
+  }
 };
 
 export const approveToken = async (
@@ -2433,7 +2474,7 @@ export const approveToken = async (
     'function approve(address spender, uint256 amount) returns (bool)'
   ], signer);
   
-  const tx = await erc20Contract.approve(spenderAddress, ethers.utils.parseEther(amount));
+  const tx = await erc20Contract.approve(spenderAddress, parseTokenAmount(amount, tokenAddress));
   await tx.wait();
 };
 
@@ -2448,11 +2489,12 @@ export const getTokenAllowance = async (
     return ethers.constants.MaxUint256.toString();
   }
   
-  // Check if it's ROOT token (has specific allowance function)
-  if (tokenAddress === '0xcCcCCccC00000001000000000000000000000000') {
+  // Check if it's ROOT token (has specific allowance function and uses 6 decimals)
+  if (tokenAddress.toLowerCase() === '0xcCcCCccC00000001000000000000000000000000'.toLowerCase()) {
     const contract = await getTokenContract(signer);
     const allowance = await contract.getRootTokenAllowance(ownerAddress);
-    return ethers.utils.formatEther(allowance);
+    // ROOT token uses 6 decimals, not 18
+    return ethers.utils.formatUnits(allowance, 6);
   }
   
   // For other ERC20 tokens, use standard ERC20 interface
@@ -2473,7 +2515,7 @@ export const getUserTokenTransfers = async (signer: ethers.Signer, userAddress: 
     sender: transfer.sender,
     recipient: transfer.recipient,
     token: transfer.token,
-    amount: ethers.utils.formatEther(transfer.amount),
+    amount: formatTokenAmount(transfer.amount, transfer.token),
     timestamp: transfer.timestamp.toNumber(),
     status: transfer.status,
     remarks: transfer.remarks,
@@ -2492,7 +2534,7 @@ export const canTransferToken = async (
   const result = await contract.canTransferToken(
     senderAddress, 
     tokenAddress, 
-    ethers.utils.parseEther(amount)
+    parseTokenAmount(amount, tokenAddress)
   );
   return {
     canTransfer: result[0],
