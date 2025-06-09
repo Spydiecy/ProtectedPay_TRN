@@ -1,18 +1,7 @@
 import { ethers } from 'ethers';
 
 const CONTRACT_ADDRESSES = {
-	12227332: '0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9', // NeoX Testnet
-	656476: '0x03c4fb7563e593ca0625C1c64959AC56081785cE', // EduChain Testnet
-	41923: '0x5bA4CB3929C75DF47B8b5E6ca6c7414a5E1a3DB0', // Educhain Mainnet
-	1001: '0xca36dd890f987edce1d6d7c74fb9df627c216bf6', // KAIA Testnet
-	41: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // Telos Testnet
-	28122024: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // Ancient8 Testnet
-	5003: '0x74689f77e03D8213DF5037b681F05b80bAAe3504', // Mantle Testnet
-	59141: '0xd150d34976Ac00D5e892aDFE565ba47de11c2656', // Linea Testnet
-	4157: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // CrossFi Testnet
-	66665: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // Creator Testnet
-	5201420: '0x186a621d17819788c9aa170065ff3bbEEF37E7B7', // Electroneum Testnet
-	52014: '0xC27106b03AadbFFec555C64F461784fCE850A51b', // Electroneum Mainnet
+	7672: '0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6', // Root Network Porcini (Testnet)
 } as const;
   
 const CONTRACT_ABI = [
@@ -1156,7 +1145,7 @@ interface TransferEvent {
   const getContractAddress = async (signer: ethers.Signer) => {
 	const chainId = await signer.getChainId();
 	return CONTRACT_ADDRESSES[chainId as keyof typeof CONTRACT_ADDRESSES] 
-	  || CONTRACT_ADDRESSES[656476]; // Default to Educhain if chain not found
+	  || CONTRACT_ADDRESSES[7672]; // Default to Root Network if chain not found
   };
   
   // Contract instance getter with chain awareness
@@ -1539,22 +1528,16 @@ interface TransferEvent {
   
   export const getChainNativeCurrency = (chainId: number) => {
 	switch (chainId) {
-	  case 12227332:
+	  case 7672:
 		return {
-		  name: 'GAS',
-		  symbol: 'GAS',
-		  decimals: 18
-		};
-	  case 656476:
-		return {
-		  name: 'EDU',
-		  symbol: 'EDU',
+		  name: 'XRP',
+		  symbol: 'XRP',
 		  decimals: 18
 		};
 	  default:
 		return {
-		  name: 'GAS',
-		  symbol: 'GAS',
+		  name: 'XRP',
+		  symbol: 'XRP',
 		  decimals: 18
 		};
 	}
@@ -1562,12 +1545,10 @@ interface TransferEvent {
   
   export const getExplorerUrl = (chainId: number) => {
 	switch (chainId) {
-	  case 12227332:
-		return 'https://xt4scan.ngd.network/';
-	  case 656476:
-		return 'https://opencampus-codex.blockscout.com/';
+	  case 7672:
+		return 'https://porcini.rootscan.io';
 	  default:
-		return 'https://xt4scan.ngd.network/';
+		return 'https://porcini.rootscan.io';
 	}
   };
   

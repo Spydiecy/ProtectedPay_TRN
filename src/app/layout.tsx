@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: 'ProtectedPay | Secure Crypto Transfers on multiple evm chains',
-  description: 'Secure crypto transfers, group payments, and smart savings on the multiple evm chains',
-  keywords: 'crypto, payments, blockchain, electroneum, educhain, flow, kaia, ancient8, DeFi, secure transfers, group payments',
+  title: 'ProtectedPay | Secure Crypto Transfers on The Root Network',
+  description: 'Secure crypto transfers, group payments, and smart savings on The Root Network (TRN) blockchain',
+  keywords: 'crypto, payments, blockchain, The Root Network, TRN, XRP, DeFi, secure transfers, group payments, Porcini testnet',
   authors: [{ name: 'ProtectedPay' }],
 };
 

@@ -284,20 +284,9 @@ const Navbar = () => {
   );
 };
 
-const ChainSlider = () => {
-  const chains = [
-    { name: 'Electroneum', icon: '/chains/electroneum.png' },
-    { name: 'NeoX', icon: '/chains/neox.png' },
-    { name: 'EduChain', icon: '/chains/educhain.png' },
-    { name: 'Ancient8', icon: '/chains/ancient8.png' },
-    { name: 'Mantle', icon: '/chains/mantle.png' },
-    { name: 'Kaia', icon: '/chains/kaia.png' },
-    { name: 'Linea', icon: '/chains/linea.png' },
-    { name: 'Creator', icon: '/chains/creator.png' },
-  ];
-
+const TRNShowcase = () => {
   return (
-    <section id="chains" className="py-16 relative overflow-hidden">
+    <section id="network" className="py-16 relative overflow-hidden">
       <div className="container mx-auto px-4 mb-10">
         <motion.h2 
           className="text-3xl md:text-5xl font-bold mb-4 text-center"
@@ -307,147 +296,62 @@ const ChainSlider = () => {
           viewport={{ once: true }}
         >
           <span className="bg-gradient-to-r from-green-500 to-emerald-500 dark:from-green-400 dark:to-emerald-500 text-transparent bg-clip-text">
-            Multi-Chain Support
+            Built for The Root Network
           </span>
         </motion.h2>
         
         <motion.p
-          className="text-center text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8"
+          className="text-center text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-12"
           variants={fadeIn}
           initial="initial"
           whileInView="animate"
           viewport={{ once: true }}
         >
-          Send and receive funds seamlessly across multiple blockchain networks, all with the same secure interface
+          Experience ultra-fast transactions and low fees on The Root Network's advanced blockchain infrastructure
         </motion.p>
-      </div>
 
-      <div className="slider-container">
-        <div className="slider">
-          {/* Generate multiple copies for infinite scrolling effect */}
-          {[...Array(4)].map((_, copyIndex) => (
-            <React.Fragment key={`copy-${copyIndex}`}>
-              {chains.map((chain, index) => (
-                <div key={`chain-${copyIndex}-${index}`} className="slide">
-                  <div className="logo-wrapper group">
-                    <Image
-                      src={chain.icon}
-                      alt={chain.name}
-                      width={80}
-                      height={80}
-                      className="logo-image transition-all duration-300 filter grayscale group-hover:grayscale-0 group-hover:scale-110"
-                    />
-                    <div className="logo-name opacity-70 group-hover:opacity-100 group-hover:text-green-500 dark:group-hover:text-green-400">
-                      {chain.name}
-                    </div>
+        <div className="flex justify-center">
+          <motion.div 
+            className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8 max-w-md"
+            variants={fadeIn}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-20 h-20 relative">
+                <Image
+                  src="/chains/trn.png"
+                  alt="The Root Network"
+                  width={80}
+                  height={80}
+                  className="transition-all duration-300 hover:scale-110"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-2">The Root Network</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Porcini Testnet
+                </p>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Chain ID:</span>
+                    <span className="font-mono">7672</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Currency:</span>
+                    <span className="font-semibold">XRP</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Status:</span>
+                    <span className="text-green-500 font-semibold">✅ Active</span>
                   </div>
                 </div>
-              ))}
-            </React.Fragment>
-          ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
-      
-      <style jsx>{`
-        .slider-container {
-          position: relative;
-          overflow: hidden;
-          padding: 20px 0;
-          width: 100%;
-        }
-        
-        .slider-container::before,
-        .slider-container::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          width: 200px;
-          height: 100%;
-          z-index: 2;
-          pointer-events: none;
-        }
-        
-        .slider-container::before {
-          left: 0;
-          background: linear-gradient(to right, var(--slider-bg-start), var(--slider-bg-end));
-        }
-        
-        .slider-container::after {
-          right: 0;
-          background: linear-gradient(to left, var(--slider-bg-start), var(--slider-bg-end));
-        }
-        
-        .slider {
-          display: flex;
-          animation: scroll 60s linear infinite;
-          width: fit-content;
-        }
-        
-        .slider-container:hover .slider {
-          animation-play-state: paused;
-        }
-        
-        .slide {
-          flex: 0 0 auto;
-          width: 140px;
-          box-sizing: border-box;
-          padding: 0 10px;
-        }
-        
-        .logo-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 10px;
-          border-radius: 12px;
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(128, 128, 128, 0.2);
-          transition: all 0.3s ease;
-          cursor: pointer;
-          height: 120px;
-        }
-        
-        .logo-wrapper:hover {
-          border-color: rgba(74, 222, 128, 0.4);
-          transform: translateY(-5px);
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo-image {
-          width: 60px;
-          height: 60px;
-          object-fit: contain;
-        }
-        
-        .logo-name {
-          margin-top: 8px;
-          font-size: 14px;
-          text-align: center;
-          color: #6b7280;
-          transition: all 0.3s ease;
-        }
-        
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-140px * ${chains.length}));
-          }
-        }
-
-        :root {
-          --slider-bg-start: rgba(255, 255, 255, 1);
-          --slider-bg-end: rgba(255, 255, 255, 0);
-        }
-
-        :global(.dark) {
-          --slider-bg-start: rgba(0, 0, 0, 1);
-          --slider-bg-end: rgba(0, 0, 0, 0);
-        }
-      `}</style>
     </section>
   );
 };
@@ -683,7 +587,7 @@ const LandingPage = () => {
       <main className="flex-grow">
         <Hero />
         <TransferHighlight />
-        <ChainSlider />
+        <TRNShowcase />
       </main>
       
       {/* Footer - explicitly attached to the bottom */}

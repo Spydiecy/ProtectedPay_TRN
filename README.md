@@ -3,15 +3,15 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/eb3dbd55-6522-4d3b-b6f9-6ec63157e565" alt="ProtectedPay Logo" width="650px">
   
-  <h3>Smart. Secure Crypto Transfers</h3>
+  <h3>Smart. Secure Crypto Transfers on The Root Network</h3>
   
-  <p>A revolutionary DeFi platform for secure transfers, group payments, and smart savings across multiple blockchains.</p>
+  <p>A revolutionary DeFi platform for secure transfers, group payments, and smart savings, built exclusively for The Root Network (TRN) blockchain.</p>
 </div>
 
 ## 📋 Contents
 
 - [Features](#-features)
-- [Supported Blockchains](#-supported-blockchains)
+- [Supported Networks](#-supported-networks)
 - [How It Works](#-how-it-works)
 - [User Interface](#-user-interface)
 - [Security](#-security)
@@ -21,26 +21,26 @@
 
 ## ✨ Features
 
-### 🛡️ Protected Cross-Chain Transfers
+### 🛡️ Protected Transfers on The Root Network
 
-<img align="right" src="https://github.com/user-attachments/assets/bdb20bd8-fa93-488a-b720-46615b9918de" width="350px">
+<img align="right" src="https://github.com/user-attachments/assets/c5c1630d-0ace-4a95-a0ab-075d00605311" width="350px">
 
 - **Escrow-Like Protection**: Funds remain secure until claimed by recipient
-- **Multi-Chain Support**: Send assets seamlessly across different blockchains
+- **Refundable Transfers**: Easily recover funds if sent to the wrong address
 - **Easy Identification**: Transfer using usernames instead of complex addresses
 - **Customizable Remarks**: Add notes to help identify your transfers
-- **Refund Safety Net**: Easily recover unclaimed funds
 - **QR Integration**: Scan to pay functionality for quick transfers
 - **Transaction Privacy**: Keep your transfer details confidential
+- **TRN-Native Speed**: Benefit from The Root Network's ultra-fast transaction finality
 
 <br clear="right"/>
 
 ### 👥 Group Payments
 
-<img align="right" src="https://github.com/user-attachments/assets/56141ff7-ad4b-4a1e-bfac-5abdd92b22a9" width="350px">
+<img align="right" src="https://github.com/user-attachments/assets/26daca67-e41d-49ea-8203-369f8afc9249" width="350px">
 
 - **Split Expenses Easily**: Divide costs among friends or colleagues
-- **Cross-Chain Contributors**: Accept payments from any supported blockchain
+- **Simple Contributors**: Accept payments from any TRN user
 - **Automatic Distribution**: Funds released when target amount is reached
 - **Real-Time Tracking**: Monitor contributions as they happen
 - **Transparent History**: View all group payment activity
@@ -50,28 +50,15 @@
 
 ### 💰 Savings Pots
 
-<img align="right" src="https://github.com/user-attachments/assets/4c88cdb7-d21c-4d1e-863f-53d063830e19" width="350px">
+<img align="right" src="https://github.com/user-attachments/assets/ec386240-4093-4c25-bb63-21d6ede14e5c" width="350px">
 
 - **Goal-Based Savings**: Set targets and track progress visually
-- **Chain-Specific Pots**: Create dedicated savings on each blockchain
+- **TRN-Optimized**: Create dedicated savings on The Root Network
 - **Flexible Contributions**: Add funds on your own schedule
 - **Emergency Access**: Withdraw when needed without penalties
 - **Purpose Tracking**: Organize savings by specific goals or needs
-- **Yield Earning**: Option to earn yield on your savings, increasing chain TVL
+- **Yield Earning**: Option to earn yield on your savings, increasing TRN TVL
 - **Progress Visualization**: Watch your savings grow in real-time
-
-<br clear="right"/>
-
-### 🔄 Cross-Chain User Experience
-
-<img align="right" src="https://github.com/user-attachments/assets/35cbdaad-5e05-4dc6-9a13-18b2f0b4a919" width="350px">
-
-- **Universal Username**: One identity across all supported chains
-- **Unified Dashboard**: View all activities in a single interface
-- **Real-Time Balances**: Track your assets across all networks
-- **Chain-Aware Design**: UI adapts to the selected blockchain
-- **Seamless Switching**: Change networks without changing interfaces
-- **Comprehensive History**: View transactions across all chains
 
 <br clear="right"/>
 
@@ -87,95 +74,89 @@
 - **Instant Recognition**: Fast processing of payment information
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/f645759e-47bf-4fb1-9e87-b46f7c0bc6a7" width="400px">
+  <img src="https://github.com/user-attachments/assets/f09258a5-936c-4162-bf56-9a89835fdfe2" width="400px">
 </div>
 
 <br clear="right"/>
 
-## 🔗 Supported Blockchains
+## 🔗 Supported Networks
 
-ProtectedPay operates seamlessly across multiple blockchains, delivering consistent functionality regardless of your preferred network.
+ProtectedPay is built exclusively for The Root Network (TRN) blockchain ecosystem, delivering optimized functionality on the Porcini testnet environment.
 
-<div align="center">
+<div align="left">
   <table>
     <tr>
-      <td align="center"><img src="/public/chains/electroneum.png" width="50px"><br><b>Electroneum</b></td>
-      <td align="center"><img src="/public/chains/educhain.png" width="50px"><br><b>EduChain</b></td>
-      <td align="center"><img src="/public/chains/neox.png" width="50px"><br><b>NeoX</b></td>
-      <td align="center"><img src="/public/chains/kaia.png" width="50px"><br><b>KAIA</b></td>
-      <td align="center"><img src="/public/chains/telos.png" width="50px"><br><b>Telos</b></td>
-    </tr>
-    <tr>
-      <td align="center"><img src="/public/chains/ancient8.png" width="50px"><br><b>Ancient8</b></td>
-      <td align="center"><img src="/public/chains/mantle.png" width="50px"><br><b>Mantle</b></td>
-      <td align="center"><img src="/public/chains/linea.png" width="50px"><br><b>Linea</b></td>
-      <td align="center"><img src="/public/chains/creator.png" width="50px"><br><b>Creator</b></td>
-      <td align="center"><img src="/public/chains/crossfi.png" width="50px"><br><b>CrossFi</b></td>
+      <td align="center"><img src="/public/chains/trn.png" width="70px"><br><b>Root Network Porcini (Testnet)</b></td>
     </tr>
   </table>
+</div>
+
+<div align="ledt">
+  <img src="https://github.com/user-attachments/assets/67edf085-97a7-443b-8f9b-48eb8351890f" width="700px">
+  <p><i>Comprehensive dashboard with activity tracking</i></p>
 </div>
 
 ## 🚀 How It Works
 
 ### Protected Transfers in 3 Simple Steps
 
-1. **Connect & Select**: Choose your blockchain network and connect your wallet
+1. **Connect Your Wallet**: Connect your TRN-compatible wallet to ProtectedPay
 2. **Enter Details**: Specify recipient (username, address, or QR scan) and amount
-3. **Confirm & Send**: The recipient securely claims funds when ready
+3. **Confirm & Send**: The recipient securely claims funds when ready, or you can refund if needed
 
 ### Group Payments Made Easy
 
 1. **Create Pool**: Set up a payment group with target amount and participants
-2. **Share & Collect**: Participants contribute from any supported chain
+2. **Share & Collect**: Participants contribute to the pool
 3. **Auto-Distribution**: Funds are automatically sent to the recipient when the target is reached
 
 ### Smart Savings Pots
 
-1. **Set Goals**: Choose a blockchain and set your savings target
+1. **Set Goals**: Set your savings target on The Root Network
 2. **Contribute**: Add funds at your own pace with real-time progress tracking
-3. **Yield Option**: Opt to earn yield on your savings, helping grow both your funds and the chain's TVL
+3. **Yield Option**: Opt to earn yield on your savings, helping grow both your funds and TRN's TVL
 4. **Flexible Access**: Withdraw partially or completely whenever needed
 
 ## 💻 User Interface
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/c87a5393-76dd-4cde-9895-80481511cc2c" width="700px">
+<div align="left">
+  <img src="https://github.com/user-attachments/assets/9dc7d205-f19f-4893-8e97-ff2918cd9708" width="700px">
   <p><i>Modern, intuitive interface with glassmorphism design</i></p>
 </div>
 
 ### Design Philosophy
 
-- **Chain-Responsive**: UI themes adapt to the selected blockchain
+- **TRN-Inspired**: UI themes designed to match The Root Network's branding
 - **Glassmorphism**: Modern, clean aesthetics with depth and transparency
 - **Responsive Layout**: Perfect experience on any device
 - **Intuitive Navigation**: Easily access all features with minimal learning curve
 
 ### Dashboard Experience
 
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/21ce5262-c766-4a5a-bc5a-4b10f776188b" width="700px">
-  <p><i>Comprehensive dashboard with multi-chain activity tracking</i></p>
+<div align="ledt">
+  <img src="https://github.com/user-attachments/assets/7fbe5d00-b6e7-479d-9949-a4e9ef90e962" width="700px">
+  <p><i>Comprehensive dashboard with activity tracking</i></p>
 </div>
 
-- **Activity Feed**: Real-time updates across all chains
-- **Asset Overview**: Quick view of balances on each network
+- **Activity Feed**: Real-time updates of your transactions
+- **Asset Overview**: Quick view of your XRP balance
 - **Status Indicators**: Clear visual cues for transaction states
-- **Network Switching**: Seamlessly change blockchains within the interface
+- **Network Selection**: Seamlessly switch between different network environments
 
 ## 🔒 Security
 
 ProtectedPay prioritizes security at every level:
 
-- **Smart Contract Safety**: Chain-specific contracts with rigorous security measures
+- **Smart Contract Safety**: TRN-optimized contracts with rigorous security measures
 - **Non-Custodial Architecture**: Users always maintain control of their funds
 - **Protected Transfers**: Built-in escrow functionality keeps funds secure
 - **QR Verification**: Thorough validation of all scanned payment codes
-- **Cross-Chain Safeguards**: Secure bridging between different blockchains
-- **Transparent Transactions**: Clear visibility of all operation stages
+- **Refundable Transactions**: Safety net for accidental transfers
+- **Transparent Operations**: Clear visibility of all transaction stages
 
 ## 📃 Deployed Contracts
 
-<div align="center">
+<div align="left">
   <table>
     <tr>
       <th>Network</th>
@@ -183,57 +164,7 @@ ProtectedPay prioritizes security at every level:
       <th>Status</th>
     </tr>
     <tr>
-      <td><img src="/public/chains/electroneum.png" width="20"> Electrneum Mainnet</td>
-      <td><code>0x186a621d17819788c9aa170065ff3bbEEF37E7B7</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/electroneum.png" width="20"> Electrneum Testnet</td>
-      <td><code>0xC27106b03AadbFFec555C64F461784fCE850A51b</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/educhain.png" width="20"> Educhain Testnet</td>
-      <td><code>0x03c4fb7563e593ca0625C1c64959AC56081785cE</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/ancient8.png" width="20"> Ancient8 Testnet</td>
-      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/neox.png" width="20"> NeoX Testnet</td>
-      <td><code>0xF93132d75c20EfeD556EC2Bc5aC777750665D3a9</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/mantle.png" width="20"> Mantle Testnet</td>
-      <td><code>0x74689f77e03D8213DF5037b681F05b80bAAe3504</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/kaia.png" width="20"> KAIA Testnet</td>
-      <td><code>0xca36dd890f987edce1d6d7c74fb9df627c216bf6</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/telos.png" width="20"> Telos Testnet</td>
-      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/linea.png" width="20"> Linea Testnet</td>
-      <td><code>0xd150d34976Ac00D5e892aDFE565ba47de11c2656</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/crossfi.png" width="20"> CrossFi Testnet</td>
-      <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
-      <td>✅ Active</td>
-    </tr>
-    <tr>
-      <td><img src="/public/chains/creator.png" width="20"> Creator Testnet</td>
+      <td><img src="/public/chains/trn.png" width="20"> Root Network Porcini (Testnet)</td>
       <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
       <td>✅ Active</td>
     </tr>
@@ -244,7 +175,7 @@ ProtectedPay prioritizes security at every level:
 
 See ProtectedPay in action:
 
-<div align="center">
+<div align="left">
   <a href="https://youtu.be/TJgnpVpa51c?si=ojjzXsVgQBj_BSGN">
     <img src="https://img.youtube.com/vi/TJgnpVpa51c/0.jpg" alt="ProtectedPay Demo Video" width="500px">
   </a>
@@ -262,5 +193,5 @@ Need assistance or have questions? We're here to help:
 
 <div align="center">
   <p>© 2025 ProtectedPay</p>
-  <h3>Revolutionizing secure multi-chain asset management</h3>
+  <h3>Revolutionizing secure payments on The Root Network</h3>
 </div>
