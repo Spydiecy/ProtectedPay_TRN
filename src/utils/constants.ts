@@ -38,7 +38,7 @@ export const SUPPORTED_TOKENS = [
     symbol: 'XRP',
     name: 'XRP (Native)',
     decimals: 18,
-    logo: '/chains/trn.png', // Using TRN logo for native token
+    logo: '/chains/xrp.png', // Using TRN logo for native token
     isNative: true
   },
   {
@@ -51,10 +51,10 @@ export const SUPPORTED_TOKENS = [
   },
   {
     address: '0xCCcCCcCC00000C64000000000000000000000000',
-    symbol: 'STYLO',
-    name: 'Stylo Token',
+    symbol: 'SYLO',
+    name: 'Sylo Token',
     decimals: 18,
-    logo: '/chains/trn.png', // Placeholder, will be updated
+    logo: '/chains/sylo.png', // Placeholder, will be updated
     isNative: false
   },
   {
@@ -62,7 +62,23 @@ export const SUPPORTED_TOKENS = [
     symbol: 'ASTO',
     name: 'Asto Token',
     decimals: 18,
-    logo: '/chains/trn.png', // Placeholder, will be updated
+    logo: '/chains/asto.png', // Placeholder, will be updated
+    isNative: false
+  },
+  {
+    address: '0xCCCccccc00001864000000000000000000000000',
+    symbol: 'USDT',
+    name: 'Tether USD',
+    decimals: 18,
+    logo: '/chains/usdt.png', // Placeholder, will be updated
+    isNative: false
+  },
+  {
+    address: '0xcCcCCCCc00000864000000000000000000000000',
+    symbol: 'USDC',
+    name: 'USD Coin',
+    decimals: 18,
+    logo: '/chains/usdc.png', // Placeholder, will be updated
     isNative: false
   }
 ] as const;

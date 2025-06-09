@@ -159,13 +159,21 @@ ProtectedPay prioritizes security at every level:
 <div align="left">
   <table>
     <tr>
+      <th>Contract Type</th>
       <th>Network</th>
       <th>Contract Address</th>
       <th>Status</th>
     </tr>
     <tr>
+      <td>Native Transfers</td>
       <td><img src="/public/chains/trn.png" width="20"> Root Network Porcini (Testnet)</td>
       <td><code>0xCa36dD890F987EDcE1D6D7C74Fb9df627c216BF6</code></td>
+      <td>✅ Active</td>
+    </tr>
+    <tr>
+      <td>Token Transfers</td>
+      <td><img src="/public/chains/trn.png" width="20"> Root Network Porcini (Testnet)</td>
+      <td><code>0x16f16b1742ECA434faf9442a9f9d933A766acfCA</code></td>
       <td>✅ Active</td>
     </tr>
   </table>
