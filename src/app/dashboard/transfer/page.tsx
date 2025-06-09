@@ -358,7 +358,9 @@ export default function TransferPage() {
     }
   }
 
-  const handleClaimTransferByUsername = async () => {
+  const handleClaimTransferByUsername = async (e: React.FormEvent) => {
+    e.preventDefault() // Prevent form submission and page refresh
+    
     if (!signer || !claimInput) {
       setClaimError('Please connect your wallet and enter a sender or transfer ID')
       return
