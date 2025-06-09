@@ -2,7 +2,8 @@
 import { assetIdToERC20Address } from "@therootnetwork/evm";
 
 const ROOT_ASSET_ID = 1;
-const ROOT_CONTRACT_ADDRESS = assetIdToERC20Address(ROOT_ASSET_ID);
+// Use the specific ROOT contract address
+const ROOT_CONTRACT_ADDRESS = '0xcCcCCccC00000001000000000000000000000000';
 
 export const STATUS_LABELS = {
     0: 'Pending',

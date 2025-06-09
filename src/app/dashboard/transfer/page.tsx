@@ -177,6 +177,18 @@ export default function TransferPage() {
         (tokenTransferIds || []).map(async (id: string) => {
           try {
             const details = await getTokenTransferDetails(signer, id)
+            
+            console.log(`Token transfer details for ${id}:`, details)
+            
+            // Determine if this is actually a native token transfer
+            // The contract might incorrectly mark ROOT token as native
+            const isActuallyNative = (details.token === 'NATIVE' || 
+                                   details.token === '0x0000000000000000000000000000000000000000' ||
+                                   !details.token) && 
+                                   details.token !== '0xcCcCCccC00000001000000000000000000000000'
+            
+            console.log(`Transfer ${id} - Token: ${details.token}, IsNative from contract: ${details.isNativeToken}, IsActuallyNative: ${isActuallyNative}`)
+            
             return {
               id,
               sender: details.sender,
@@ -186,7 +198,7 @@ export default function TransferPage() {
               remarks: details.remarks,
               status: details.status,
               token: details.token,
-              isNativeToken: details.isNativeToken
+              isNativeToken: isActuallyNative
             }
           } catch (err) {
             console.error(`Error fetching token transfer details for ${id}:`, err)
@@ -744,9 +756,33 @@ export default function TransferPage() {
                           const isSender = transfer.sender.toLowerCase() === wagmiAddress?.toLowerCase()
                           
                           // Get token info for display
-                          const tokenInfo = transfer.isNativeToken 
-                            ? SUPPORTED_TOKENS[0] // Native XRP
-                            : SUPPORTED_TOKENS.find(t => t.address === transfer.token) || SUPPORTED_TOKENS[0]
+                          const getTokenInfo = () => {
+                            if (transfer.isNativeToken || transfer.token === 'NATIVE' || !transfer.token) {
+                              return SUPPORTED_TOKENS[0] // Native XRP
+                            }
+                            
+                            // Find token by address (case-insensitive)
+                            const foundToken = SUPPORTED_TOKENS.find(t => 
+                              t.address.toLowerCase() === transfer.token?.toLowerCase()
+                            )
+                            
+                            if (foundToken) {
+                              return foundToken
+                            }
+                            
+                            // If token not found in supported list, return a default representation
+                            // Using two-step type assertion to handle the type incompatibility
+                            return {
+                              address: transfer.token || '',
+                              symbol: 'UNKNOWN',
+                              name: 'Unknown Token',
+                              decimals: 18,
+                              logo: '/chains/trn.png',
+                              isNative: false
+                            } as unknown as Token
+                          }
+                          
+                          const tokenInfo = getTokenInfo()
                           
                           return (
                             <div key={transfer.id} className="bg-white/5 p-4 rounded-lg border border-[rgb(var(--border))]/50">
